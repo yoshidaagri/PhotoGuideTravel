@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>札幌観光AI - 完全版MVP</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2E7D32;
+            --primary-dark: #1B5E20;
+            --primary-light: #4CAF50;
+            --secondary-color: #66BB6A;
+            --secondary-dark: #43A047;
+            --accent-color: #81C784;
+            --success-color: #4CAF50;
+            --bg-gradient: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 30%, #81C784 70%, #66BB6A 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(76, 175, 80, 0.2);
+            --shadow: 0 20px 40px rgba(46, 125, 50, 0.15);
+            --shadow-hover: 0 25px 50px rgba(46, 125, 50, 0.25);
+            --nature-accent: #8BC34A;
+            --forest-green: #388E3C;
+            --leaf-green: #9CCC65;
+        }
+
+        body {
+            font-family: 'BIZ UDPGothic', 'BIZ UDGothic', 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo', 'MS PGothic', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .user-info.active {
+            display: flex;
+        }
+
+        .logout-btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: var(--secondary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Main Container */
+        .container {
+            flex: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            width: 100%;
+        }
+
+        /* Login Section */
+        .login-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem 2.5rem;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .login-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .login-subtitle {
+            color: #666;
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(46, 125, 50, 0.3);
+            background: linear-gradient(45deg, var(--primary-dark), var(--secondary-dark));
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .demo-info {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e1e5e9;
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Main App Section */
+        .main-app {
+            display: none;
+        }
+
+        .main-app.active {
+            display: block;
+        }
+
+        .welcome-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
+        }
+
+        .welcome-title {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--forest-green), var(--nature-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        .welcome-description {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Analysis Type Selection */
+        .analysis-type-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
+        }
+
+        .analysis-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .analysis-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .analysis-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .analysis-option:hover {
+            background: rgba(102, 187, 106, 0.1);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .analysis-option input[type="radio"] {
+            display: none;
+        }
+
+        .analysis-option input[type="radio"]:checked + .analysis-icon + .analysis-name,
+        .analysis-option:has(input[type="radio"]:checked) {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(102, 187, 106, 0.3);
+        }
+
+        .analysis-icon {
+            font-size: 2rem;
+        }
+
+        .analysis-name {
+            font-weight: 500;
+        }
+
+        .store-option:has(input[type="radio"]:checked) {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8ff);
+            border-color: var(--primary-color);
+        }
+
+        .menu-option:has(input[type="radio"]:checked) {
+            background: linear-gradient(135deg, #fff8dc, #fdf5e6);
+            border-color: #ff9800;
+        }
+
+        /* Language Selection */
+        .language-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
+        }
+
+        .language-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .language-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .language-option:hover {
+            background: rgba(102, 187, 106, 0.1);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .language-option input[type="radio"] {
+            display: none;
+        }
+
+        .language-option input[type="radio"]:checked + .language-flag + .language-name,
+        .language-option:has(input[type="radio"]:checked) {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(102, 187, 106, 0.3);
+        }
+
+        .language-flag {
+            font-size: 1.2rem;
+        }
+
+        .language-name {
+            font-weight: 500;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            border: 2px dashed #e1e5e9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .upload-section:hover {
+            border-color: var(--secondary-color);
+            background: rgba(102, 187, 106, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .upload-section.dragover {
+            border-color: var(--primary-color);
+            background: rgba(76, 175, 80, 0.12);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+
+        .upload-text {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        .image-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(33, 150, 243, 0.05);
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .image-detail {
+            color: #666;
+        }
+
+        .image-detail strong {
+            color: #333;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 8px 20px rgba(102, 187, 106, 0.3);
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(45deg, var(--secondary-dark), var(--primary-light));
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading Section */
+        .loading-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
+        }
+
+        .loading-spinner {
+            font-size: 4rem;
+            animation: spin 2s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .loading-subtext {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Results Section */
+        .results-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .results-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .new-analysis-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .new-analysis-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .results-content {
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+            font-size: 1rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header-content {
+                padding: 0 1rem;
+            }
+
+            .logo {
+                font-size: 1.3rem;
+            }
+
+            .login-card {
+                padding: 2rem 1.5rem;
+                margin: 0 1rem;
+            }
+
+            .login-title {
+                font-size: 2rem;
+            }
+
+            .welcome-title {
+                font-size: 2.2rem;
+            }
+
+            .welcome-section,
+            .upload-section,
+            .preview-section,
+            .loading-section,
+            .results-section {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .results-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .image-details {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .upload-icon {
+                font-size: 3rem;
+            }
+
+            .upload-text {
+                font-size: 1.1rem;
+            }
+
+            .loading-spinner {
+                font-size: 3rem;
+            }
+
+            .user-info {
+                font-size: 0.8rem;
+            }
+
+            .user-info span:first-child {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-content {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .user-section {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    🏔️ 札幌観光AI
+                </div>
+                <div class="user-section">
+                    <div id="userInfo" class="user-info">
+                        <span>👤 <span id="currentUser">sapporo-guide</span></span>
+                        <button onclick="logout()" class="logout-btn" data-i18n="logout">ログアウト</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Login Section -->
+            <div id="loginSection" class="login-section">
+                <div class="login-card fade-in">
+                    <h1 class="login-title">🏔️</h1>
+                    <h2 class="login-subtitle" data-i18n="loginTitle">札幌観光AI - 画像解析ガイド</h2>
+                    
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="loginUsername">ユーザーID</label>
+                            <input type="text" id="username" class="form-input" data-i18n="currentUser" placeholder="sapporo-guide" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="loginPassword">パスワード</label>
+                            <input type="password" id="password" class="form-input" placeholder="hokkaido2024" required>
+                        </div>
+                        
+                        <button type="submit" id="loginBtn" class="login-btn" data-i18n="loginButton">
+                            🔐 ログイン
+                        </button>
+                    </form>
+                    
+                    <div class="demo-info">
+                        <p><strong>📱 スマートフォン・PC対応</strong></p>
+                        <p><strong>デモアカウント:</strong></p>
+                        <p>ID: <strong>sapporo-guide</strong></p>
+                        <p>PASS: <strong>hokkaido2024</strong></p>
+                        <p><small>札幌の店舗・観光地・料理画像をAIが詳しく解析します</small></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Application -->
+            <div id="mainApp" class="main-app">
+                <!-- Welcome Section -->
+                <section class="welcome-section fade-in">
+                    <h1 class="welcome-title" data-i18n="title">札幌観光AI画像解析</h1>
+                    <p class="welcome-description">
+                        <span data-i18n="description">札幌の店舗・観光地・料理の画像をAIが詳しく解析し、地元情報やおすすめスポットをご紹介します</span>
+                    </p>
+                </section>
+
+                <!-- Language Selection -->
+                <section class="language-section">
+                    <h3 class="language-title" data-i18n="languageSelect">🌐 解析言語を選択</h3>
+                    <div class="language-options">
+                        <label class="language-option">
+                            <input type="radio" name="language" value="ja" checked>
+                            <span class="language-flag">🇯🇵</span>
+                            <span class="language-name">日本語</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="ko">
+                            <span class="language-flag">🇰🇷</span>
+                            <span class="language-name">한국어</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="zh">
+                            <span class="language-flag">🇨🇳</span>
+                            <span class="language-name">简体中文</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="en">
+                            <span class="language-flag">🇺🇸</span>
+                            <span class="language-name">English</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Analysis Type Selection -->
+                <section class="analysis-type-section">
+                    <h3 class="analysis-title" data-i18n="analysisTypeSelect">🔍 解析タイプを選択</h3>
+                    <div class="analysis-options">
+                        <label class="analysis-option store-option">
+                            <input type="radio" name="analysisType" value="store" checked>
+                            <span class="analysis-icon">🏪🕌</span>
+                            <span class="analysis-name" data-i18n="storeAnalysis">店舗・観光地分析</span>
+                        </label>
+                        <label class="analysis-option menu-option">
+                            <input type="radio" name="analysisType" value="menu">
+                            <span class="analysis-icon">📋🍜</span>
+                            <span class="analysis-name" data-i18n="menuTranslation">看板・メニュー翻訳</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Upload Section -->
+                <section id="uploadSection" class="upload-section" onclick="document.getElementById('imageInput').click()">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text" data-i18n="uploadText">画像をアップロード</div>
+                    <div class="upload-subtext">
+                        <span data-i18n="uploadSubtext">札幌の店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ</span><br>
+                        <strong><span data-i18n="fileFormat">対応形式: JPG, PNG, GIF (最大 10MB)</span></strong><br>
+                        <strong><span id="recommendedText" data-i18n="storeRecommended">推奨: ラーメン、ジンギスカン、雪まつり、すすきの等</span></strong>
+                    </div>
+                    <input type="file" id="imageInput" class="file-input" accept="image/*">
+                </section>
+
+                <!-- Preview Section -->
+                <section id="previewSection" class="preview-section hidden">
+                    <h3 class="preview-title" data-i18n="previewTitle">📋 アップロード画像プレビュー</h3>
+                    <img id="previewImage" class="preview-image" alt="プレビュー">
+                    <div id="imageDetails" class="image-details"></div>
+                    <button onclick="analyzeImage()" id="analyzeBtn" class="analyze-btn">
+                        <span id="analyzeBtnText" data-i18n="analyzeButton">🤖 札幌観光AI解析を開始</span>
+                    </button>
+                </section>
+
+                <!-- Loading Section -->
+                <section id="loadingSection" class="loading-section hidden">
+                    <div class="loading-spinner">🤖</div>
+                    <div class="loading-text" data-i18n="loading">札幌観光AIが解析中...</div>
+                    <div class="loading-subtext">
+                        <span data-i18n="loadingSubtext">すすきの・大通・札幌グルメ・観光スポット</span><br>
+                        <span data-i18n="loadingDetail">詳細な地元情報を分析しています</span>
+                    </div>
+                </section>
+
+                <!-- Results Section -->
+                <section id="resultsSection" class="results-section hidden">
+                    <div class="results-header">
+                        <h3 class="results-title">🏔️ 札幌観光AI解析結果</h3>
+                        <button onclick="newAnalysis()" class="new-analysis-btn">🔄 新しい解析</button>
+                    </div>
+                    <div id="resultsContent" class="results-content"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev';
+        const CREDENTIALS = {
+            username: 'sapporo-guide',
+            password: 'hokkaido2024'
+        };
+
+        // State
+        let selectedImage = null;
+        let isLoggedIn = false;
+
+        // Translation dictionary for UI internationalization
+        const translations = {
+            ja: {
+                title: "札幌観光AI画像解析",
+                description: "札幌の店舗・観光地・料理の画像をAIが詳しく解析し、地元情報やおすすめスポットをご紹介します",
+                languageSelect: "解析言語を選択",
+                analysisTypeSelect: "解析タイプを選択",
+                storeAnalysis: "店舗・観光地分析",
+                menuTranslation: "看板・メニュー翻訳",
+                uploadText: "画像をアップロード",
+                uploadSubtext: "札幌の店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ",
+                fileFormat: "対応形式: JPG, PNG, GIF (最大 10MB)",
+                storeRecommended: "推奨: ラーメン、ジンギスカン、雪まつり、すすきの等",
+                menuRecommended: "特に有効: 手書きメニュー、価格表、注文表等",
+                previewTitle: "アップロード画像プレビュー",
+                analyzeButton: "札幌観光AI解析を開始",
+                loading: "札幌観光AIが解析中...",
+                loadingSubtext: "すすきの・大通・札幌グルメ・観光スポット",
+                loadingDetail: "詳細な地元情報を分析しています",
+                loginTitle: "札幌観光AI - 画像解析ガイド",
+                loginUsername: "ユーザーID",
+                loginPassword: "パスワード",
+                loginButton: "ログイン",
+                loginProcessing: "認証中...",
+                currentUser: "sapporo-guide",
+                logout: "ログアウト"
+            },
+            ko: {
+                title: "삿포로 관광 AI 화상 분석",
+                description: "삿포로의 상점・관광지・요리 이미지를 AI가 상세히 분석하여 지역 정보와 추천 스팟을 소개합니다",
+                languageSelect: "분석 언어 선택",
+                analysisTypeSelect: "분석 유형 선택", 
+                storeAnalysis: "상점・관광지 분석",
+                menuTranslation: "간판・메뉴 번역",
+                uploadText: "이미지 업로드",
+                uploadSubtext: "삿포로 상점・관광지・요리 사진을 클릭하거나 드래그 & 드롭",
+                fileFormat: "대응 형식: JPG, PNG, GIF (최대 10MB)",
+                storeRecommended: "추천: 라멘, 징기스칸, 눈축제, 스스키노 등",
+                menuRecommended: "특히 효과적: 손글씨 메뉴, 가격표, 주문표 등",
+                previewTitle: "업로드 이미지 미리보기",
+                analyzeButton: "삿포로 관광 AI 분석 시작",
+                loading: "삿포로 관광 AI가 분석중...",
+                loadingSubtext: "스스키노・오도리・삿포로 그루메・관광 스팟",
+                loadingDetail: "상세한 지역 정보를 분석하고 있습니다",
+                loginTitle: "삿포로 관광 AI - 화상 분석 가이드",
+                loginUsername: "사용자 ID",
+                loginPassword: "비밀번호",
+                loginButton: "로그인",
+                loginProcessing: "인증중...",
+                currentUser: "sapporo-guide",
+                logout: "로그아웃"
+            },
+            zh: {
+                title: "札幌观光AI图像分析",
+                description: "AI详细分析札幌店铺・观光地・料理图像，介绍当地信息和推荐景点",
+                languageSelect: "选择分析语言",
+                analysisTypeSelect: "选择分析类型",
+                storeAnalysis: "店铺・观光地分析",
+                menuTranslation: "招牌・菜单翻译",
+                uploadText: "上传图像",
+                uploadSubtext: "点击或拖拽上传札幌店铺・观光地・料理照片",
+                fileFormat: "支持格式: JPG, PNG, GIF (最大 10MB)",
+                storeRecommended: "推荐: 拉面、成吉思汗烤肉、雪祭、薄野等",
+                menuRecommended: "特别有效: 手写菜单、价格表、订单等",
+                previewTitle: "上传图像预览",
+                analyzeButton: "开始札幌观光AI分析",
+                loading: "札幌观光AI分析中...",
+                loadingSubtext: "薄野・大通・札幌美食・观光景点",
+                loadingDetail: "正在分析详细的当地信息",
+                loginTitle: "札幌观光AI - 图像分析向导",
+                loginUsername: "用户ID",
+                loginPassword: "密码",
+                loginButton: "登录",
+                loginProcessing: "认证中...",
+                currentUser: "sapporo-guide",
+                logout: "退出登录"
+            },
+            en: {
+                title: "Sapporo Tourism AI Image Analysis",
+                description: "AI analyzes images of Sapporo stores, tourist spots, and cuisine in detail, introducing local information and recommended spots",
+                languageSelect: "Select Analysis Language",
+                analysisTypeSelect: "Select Analysis Type",
+                storeAnalysis: "Store・Tourism Analysis",
+                menuTranslation: "Signboard・Menu Translation", 
+                uploadText: "Upload Image",
+                uploadSubtext: "Click or drag & drop photos of Sapporo stores, tourist spots, and cuisine",
+                fileFormat: "Supported formats: JPG, PNG, GIF (max 10MB)",
+                storeRecommended: "Recommended: Ramen, Jingisukan, Snow Festival, Susukino, etc.",
+                menuRecommended: "Especially effective: Handwritten menus, price lists, order forms, etc.",
+                previewTitle: "Upload Image Preview",
+                analyzeButton: "Start Sapporo Tourism AI Analysis",
+                loading: "Sapporo Tourism AI Analyzing...",
+                loadingSubtext: "Susukino・Odori・Sapporo Gourmet・Tourist Spots",
+                loadingDetail: "Analyzing detailed local information",
+                loginTitle: "Sapporo Tourism AI - Image Analysis Guide",
+                loginUsername: "User ID", 
+                loginPassword: "Password",
+                loginButton: "Login",
+                loginProcessing: "Authenticating...",
+                currentUser: "sapporo-guide",
+                logout: "Logout"
+            }
+        };
+
+        // DOM Elements
+        const loginSection = document.getElementById('loginSection');
+        const mainApp = document.getElementById('mainApp');
+        const userInfo = document.getElementById('userInfo');
+        const uploadSection = document.getElementById('uploadSection');
+        const previewSection = document.getElementById('previewSection');
+        const loadingSection = document.getElementById('loadingSection');
+        const resultsSection = document.getElementById('resultsSection');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            setupEventListeners();
+            checkAuthStatus();
+            initializeLanguage();
+        }
+
+        function setupEventListeners() {
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+            // File input
+            document.getElementById('imageInput').addEventListener('change', handleFileSelect);
+
+            // Drag and drop
+            uploadSection.addEventListener('dragover', handleDragOver);
+            uploadSection.addEventListener('drop', handleDrop);
+            uploadSection.addEventListener('dragleave', handleDragLeave);
+
+            // Language change listeners
+            document.querySelectorAll('input[name="language"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    updateUILanguage(e.target.value);
+                });
+            });
+
+            // Analysis type change listeners
+            document.querySelectorAll('input[name="analysisType"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    updateRecommendedText(e.target.value);
+                });
+            });
+        }
+
+        // UI Language Update Functions
+        function updateUILanguage(language) {
+            const t = translations[language];
+            if (!t) return;
+
+            // Update all elements with data-i18n attributes
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (t[key]) {
+                    // Handle different element types
+                    if (element.tagName === 'INPUT' && element.type === 'text') {
+                        element.placeholder = t[key];
+                    } else if (element.tagName === 'INPUT' && element.type === 'password') {
+                        element.placeholder = t[key];
+                    } else {
+                        // Preserve emojis and icons at the beginning of text
+                        const currentText = element.textContent;
+                        const emojiMatch = currentText.match(/^[\u{1F000}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]+\s*/u);
+                        const emoji = emojiMatch ? emojiMatch[0] : '';
+                        element.textContent = emoji + t[key];
+                    }
+                }
+            });
+
+            // Update document language attribute
+            document.documentElement.lang = language;
+
+            // Update font family based on language
+            updateFontFamily(language);
+
+            // Store selected language in sessionStorage
+            sessionStorage.setItem('selectedLanguage', language);
+
+            // Update recommended text based on current analysis type
+            const currentAnalysisType = document.querySelector('input[name="analysisType"]:checked')?.value || 'store';
+            updateRecommendedText(currentAnalysisType);
+        }
+
+        function updateRecommendedText(analysisType) {
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            const recommendedElement = document.getElementById('recommendedText');
+            
+            if (recommendedElement && t) {
+                if (analysisType === 'menu') {
+                    recommendedElement.textContent = t.menuRecommended;
+                    recommendedElement.setAttribute('data-i18n', 'menuRecommended');
+                } else {
+                    recommendedElement.textContent = t.storeRecommended;
+                    recommendedElement.setAttribute('data-i18n', 'storeRecommended');
+                }
+            }
+        }
+
+        function updateFontFamily(language) {
+            const body = document.body;
+            switch (language) {
+                case 'ko':
+                    body.style.fontFamily = "'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif";
+                    break;
+                case 'zh':
+                    body.style.fontFamily = "'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif";
+                    break;
+                case 'en':
+                    body.style.fontFamily = "'Inter', 'Roboto', 'Segoe UI', sans-serif";
+                    break;
+                default: // ja
+                    body.style.fontFamily = "'BIZ UDPGothic', 'BIZ UDGothic', 'Hiragino Sans', 'Yu Gothic UI', sans-serif";
+            }
+        }
+
+        function initializeLanguage() {
+            // Load saved language or default to Japanese
+            const savedLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const languageRadio = document.querySelector(`input[name="language"][value="${savedLanguage}"]`);
+            if (languageRadio) {
+                languageRadio.checked = true;
+                updateUILanguage(savedLanguage);
+            }
+        }
+
+        // Authentication
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = t.loginProcessing;
+
+            setTimeout(() => {
+                if (username === CREDENTIALS.username && password === CREDENTIALS.password) {
+                    isLoggedIn = true;
+                    sessionStorage.setItem('sapporoAuth', 'true');
+                    sessionStorage.setItem('sapporoUser', username);
+                    showMainApp();
+                } else {
+                    const errorMessages = {
+                        ja: '❌ ログインに失敗しました\n\n正しいID・パスワードを入力してください\n\nID: sapporo-guide\nPASS: hokkaido2024',
+                        ko: '❌ 로그인에 실패했습니다\n\n올바른 ID・비밀번호를 입력해주세요\n\nID: sapporo-guide\nPASS: hokkaido2024',
+                        zh: '❌ 登录失败\n\n请输入正确的ID・密码\n\nID: sapporo-guide\nPASS: hokkaido2024',
+                        en: '❌ Login failed\n\nPlease enter correct ID and password\n\nID: sapporo-guide\nPASS: hokkaido2024'
+                    };
+                    alert(errorMessages[currentLanguage]);
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '🔐 ' + t.loginButton;
+                }
+            }, 800);
+        }
+
+        function checkAuthStatus() {
+            const authStatus = sessionStorage.getItem('sapporoAuth');
+            const username = sessionStorage.getItem('sapporoUser');
+            
+            if (authStatus === 'true' && username) {
+                isLoggedIn = true;
+                document.getElementById('currentUser').textContent = username;
+                showMainApp();
+            }
+        }
+
+        function showMainApp() {
+            loginSection.classList.add('hidden');
+            mainApp.classList.add('active');
+            userInfo.classList.add('active');
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            sessionStorage.removeItem('sapporoAuth');
+            sessionStorage.removeItem('sapporoUser');
+            
+            resetApp();
+            
+            mainApp.classList.remove('active');
+            userInfo.classList.remove('active');
+            loginSection.classList.remove('hidden');
+            
+            document.getElementById('loginForm').reset();
+        }
+
+        // File Handling
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) processFile(file);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) processFile(files[0]);
+        }
+
+        function processFile(file) {
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                alert('❌ 画像ファイルを選択してください\n\n対応形式: JPG, PNG, GIF');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('❌ ファイルサイズは10MB以下にしてください\n\n現在のサイズ: ' + (file.size / (1024 * 1024)).toFixed(1) + 'MB');
+                return;
+            }
+
+            // Resize image if needed
+            resizeImage(file, 1200).then(resizedFile => {
+                selectedImage = resizedFile;
+                showPreview(resizedFile);
+            }).catch(error => {
+                console.error('Image resize error:', error);
+                selectedImage = file;
+                showPreview(file);
+            });
+        }
+
+        function resizeImage(file, maxSize = 1200) {
+            return new Promise((resolve, reject) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = function() {
+                    // Calculate new dimensions
+                    let { width, height } = img;
+                    
+                    if (width <= maxSize && height <= maxSize) {
+                        // No resize needed
+                        resolve(file);
+                        return;
+                    }
+                    
+                    // Calculate resize ratio
+                    const ratio = Math.min(maxSize / width, maxSize / height);
+                    width *= ratio;
+                    height *= ratio;
+                    
+                    // Set canvas size
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // Draw resized image
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Convert to blob
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            // Create new File object
+                            const resizedFile = new File([blob], file.name, {
+                                type: file.type,
+                                lastModified: Date.now()
+                            });
+                            
+                            console.log(`Image resized: ${img.width}x${img.height} → ${width}x${height}`);
+                            console.log(`File size: ${(file.size/1024).toFixed(1)}KB → ${(resizedFile.size/1024).toFixed(1)}KB`);
+                            
+                            resolve(resizedFile);
+                        } else {
+                            reject(new Error('Failed to resize image'));
+                        }
+                    }, file.type, 0.9);
+                };
+                
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        function showPreview(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImage').src = e.target.result;
+                document.getElementById('imageDetails').innerHTML = `
+                    <div class="image-detail">📁 <strong>ファイル名:</strong> ${file.name}</div>
+                    <div class="image-detail">📏 <strong>サイズ:</strong> ${(file.size / 1024).toFixed(1)} KB</div>
+                    <div class="image-detail">🖼️ <strong>形式:</strong> ${file.type}</div>
+                `;
+                
+                uploadSection.classList.add('hidden');
+                previewSection.classList.remove('hidden');
+                previewSection.classList.add('fade-in');
+                
+                // Scroll to preview
+                previewSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Image Analysis with S3 Upload
+        async function analyzeImage() {
+            if (!selectedImage || !isLoggedIn) return;
+
+            showLoading();
+
+            try {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const base64Data = e.target.result.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+                    
+                    try {
+                        // Get selected language and analysis type
+                        const selectedLanguage = document.querySelector('input[name="language"]:checked').value;
+                        const selectedType = document.querySelector('input[name="analysisType"]:checked').value;
+                        const currentUser = sessionStorage.getItem('sapporoUser') || 'sapporo-guide';
+                        
+                        // Upload image to S3 first
+                        const uploadResponse = await fetch(`${API_BASE_URL}/upload-image`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                image: base64Data,
+                                filename: selectedImage.name || 'image.jpg',
+                                userId: currentUser,
+                                analysisType: selectedType,
+                                language: selectedLanguage
+                            })
+                        });
+
+                        let imageUploadResult = null;
+                        if (uploadResponse.ok) {
+                            imageUploadResult = await uploadResponse.json();
+                            console.log('Image uploaded to S3:', imageUploadResult);
+                        } else {
+                            console.warn('Image upload failed, proceeding with analysis');
+                        }
+                        
+                        // Proceed with analysis regardless of upload success
+                        const response = await fetch(`${API_BASE_URL}/analyze`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                image: `data:image/jpeg;base64,${base64Data}`,
+                                language: selectedLanguage,
+                                type: selectedType,
+                                imageId: imageUploadResult?.image_id || null,
+                                s3Url: imageUploadResult?.s3_url || null
+                            })
+                        });
+
+                        const responseText = await response.text();
+                        showResults(response.ok, responseText, imageUploadResult);
+                        
+                    } catch (error) {
+                        showResults(false, `ネットワークエラーが発生しました: ${error.message}`);
+                    }
+                };
+                
+                reader.readAsDataURL(selectedImage);
+                
+            } catch (error) {
+                showResults(false, `エラーが発生しました: ${error.message}`);
+            }
+        }
+
+        function showLoading() {
+            previewSection.classList.add('hidden');
+            loadingSection.classList.remove('hidden');
+            loadingSection.classList.add('fade-in');
+            
+            // Scroll to loading
+            loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function showResults(success, responseText, uploadInfo = null) {
+            loadingSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            resultsSection.classList.add('fade-in');
+            
+            let content;
+            if (success) {
+                try {
+                    const result = JSON.parse(responseText);
+                    content = result.analysis || 'データの解析に失敗しました';
+                } catch (e) {
+                    content = responseText;
+                }
+                
+                // Image is saved silently in background
+            } else {
+                content = `❌ ${responseText}`;
+            }
+            
+            document.getElementById('resultsContent').textContent = content;
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function newAnalysis() {
+            resetApp();
+            // Scroll to upload
+            uploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function resetApp() {
+            selectedImage = null;
+            uploadSection.classList.remove('hidden');
+            previewSection.classList.add('hidden');
+            loadingSection.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+            document.getElementById('imageInput').value = '';
+        }
+
+        // Analysis type change handler
+        document.querySelectorAll('input[name="analysisType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                updateAnalysisUI(this.value);
+            });
+        });
+
+        function updateAnalysisUI(type) {
+            const btnText = document.getElementById('analyzeBtnText');
+            const uploadText = document.querySelector('.upload-text');
+            const uploadSubtext = document.querySelector('.upload-subtext');
+            
+            if (type === 'menu') {
+                btnText.textContent = '📋🍜 看板・メニュー翻訳を開始';
+                uploadText.textContent = '看板・メニューをアップロード';
+                uploadSubtext.innerHTML = '日本語の看板・メニューの写真をクリックまたはドラッグ＆ドロップ<br><strong>対応形式:</strong> JPG, PNG, GIF (最大 10MB)<br><strong>特に有効:</strong> 手書きメニュー、価格表、注文表等';
+            } else {
+                btnText.textContent = '🤖 札幌観光AI解析を開始';
+                uploadText.textContent = '画像をアップロード';
+                uploadSubtext.innerHTML = '札幌の店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ<br><strong>対応形式:</strong> JPG, PNG, GIF (最大 10MB)<br><strong>推奨:</strong> ラーメン、ジンギスカン、雪まつり、すすきの等';
+            }
+        }
+
+        // Auto-fill demo credentials on focus
+        document.getElementById('username').addEventListener('focus', function() {
+            if (!this.value) this.value = 'sapporo-guide';
+        });
+        
+        document.getElementById('password').addEventListener('focus', function() {
+            if (!this.value) this.value = 'hokkaido2024';
+        });
+    </script>
+</body>
+</html>
