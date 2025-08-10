@@ -1,0 +1,23 @@
+# テスト専用依存関係
+
+# テストフレームワーク
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# AWS モック
+moto[dynamodb,lambda,s3]==4.2.14
+
+# HTTP モック
+responses==0.24.1
+requests-mock==1.11.0
+
+# ファクトリー・フェイクデータ
+factory-boy==3.3.0
+Faker==20.1.0
+
+# JWT テスト
+PyJWT==2.8.0
+
+# 並行テスト実行
+pytest-xdist==3.5.0

@@ -1,0 +1,111 @@
+service: ai-tourism-poc
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: ap-northeast-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    STAGE: ${self:provider.stage}
+    GOOGLE_GEMINI_API_KEY: ${env:GOOGLE_GEMINI_API_KEY}
+    STRIPE_SECRET_KEY: ${env:STRIPE_SECRET_KEY}
+    PROJECT_NAME: ai-tourism-poc
+
+functions:
+  auth:
+    handler: functions/auth/handler.main
+    events:
+      - http:
+          path: auth/{proxy+}
+          method: ANY
+          cors: true
+
+  imageAnalysis:
+    handler: functions/image-analysis/handler.main
+    timeout: 15
+    memorySize: 512
+    reservedConcurrency: 5
+    events:
+      - http:
+          path: analyze
+          method: POST
+          cors: true
+
+  payment:
+    handler: functions/payment/handler.main
+    events:
+      - http:
+          path: payment/{proxy+}
+          method: ANY
+          cors: true
+
+  userManagement:
+    handler: functions/user-management/handler.main
+    events:
+      - http:
+          path: users/{proxy+}
+          method: ANY
+          cors: true
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-users-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+    AnalysisHistoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-analysis-history-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+
+    PaymentHistoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-payment-history-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: paymentId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: paymentId
+            KeyType: RANGE
+
+plugins:
+  - serverless-python-requirements
+  - serverless-offline
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+    zip: true
+    slim: true
+  serverless-offline:
+    httpPort: 3001
+    host: 0.0.0.0
