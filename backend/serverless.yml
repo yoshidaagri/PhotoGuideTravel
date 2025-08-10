@@ -12,6 +12,30 @@ provider:
     GOOGLE_GEMINI_API_KEY: ${env:GOOGLE_GEMINI_API_KEY}
     STRIPE_SECRET_KEY: ${env:STRIPE_SECRET_KEY}
     PROJECT_NAME: ai-tourism-poc
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-*"
+        - "arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-*/index/*"
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+        - s3:DeleteObject
+      Resource:
+        - "arn:aws:s3:::${self:service}-images-${self:provider.stage}/*"
+    - Effect: Allow
+      Action:
+        - s3:ListBucket
+      Resource:
+        - "arn:aws:s3:::${self:service}-images-${self:provider.stage}"
 
 functions:
   auth:
@@ -23,7 +47,7 @@ functions:
           cors: true
 
   imageAnalysis:
-    handler: functions/image-analysis/handler.main
+    handler: functions/image-analysis/handler_gemini.main
     timeout: 15
     memorySize: 512
     reservedConcurrency: 5
@@ -49,63 +73,27 @@ functions:
           method: ANY
           cors: true
 
-resources:
-  Resources:
-    UsersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:service}-users-${self:provider.stage}
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: userId
-            AttributeType: S
-        KeySchema:
-          - AttributeName: userId
-            KeyType: HASH
-        StreamSpecification:
-          StreamViewType: NEW_AND_OLD_IMAGES
+  imageUpload:
+    handler: functions/image-upload/handler.main
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: upload-image
+          method: POST
+          cors: true
 
-    AnalysisHistoryTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:service}-analysis-history-${self:provider.stage}
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: userId
-            AttributeType: S
-          - AttributeName: timestamp
-            AttributeType: S
-        KeySchema:
-          - AttributeName: userId
-            KeyType: HASH
-          - AttributeName: timestamp
-            KeyType: RANGE
+# Resources commented out to avoid conflicts with existing infrastructure
+# resources:
+#   Resources:
 
-    PaymentHistoryTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:service}-payment-history-${self:provider.stage}
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: userId
-            AttributeType: S
-          - AttributeName: paymentId
-            AttributeType: S
-        KeySchema:
-          - AttributeName: userId
-            KeyType: HASH
-          - AttributeName: paymentId
-            KeyType: RANGE
 
-plugins:
-  - serverless-python-requirements
-  - serverless-offline
+# plugins:
+#   - serverless-python-requirements
 
-custom:
-  pythonRequirements:
-    dockerizePip: non-linux
-    zip: true
-    slim: true
-  serverless-offline:
-    httpPort: 3001
-    host: 0.0.0.0
+# custom:
+#   pythonRequirements:
+#     pipCmdExtraArgs:
+#       - --python=/Library/Frameworks/Python.framework/Versions/3.13/bin/python3
+#     zip: true
+#     slim: true

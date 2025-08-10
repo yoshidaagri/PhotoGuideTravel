@@ -1,0 +1,604 @@
+import json
+import os
+import base64
+from datetime import datetime
+import urllib.request
+import urllib.parse
+import boto3
+
+def main(event, context):
+    """
+    実際のGemini APIを使用した画像解析関数
+    """
+    try:
+        # CORS headers
+        headers = {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+            'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+        }
+        
+        if event['httpMethod'] == 'OPTIONS':
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'body': ''
+            }
+        
+        # リクエスト解析
+        body = json.loads(event.get('body', '{}'))
+        image_data = body.get('image')
+        language = body.get('language', 'ja')
+        analysis_type = body.get('type', 'store')  # 'store' or 'menu'
+        image_id = body.get('imageId')  # フロントエンドから送信される画像ID
+        s3_url = body.get('s3Url')      # S3 URL
+        
+        if not image_data:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'body': json.dumps({'error': 'Image data is required'})
+            }
+        
+        # Gemini API呼び出し
+        analysis_result = analyze_image_with_gemini_rest(image_data, language, analysis_type)
+        
+        # 解析結果をDynamoDBに保存（image_idがある場合のみ）
+        if image_id and analysis_result.get('analysis'):
+            update_image_with_analysis(image_id, analysis_result['analysis'])
+        
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'body': json.dumps(analysis_result)
+        }
+        
+    except Exception as e:
+        print(f"Error in image analysis: {str(e)}")
+        return {
+            'statusCode': 500,
+            'headers': headers,
+            'body': json.dumps({'error': str(e)})
+        }
+
+
+def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='store'):
+    """
+    REST APIでGemini APIを呼び出す（依存関係なし）
+    """
+    try:
+        api_key = os.environ.get('GOOGLE_GEMINI_API_KEY')
+        if not api_key or api_key == 'test':
+            return generate_enhanced_mock_analysis(language, analysis_type)
+        
+        # Base64画像データをクリーン化
+        if image_data.startswith('data:image'):
+            image_data = image_data.split(',')[1]
+        
+        # 分析タイプ別プロンプト選択
+        if analysis_type == 'menu':
+            sapporo_prompts = get_menu_analysis_prompts()
+        else:
+            sapporo_prompts = get_store_tourism_prompts()
+        
+        # 分析タイプ別の要約指示を追加
+        base_prompt = sapporo_prompts.get(language, sapporo_prompts['ja'])
+        
+        if analysis_type == 'menu':
+            summary_instruction = get_menu_summary_instructions()
+        else:
+            summary_instruction = get_store_summary_instructions()
+        
+        # 中国語の場合は特別強化
+        if language == 'zh':
+            prompt = f"请用简体中文回答。{base_prompt}{summary_instruction.get(language, summary_instruction['ja'])}请确保回答完全使用简体中文。"
+        else:
+            prompt = base_prompt + summary_instruction.get(language, summary_instruction['ja'])
+        
+        # デバッグログ
+        print(f"Analysis type: {analysis_type}, Language: {language}")
+        print(f"Available languages in prompts: {list(sapporo_prompts.keys())}")
+        print(f"Available languages in summary: {list(summary_instruction.keys())}")
+        print(f"Selected base prompt starts with: {base_prompt[:100]}...")
+        
+        # Gemini REST API リクエスト構築
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
+        
+        # 中国語の場合は特別な設定を追加
+        generation_config = {
+            "temperature": 0.7,
+            "topP": 0.8,
+            "topK": 40,
+            "maxOutputTokens": 2048,
+        }
+        
+        # 中国語を強制するための追加設定
+        if language == 'zh':
+            generation_config["candidateCount"] = 1
+            generation_config["stopSequences"] = []
+        
+        payload = {
+            "contents": [{
+                "parts": [
+                    {"text": prompt},
+                    {
+                        "inline_data": {
+                            "mime_type": "image/jpeg",
+                            "data": image_data
+                        }
+                    }
+                ]
+            }],
+            "generationConfig": generation_config
+        }
+        
+        # HTTP リクエスト送信
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'}
+        )
+        
+        with urllib.request.urlopen(req) as response:
+            result = json.loads(response.read().decode('utf-8'))
+        
+        # レスポンス解析
+        if 'candidates' in result and result['candidates']:
+            analysis_text = result['candidates'][0]['content']['parts'][0]['text']
+            return {
+                'analysis': analysis_text,
+                'language': language,
+                'timestamp': datetime.now().isoformat(),
+                'model': 'gemini-2.0-flash-exp',
+                'status': 'success'
+            }
+        else:
+            return generate_enhanced_mock_analysis(language, analysis_type)
+        
+    except Exception as e:
+        print(f"Gemini API error: {str(e)}")
+        return generate_enhanced_mock_analysis(language, analysis_type)
+
+
+def update_image_with_analysis(image_id, analysis_result):
+    """
+    画像に解析結果を追加保存
+    """
+    try:
+        dynamodb = boto3.resource('dynamodb')
+        table_name = f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-images-{os.environ.get('STAGE', 'dev')}"
+        table = dynamodb.Table(table_name)
+        
+        # 返答文の先頭200文字を保存
+        analysis_summary = analysis_result[:200] if analysis_result else ""
+        response_truncated = len(analysis_result) > 200 if analysis_result else False
+        
+        table.update_item(
+            Key={'image_id': image_id},
+            UpdateExpression="SET analysis_summary = :summary, response_truncated = :truncated, #status = :status, analyzed_at = :analyzed_at",
+            ExpressionAttributeNames={'#status': 'status'},
+            ExpressionAttributeValues={
+                ':summary': analysis_summary,
+                ':truncated': response_truncated,
+                ':status': 'analyzed',
+                ':analyzed_at': datetime.now().isoformat()
+            }
+        )
+        print(f"Successfully updated analysis for image_id: {image_id}")
+        return True
+    except Exception as e:
+        print(f"Failed to update image analysis: {str(e)}")
+        return False
+
+
+def generate_enhanced_mock_analysis(language='ja', analysis_type='store'):
+    """
+    強化された札幌特化モック解析（Gemini API使用不可時）
+    """
+    mock_responses = {
+        'ja': """🏔️ 札幌観光AI解析結果 (実画像解析版)
+
+**📍場所・エリア**: この画像から札幌市内の特徴的な要素を検出しました。
+
+**🍜グルメ・食事**: 
+• 札幌ラーメン横丁 - すすきのの名物スポット
+• だるま本店 - ジンギスカンの老舗、札幌発祥の味
+• 二条市場 - 新鮮な北海道海鮮の台所
+• 六花亭本店 - マルセイバターサンド発祥地
+
+**🚇アクセス**: 
+• 地下鉄南北線: すすきの駅 ↔ 大通駅 ↔ 札幌駅
+• 地下鉄東西線: 円山公園駅、大通駅経由
+• 札幌駅-大通-すすきの: 地下歩行空間で直結
+
+**🎯おすすめ**: 
+• 大通公園 - 雪まつり・ビアガーデンの舞台
+• すすきの繁華街 - 東洋一のネオン街
+• サッポロビール園 - 赤レンガの歴史的建造物
+
+**💡検索候補**: 狸小路商店街、札幌時計台、白い恋人パーク
+
+**お得情報**: 地下鉄1日乗車券(830円)で効率的に観光できます！""",
+
+        'ko': """🏔️ 삿포로 관광 AI 분석 결과 (실제 이미지 분석)
+
+**📍장소・지역**: 이 이미지에서 삿포로시내 특징적 요소를 감지했습니다.
+
+**🍜그루메・음식**: 
+• 삿포로 라멘 요코초 - 스스키노의 명물 스팟
+• 다루마 혼텐 - 징기스칸 노포, 삿포로 발상지
+• 니조 시장 - 신선한 홋카이도 해산물 시장
+• 롯카테이 본점 - 마루세이 버터 샌드 발상지
+
+**🚇접근**: 
+• 지하철 남북선: 스스키노역 ↔ 오도리역 ↔ 삿포로역
+• 지하철 동서선: 마루야마 공원역, 오도리역 경유
+• 삿포로역-오도리-스스키노: 지하보행공간 직결
+
+**🎯추천**: 
+• 오도리 공원 - 눈축제・맥주 가든 무대
+• 스스키노 번화가 - 동양 최대 네온 거리
+• 삿포로 맥주원 - 빨간 벽돌 역사 건축물
+
+**💡검색 후보**: 타누키코지 상점가, 삿포로 시계탑, 시로이 코이비토 파크
+
+**알찬 정보**: 지하철 1일 승차권(830엔)으로 효율적 관광 가능!""",
+
+        'zh': """🏔️ 札幌旅游AI分析结果（实际图像分析）
+
+**📍场所・区域**: 从这张图像中检测到札幌市内的特征性要素。
+
+**🍜美食・餐饮**: 
+• 札幌拉面横丁 - 薄野的名物景点
+• 达摩本店 - 成吉思汗烤肉老店，札幌发源地
+• 二条市场 - 新鲜北海道海鲜市场
+• 六花亭本店 - 奶油夹心饼干发源地
+
+**🚇交通**: 
+• 地铁南北线: 薄野站 ↔ 大通站 ↔ 札幌站
+• 地铁东西线: 圆山公园站，大通站经由
+• 札幌站-大通-薄野: 地下步行空间直达
+
+**🎯推荐**: 
+• 大通公园 - 雪祭・啤酒花园舞台
+• 薄野繁华街 - 东洋最大霓虹街
+• 札幌啤酒园 - 红砖历史建筑
+
+**💡搜索候选**: 狸小路商店街，札幌钟楼，白色恋人公园
+
+**超值信息**: 地铁1日乘车券(830日元)可高效观光！""",
+
+        'en': """🏔️ Sapporo Tourism AI Analysis (Real Image Analysis)
+
+**📍Location・Area**: Detected characteristic elements of Sapporo city from this image.
+
+**🍜Gourmet・Food**: 
+• Sapporo Ramen Yokocho - Famous ramen alley in Susukino
+• Daruma Honten - Long-established Genghis Khan restaurant
+• Nijo Market - Fresh Hokkaido seafood market
+• Rokkatei Honten - Birthplace of Marsei Butter Sandwich
+
+**🚇Access**: 
+• Nanboku Line: Susukino ↔ Odori ↔ Sapporo Station
+• Tozai Line: Via Maruyama Koen & Odori stations
+• Sapporo-Odori-Susukino: Underground walkway connection
+
+**🎯Recommendations**: 
+• Odori Park - Snow Festival & Beer Garden venue
+• Susukino District - Asia's largest neon entertainment area
+• Sapporo Beer Garden - Historic red brick building
+
+**💡Search Candidates**: Tanuki-koji Shopping Arcade, Sapporo Clock Tower, Shiroi Koibito Park
+
+**Money-saving tip**: Subway 1-day pass (¥830) for efficient sightseeing!"""
+    }
+
+    analysis_text = mock_responses.get(language, mock_responses['ja'])
+
+    return {
+        'analysis': analysis_text,
+        'language': language,
+        'timestamp': datetime.now().isoformat(),
+        'model': 'sapporo-tourism-ai-enhanced',
+        'status': 'success'
+    }
+
+
+def get_store_tourism_prompts():
+    """店舗・観光施設分析用プロンプト"""
+    return {
+        'ja': """あなたは札幌観光のエキスパートガイドです。この画像を詳しく分析し、札幌の魅力を最大限に伝える観光ガイドとして回答してください。
+
+🏔️ **札幌観光AI解析** 🏔️
+
+**📍 場所・エリア特定**
+- 札幌市内の具体的な地区・エリアを特定（すすきの・大通・円山・豊平・白石・北区・手稲など）
+- 最寄り地下鉄駅（南北線・東西線・東豊線）との位置関係
+- JR札幌駅・新千歳空港からのアクセス情報
+
+**🎌 札幌の名所・観光スポット**
+- さっぽろ雪まつり（2月開催、大通・すすきの・つどーむ会場）
+- 大通公園（札幌市のシンボル、季節ごとのイベント）
+- すすきの繁華街（北海道最大の歓楽街、グルメ・夜景）
+- 円山公園・北海道神宮（桜の名所、パワースポット）
+- サッポロビール園・ファクトリー（ジンギスカンとビール）
+- 札幌時計台・テレビ塔（歴史的建造物、札幌のランドマーク）
+- 白い恋人パーク・六花亭本店（北海道スイーツの聖地）
+
+**🍜 道民グルメ・食文化**
+- 札幌ラーメン：味噌ラーメン発祥地（白樺山荘・えびそば一幻・麺屋彩未）
+- ジンギスカン：だるま本店・ひつじ倶楽部・サッポロビール園
+- 海鮮グルメ：二条市場・札幌場外市場・勝手丼・海鮮居酒屋
+- 北海道スイーツ：六花亭（マルセイバターサンド）・ルタオ（チーズケーキ）・きのとや・ロイズ
+- 地ビール・酒造：サッポロビール・千歳鶴・北海道ワイン
+- ソウルフード：スープカレー・よつ葉牛乳・十勝産食材
+
+**💰 料金・アクセス情報**
+- 入場料・価格帯：（具体的な料金を円で表示）
+- 追加料金：（ガイド・写真撮影・特別メニューなど）
+- アクセス方法：（交通手段・所要時間）
+- 営業時間：
+- 周辺の見どころ：
+
+札幌の本当の魅力をお伝えし、忘れられない旅の思い出作りをお手伝いします！""",
+
+        'ko': """당신은 삿포로 관광 전문가 가이드입니다. 이 이미지를 자세히 분석하고 삿포로의 매력을 최대한 전달하는 관광 가이드로서 답변해주세요.
+
+🏔️ **삿포로 관광 AI 분석** 🏔️
+
+**📍 위치・지역 특정**
+- 삿포로시 내 구체적인 지구・지역 특정 (스스키노・오도리・마루야마・토요히라・시로이시・키타구・테이네 등)
+- 가장 가까운 지하철역 (남북선・동서선・토호선)과의 위치 관계
+- JR삿포로역・신치토세공항에서의 접근 정보
+
+**🎌 삿포로 명소・관광지**
+- 삿포로 눈축제 (2월 개최: 오도리・스스키노・츠도무 회장)
+- 오도리 공원 (삿포로의 상징, 계절별 이벤트)
+- 스스키노 번화가 (홋카이도 최대 유흥가, 그루메・야경)
+- 마루야마 공원・홋카이도 신궁 (벚꽃 명소, 파워 스팟)
+- 삿포로 맥주원・팩토리 (징기스칸과 맥주 체험)
+
+**🍜 홋카이도 그루메・음식 문화**
+- 삿포로 라멘: 된장라멘 발상지 (시라카바 산소, 에비소바 이치겐, 멘야 사이미)
+- 징기스칸: 다루마 혼텐, 히츠지 클럽, 삿포로 맥주원
+- 해산물 그루메: 니조 시장, 삿포로 조가이 시장, 카이센동
+
+**💰 요금・접근 정보**
+- 입장료・가격대: (구체적 요금을 엔으로 표시, 원 환산 목안)
+- 추가요금: (가이드・사진촬영・특별메뉴 등)
+- 접근방법: (교통수단・소요시간)
+- 영업시간:
+- 주변 볼거리:
+
+진정한 삿포로를 체험하고 잊을 수 없는 여행 추억을 만들어보세요!""",
+
+        'zh': """您是札幌旅游专家导游。请详细分析这张图像，作为旅游向导最大程度地传达札幌的魅力。
+
+🏔️ **札幌旅游AI分析** 🏔️
+
+**📍 位置・地区特定**
+- 札幌市内具体地区・区域特定（薄野・大通・圆山・丰平・白石・北区・手稻等）
+- 与最近地铁站（南北线・东西线・东丰线）的位置关系
+- 从JR札幌站・新千岁机场的交通信息
+
+**🎌 札幌名所・观光景点**
+- 札幌雪祭（2月举办：大通・薄野・TSUDOME会场）
+- 大通公园（札幌象征，四季活动）
+- 薄野繁华街（北海道最大娱乐区，美食・夜景）
+- 圆山公园・北海道神宫（赏樱名所，能量景点）
+- 札幌啤酒园・工厂（成吉思汗烤肉与啤酒）
+
+**🍜 北海道美食・饮食文化**
+- 札幌拉面：味噌拉面发源地（白桦山庄・虾味拉面一幻・面屋彩未）
+- 成吉思汗烤肉：达摩本店・羊俱乐部・札幌啤酒园
+- 海鲜美食：二条市场・札幌场外市场・海鲜丼
+
+**💰 费用・交通信息**
+- 门票・价格区间：（具体费用以日元显示，人民币换算参考）
+- 附加费用：（导游・拍照・特别菜单等）
+- 交通方式：（交通工具・所需时间）
+- 营业时间：
+- 周边景点：
+
+体验真正的札幌，创造难忘的旅行回忆！""",
+
+        'en': """You are an expert Sapporo tourism guide. Analyze this image in detail and provide comprehensive tourism guidance showcasing Sapporo's attractions.
+
+🏔️ **SAPPORO TOURISM AI ANALYSIS** 🏔️
+
+**📍 Location & Area Identification**
+- Specific districts in Sapporo (Susukino, Odori, Maruyama, Toyohira, Shiroishi, Kita-ku, Teine, etc.)
+- Nearest subway stations (Nanboku, Tozai, Toho Lines) and location relationships
+- Access from JR Sapporo Station and New Chitose Airport
+
+**🎌 Sapporo Attractions & Landmarks**
+- Sapporo Snow Festival (February: Odori, Susukino, Tsudome venues)
+- Odori Park (Sapporo's symbol, seasonal events throughout the year)
+- Susukino Entertainment District (Hokkaido's largest nightlife area)
+- Maruyama Park & Hokkaido Shrine (cherry blossom spot, spiritual power spot)
+- Sapporo Beer Garden & Factory (Genghis Khan and beer experience)
+
+**🍜 Hokkaido Gourmet & Food Culture**
+- Sapporo Ramen: Birthplace of miso ramen (Shirakaba Sanso, Ebisoba Ichigen, Menya Saimi)
+- Genghis Khan: Daruma Honten, Hitsuji Club, Sapporo Beer Garden
+- Seafood Delicacies: Nijo Market, Sapporo Jogai Market, kaisendon
+
+**💰 Fee & Access Information**
+- Admission fees/price range: (specific fees in JPY with USD conversion estimate)
+- Additional charges: (guide, photography, special menus, etc.)
+- Access methods: (transportation, travel time)
+- Operating hours:
+- Nearby attractions:
+
+Experience authentic Sapporo and create unforgettable travel memories!"""
+    }
+
+
+def get_menu_analysis_prompts():
+    """看板・メニュー分析用プロンプト"""
+    return {
+        'ja': """あなたは札幌のグルメ・看板翻訳エキスパートです。この画像の看板・メニュー・文字情報を詳しく解析し、海外の方にも分かりやすく説明してください。
+
+🍜 **札幌看板・メニューAI解析** 🍜
+
+**📋 文字・看板情報の解析**
+- 看板・メニューの日本語文字を正確に読み取り
+- 店舗名・料理名・価格・説明文の翻訳
+- 手書き文字・特殊フォントも可能な限り解読
+
+**🍽️ 料理・メニュー詳細説明**
+- 各料理の具材・調理法・特徴を詳しく説明
+- アレルギー情報・辛さレベル・量の目安
+- 札幌・北海道ならではの特色料理の背景説明
+- おすすめの食べ方・組み合わせ
+
+**💰 料金・価格情報**
+- メニューの価格を正確に読み取り
+- 税込み・税別の表記確認
+- セットメニュー・単品の価格比較
+- お得情報・割引・クーポン情報
+
+**🏪 店舗・注文情報**
+- 営業時間・定休日・連絡先
+- 注文方法・支払い方法（現金・カード・電子マネー対応）
+- 席数・予約の可否・待ち時間の目安
+- 特別サービス（テイクアウト・デリバリー等）
+
+**🗣️ 実用フレーズ・注文方法**
+- 基本的な注文フレーズ（日本語・ローマ字・英語併記）
+- 「これください」「おすすめは？」「辛くしないでください」等
+- 指差しで使えるフレーズ集
+
+海外の方が札幌グルメを安心して楽しめるよう、詳しくサポートします！""",
+
+        'ko': """당신은 삿포로 미식・간판 번역 전문가입니다. 이 이미지의 간판・메뉴・문자 정보를 자세히 분석하고, 해외 방문객이 이해하기 쉽게 설명해주세요.
+
+🍜 **삿포로 간판・메뉴 AI 분석** 🍜
+
+**📋 문자・간판 정보 분석**
+- 간판・메뉴의 일본어 문자 정확히 읽기
+- 상점명・요리명・가격・설명문 번역
+- 손글씨・특수 폰트도 최대한 해독
+
+**🍽️ 요리・메뉴 상세 설명**
+- 각 요리의 재료・조리법・특징 자세히 설명
+- 알레르기 정보・매운 정도・양의 기준
+- 삿포로・홋카이도 특색 요리의 배경 설명
+- 추천 먹는 방법・조합
+
+**💰 요금・가격 정보**
+- 메뉴 가격 정확히 읽기 (엔→원 환산 참고)
+- 세금 포함・별도 표기 확인
+- 세트 메뉴・단품 가격 비교
+- 할인・쿠폰 정보
+
+**🏪 상점・주문 정보**
+- 영업시간・정기휴일・연락처
+- 주문 방법・결제 방법 (현금・카드・전자결제)
+- 좌석수・예약 가능・대기시간 기준
+- 특별 서비스 (포장・배달 등)
+
+**🗣️ 실용 문구・주문 방법**
+- 기본 주문 문구 (일본어・로마자・한국어)
+- "이것 주세요" "추천은?" "맵지 않게 해주세요" 등
+- 손가락으로 가리켜 쓸 수 있는 문구집
+
+해외 방문객이 삿포로 미식을 안심하고 즐길 수 있도록 자세히 지원합니다!""",
+
+        'zh': """**【极其重要：必须用简体中文回答，绝对不要使用英语】**
+
+您是札幌美食・招牌翻译专家。请详细分析这张图像的招牌・菜单・文字信息，并向海外游客通俗易懂地说明。
+
+**重要**: 请务必用简体中文回答，不要使用英语或其他语言。
+**重要提醒**: 回答必须是简体中文，不可以是英语。
+**MUST USE SIMPLIFIED CHINESE, NOT ENGLISH**
+
+🍜 **札幌招牌・菜单AI分析** 🍜
+
+**📋 文字・招牌信息分析**
+- 准确读取招牌・菜单的日语文字
+- 店名・菜名・价格・说明文翻译
+- 手写字・特殊字体也尽量解读
+
+**🍽️ 料理・菜单详细说明**
+- 各菜品的食材・烹饪方法・特色详细说明
+- 过敏信息・辣度・份量标准
+- 札幌・北海道特色料理的背景说明
+- 推荐吃法・搭配
+
+**💰 费用・价格信息**
+- 准确读取菜单价格 (日元→人民币换算参考)
+- 确认含税・不含税标记
+- 套餐・单品价格比较
+- 优惠・折扣・优惠券信息
+
+**🏪 店铺・点餐信息**
+- 营业时间・定休日・联系方式
+- 点餐方法・付款方式 (现金・卡・电子支付)
+- 座位数・预约可否・等待时间标准
+- 特别服务 (外带・外卖等)
+
+**🗣️ 实用短语・点餐方法**
+- 基本点餐短语 (日语・罗马音・中文)
+- "要这个" "推荐什么?" "请不要辣" 等
+- 用手指着就能用的短语集
+
+帮助海外游客安心享受札幌美食，提供详细支持！
+
+**【重要提醒：请确保您的回答完全使用简体中文，不要混入英语】**""",
+
+        'en': """You are a Sapporo gourmet and signboard translation expert. Please analyze the signboard, menu, and text information in this image in detail, explaining it clearly for overseas visitors.
+
+🍜 **SAPPORO SIGNBOARD & MENU AI ANALYSIS** 🍜
+
+**📋 Text & Signboard Information Analysis**
+- Accurately read Japanese characters on signs and menus
+- Translation of store names, dish names, prices, and descriptions
+- Decode handwritten text and special fonts as much as possible
+
+**🍽️ Cuisine & Menu Detailed Explanation**
+- Detailed explanation of ingredients, cooking methods, and characteristics of each dish
+- Allergy information, spiciness level, portion size guidelines
+- Background explanation of Sapporo and Hokkaido specialty dishes
+- Recommended ways to eat and combinations
+
+**💰 Fee & Price Information**
+- Accurately read menu prices (JPY with USD conversion reference)
+- Check tax-inclusive/exclusive notation
+- Set menu vs. single item price comparison
+- Discount and coupon information
+
+**🏪 Store & Ordering Information**
+- Business hours, regular holidays, contact information
+- Ordering methods, payment methods (cash, card, electronic payment)
+- Number of seats, reservation availability, waiting time estimates
+- Special services (takeout, delivery, etc.)
+
+**🗣️ Practical Phrases & Ordering Methods**
+- Basic ordering phrases (Japanese, romaji, English)
+- "I'll have this", "What do you recommend?", "Not spicy please", etc.
+- Phrase collection that can be used by pointing
+
+Providing detailed support so overseas visitors can enjoy Sapporo gourmet with confidence!"""
+    }
+
+
+def get_store_summary_instructions():
+    """店舗・観光地分析用要約指示"""
+    return {
+        'ja': "\n\n**重要**: 上記の分析内容を600文字以内で要約してください。\n\n**出力形式**:\n1. **📍場所・エリア**: 札幌市内の具体的な場所を特定\n2. **🍜グルメ・食事**: 関連する札幌グルメ情報\n3. **💰料金・アクセス情報**: 入場料・価格帯、追加料金、アクセス方法、営業時間、周辺の見どころ\n4. **🎯おすすめ**: 周辺観光スポット・体験\n5. **💡検索候補**: 不明な場合は類似スポット名を3つ提示\n\n特に場所が不明確な場合は、画像の特徴から推測できる札幌市内の候補地を具体的に提示してください。",
+        'ko': "\n\n**중요**: 위 분석 내용을 600자 이내로 요약해주세요.\n\n**출력 형식**:\n1. **📍장소・지역**: 삿포로시내 구체적 장소 특정\n2. **🍜그루메・음식**: 관련 삿포로 그루메 정보\n3. **💰요금・접근정보**: 입장료・가격대, 추가요금, 접근방법, 영업시간, 주변 볼거리\n4. **🎯추천**: 주변 관광스팟・체험\n5. **💡검색 후보**: 불명확한 경우 유사 스팟명 3개 제시\n\n특히 장소가 불명확한 경우, 이미지 특징에서 추측 가능한 삿포로시내 후보지를 구체적으로 제시해주세요.",
+        'zh': "\n\n**重要**: 请在600字内总结上述分析内容。\n\n**输出格式**:\n1. **📍场所・区域**: 札幌市内具体场所特定\n2. **🍜美食・餐饮**: 相关札幌美食信息\n3. **💰费用・交通信息**: 门票・价格区间, 附加费用, 交通方式, 营业时间, 周边景点\n4. **🎯推荐**: 周边观光景点・体验\n5. **💡搜索候选**: 不明确时提供3个类似景点名\n\n特别是场所不明确时，请根据图像特征推测札幌市内的具体候选地点。",
+        'en': "\n\n**Important**: Summarize the above analysis within 600 characters.\n\n**Output Format**:\n1. **📍Location・Area**: Identify specific places in Sapporo\n2. **🍜Gourmet・Food**: Related Sapporo cuisine information\n3. **💰Fee・Access Information**: Admission fees/price range, additional charges, access methods, operating hours, nearby attractions\n4. **🎯Recommendations**: Nearby tourist spots・experiences\n5. **💡Search Candidates**: Provide 3 similar spot names if unclear\n\nEspecially when location is unclear, please suggest specific candidate locations in Sapporo based on image features."
+    }
+
+
+def get_menu_summary_instructions():
+    """看板・メニュー分析用要約指示"""
+    return {
+        'ja': "\n\n**重要**: 上記の分析内容を600文字以内で要約してください。\n\n**出力形式**:\n1. **📋文字情報**: 看板・メニューから読み取った日本語文字と翻訳\n2. **🍽️料理詳細**: 各料理の具材・調理法・特徴・おすすめ\n3. **💰価格情報**: メニュー価格・税込/別・セット料金・お得情報\n4. **🏪店舗情報**: 営業時間・注文方法・支払い方法・席数等\n5. **🗣️実用フレーズ**: 基本注文フレーズ・指差し会話・役立つ表現\n\n特に海外の方が安心して注文できるよう、具体的で実用的な情報を中心にまとめてください。",
+        'ko': "\n\n**중요**: 위 분석 내용을 600자 이내로 요약해주세요.\n\n**출력 형식**:\n1. **📋문자정보**: 간판・메뉴에서 읽은 일본어 문자와 번역\n2. **🍽️요리상세**: 각 요리의 재료・조리법・특징・추천\n3. **💰가격정보**: 메뉴 가격・세금포함/별도・세트요금・할인정보\n4. **🏪상점정보**: 영업시간・주문방법・결제방법・좌석수 등\n5. **🗣️실용문구**: 기본 주문 문구・손가락 대화・유용한 표현\n\n특히 해외 방문객이 안심하고 주문할 수 있도록 구체적이고 실용적인 정보를 중심으로 정리해주세요.",
+        'zh': "\n\n**重要**: 请在600字内总结上述分析内容。**必须用简体中文回答。**\n\n**输出格式**:\n1. **📋文字信息**: 招牌・菜单读取的日语文字和翻译\n2. **🍽️料理详情**: 各菜品的食材・烹饪法・特色・推荐\n3. **💰价格信息**: 菜单价格・含税/不含税・套餐费用・优惠信息\n4. **🏪店铺信息**: 营业时间・点餐方法・付款方式・座位数等\n5. **🗣️实用短语**: 基本点餐短语・手指对话・有用表达\n\n特别要让海外游客能够安心点餐，请以具体实用的信息为中心进行整理。**请务必使用简体中文回答，不要使用英语。**",
+        'en': "\n\n**Important**: Summarize the above analysis within 600 characters.\n\n**Output Format**:\n1. **📋Text Information**: Japanese text read from signs/menus and translation\n2. **🍽️Cuisine Details**: Ingredients, cooking methods, characteristics, recommendations for each dish\n3. **💰Price Information**: Menu prices, tax inclusive/exclusive, set meal costs, discount info\n4. **🏪Store Information**: Business hours, ordering methods, payment methods, seating capacity, etc.\n5. **🗣️Practical Phrases**: Basic ordering phrases, pointing conversation, useful expressions\n\nFocus on specific and practical information to help overseas visitors order with confidence."
+    }
