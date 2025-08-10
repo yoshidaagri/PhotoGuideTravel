@@ -3,716 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>札幌観光AI - 完全版MVP</title>
+    <title>観光アナライザー</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #2E7D32;
-            --primary-dark: #1B5E20;
-            --primary-light: #4CAF50;
-            --secondary-color: #66BB6A;
-            --secondary-dark: #43A047;
-            --accent-color: #81C784;
-            --success-color: #4CAF50;
-            --bg-gradient: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 30%, #81C784 70%, #66BB6A 100%);
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --glass-border: rgba(76, 175, 80, 0.2);
-            --shadow: 0 20px 40px rgba(46, 125, 50, 0.15);
-            --shadow-hover: 0 25px 50px rgba(46, 125, 50, 0.25);
-            --nature-accent: #8BC34A;
-            --forest-green: #388E3C;
-            --leaf-green: #9CCC65;
-        }
-
-        body {
-            font-family: 'BIZ UDPGothic', 'BIZ UDGothic', 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo', 'MS PGothic', sans-serif;
-            background: var(--bg-gradient);
-            min-height: 100vh;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .app {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header */
-        .header {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-info {
-            display: none;
-            align-items: center;
-            gap: 1rem;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .user-info.active {
-            display: flex;
-        }
-
-        .logout-btn {
-            background: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .logout-btn:hover {
-            background: var(--secondary-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
-        }
-
-        /* Main Container */
-        .container {
-            flex: 1;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-            width: 100%;
-        }
-
-        /* Login Section */
-        .login-section {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 70vh;
-        }
-
-        .login-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 3rem 2.5rem;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            border: 1px solid var(--glass-border);
-        }
-
-        .login-title {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-
-        .login-subtitle {
-            color: #666;
-            margin-bottom: 2.5rem;
-            font-size: 1.1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #333;
-            font-size: 0.95rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 1rem 1.2rem;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .login-btn {
-            width: 100%;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 1.5rem;
-        }
-
-        .login-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(46, 125, 50, 0.3);
-            background: linear-gradient(45deg, var(--primary-dark), var(--secondary-dark));
-        }
-
-        .login-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .demo-info {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #e1e5e9;
-            font-size: 0.85rem;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        /* Main App Section */
-        .main-app {
-            display: none;
-        }
-
-        .main-app.active {
-            display: block;
-        }
-
-        .welcome-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 2.5rem 2rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--glass-border);
-        }
-
-        .welcome-title {
-            font-size: 2.8rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, var(--forest-green), var(--nature-accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: bold;
-        }
-
-        .welcome-description {
-            font-size: 1.1rem;
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Analysis Type Selection */
-        .analysis-type-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--glass-border);
-        }
-
-        .analysis-title {
-            font-size: 1.3rem;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-        }
-
-        .analysis-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .analysis-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            font-size: 0.95rem;
-        }
-
-        .analysis-option:hover {
-            background: rgba(102, 187, 106, 0.1);
-            border-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
-        .analysis-option input[type="radio"] {
-            display: none;
-        }
-
-        .analysis-option input[type="radio"]:checked + .analysis-icon + .analysis-name,
-        .analysis-option:has(input[type="radio"]:checked) {
-            background: var(--secondary-color);
-            color: white;
-            border-color: var(--primary-color);
-            box-shadow: 0 5px 15px rgba(102, 187, 106, 0.3);
-        }
-
-        .analysis-icon {
-            font-size: 2rem;
-        }
-
-        .analysis-name {
-            font-weight: 500;
-        }
-
-        .store-option:has(input[type="radio"]:checked) {
-            background: linear-gradient(135deg, #e8f5e8, #f0f8ff);
-            border-color: var(--primary-color);
-        }
-
-        .menu-option:has(input[type="radio"]:checked) {
-            background: linear-gradient(135deg, #fff8dc, #fdf5e6);
-            border-color: #ff9800;
-        }
-
-        /* Language Selection */
-        .language-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--glass-border);
-        }
-
-        .language-title {
-            font-size: 1.3rem;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-        }
-
-        .language-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 1rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .language-option {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            font-size: 0.95rem;
-        }
-
-        .language-option:hover {
-            background: rgba(102, 187, 106, 0.1);
-            border-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
-        .language-option input[type="radio"] {
-            display: none;
-        }
-
-        .language-option input[type="radio"]:checked + .language-flag + .language-name,
-        .language-option:has(input[type="radio"]:checked) {
-            background: var(--secondary-color);
-            color: white;
-            border-color: var(--primary-color);
-            box-shadow: 0 5px 15px rgba(102, 187, 106, 0.3);
-        }
-
-        .language-flag {
-            font-size: 1.2rem;
-        }
-
-        .language-name {
-            font-weight: 500;
-        }
-
-        /* Upload Section */
-        .upload-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            border: 2px dashed #e1e5e9;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-        }
-
-        .upload-section:hover {
-            border-color: var(--secondary-color);
-            background: rgba(102, 187, 106, 0.08);
-            transform: translateY(-2px);
-        }
-
-        .upload-section.dragover {
-            border-color: var(--primary-color);
-            background: rgba(76, 175, 80, 0.12);
-            transform: scale(1.02);
-        }
-
-        .upload-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            color: var(--secondary-color);
-        }
-
-        .upload-text {
-            font-size: 1.3rem;
-            color: #333;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .upload-subtext {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        /* Preview Section */
-        .preview-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--glass-border);
-        }
-
-        .preview-title {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-        }
-
-        .preview-image {
-            max-width: 100%;
-            max-height: 450px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            margin-bottom: 1.5rem;
-        }
-
-        .image-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: rgba(33, 150, 243, 0.05);
-            border-radius: 12px;
-            font-size: 0.9rem;
-        }
-
-        .image-detail {
-            color: #666;
-        }
-
-        .image-detail strong {
-            color: #333;
-        }
-
-        .analyze-btn {
-            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
-            color: white;
-            border: none;
-            padding: 1rem 2.5rem;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 8px 20px rgba(102, 187, 106, 0.3);
-        }
-
-        .analyze-btn:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(76, 175, 80, 0.4);
-            background: linear-gradient(45deg, var(--secondary-dark), var(--primary-light));
-        }
-
-        .analyze-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Loading Section */
-        .loading-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 3rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--glass-border);
-        }
-
-        .loading-spinner {
-            font-size: 4rem;
-            animation: spin 2s linear infinite;
-            margin-bottom: 1.5rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            font-size: 1.4rem;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .loading-subtext {
-            color: #666;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-
-        /* Results Section */
-        .results-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--glass-border);
-        }
-
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .results-title {
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-
-        .new-analysis-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-
-        .new-analysis-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
-        }
-
-        .results-content {
-            line-height: 1.8;
-            color: #333;
-            white-space: pre-wrap;
-            font-size: 1rem;
-            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
-            padding: 2rem;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        /* Utility Classes */
-        .hidden {
-            display: none !important;
-        }
-
-        .fade-in {
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .header-content {
-                padding: 0 1rem;
-            }
-
-            .logo {
-                font-size: 1.3rem;
-            }
-
-            .login-card {
-                padding: 2rem 1.5rem;
-                margin: 0 1rem;
-            }
-
-            .login-title {
-                font-size: 2rem;
-            }
-
-            .welcome-title {
-                font-size: 2.2rem;
-            }
-
-            .welcome-section,
-            .upload-section,
-            .preview-section,
-            .loading-section,
-            .results-section {
-                padding: 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .results-header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            .image-details {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
-
-            .upload-icon {
-                font-size: 3rem;
-            }
-
-            .upload-text {
-                font-size: 1.1rem;
-            }
-
-            .loading-spinner {
-                font-size: 3rem;
-            }
-
-            .user-info {
-                font-size: 0.8rem;
-            }
-
-            .user-info span:first-child {
-                display: none;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header-content {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-
-            .user-section {
-                width: 100%;
-                justify-content: flex-end;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="app">
@@ -720,11 +13,13 @@
         <header class="header">
             <div class="header-content">
                 <div class="logo">
-                    🏔️ 札幌観光AI
+                    🏔️ <span data-i18n="title">観光アナライザー</span>
                 </div>
                 <div class="user-section">
                     <div id="userInfo" class="user-info">
                         <span>👤 <span id="currentUser">sapporo-guide</span></span>
+                        <span id="userPlan" class="user-plan">Free (残り5回)</span>
+                        <button id="upgradeBtn" onclick="showUpgradeModal()" class="upgrade-btn" style="display: none;">⭐ アップグレード</button>
                         <button onclick="logout()" class="logout-btn" data-i18n="logout">ログアウト</button>
                     </div>
                 </div>
@@ -736,30 +31,40 @@
             <div id="loginSection" class="login-section">
                 <div class="login-card fade-in">
                     <h1 class="login-title">🏔️</h1>
-                    <h2 class="login-subtitle" data-i18n="loginTitle">札幌観光AI - 画像解析ガイド</h2>
+                    <h2 class="login-subtitle" data-i18n="loginTitle">観光アナライザー</h2>
                     
-                    <form id="loginForm">
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="loginUsername">ユーザーID</label>
-                            <input type="text" id="username" class="form-input" data-i18n="currentUser" placeholder="sapporo-guide" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="loginPassword">パスワード</label>
-                            <input type="password" id="password" class="form-input" placeholder="hokkaido2024" required>
-                        </div>
-                        
-                        <button type="submit" id="loginBtn" class="login-btn" data-i18n="loginButton">
-                            🔐 ログイン
-                        </button>
-                    </form>
+                    <!-- Googleログイン -->
+                    <button id="googleLoginBtn" class="google-login-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        <span data-i18n="googleLogin">Googleでログイン</span>
+                    </button>
                     
-                    <div class="demo-info">
-                        <p><strong>📱 スマートフォン・PC対応</strong></p>
-                        <p><strong>デモアカウント:</strong></p>
-                        <p>ID: <strong>sapporo-guide</strong></p>
-                        <p>PASS: <strong>hokkaido2024</strong></p>
-                        <p><small>札幌の店舗・観光地・料理画像をAIが詳しく解析します</small></p>
+                    <!-- メールログイン -->
+                    <div class="divider">
+                        <span data-i18n="orDivider">または</span>
+                    </div>
+                    
+                    <!-- ログイン・サインアップ切り替えボタン -->
+                    <div class="auth-mode-switcher">
+                        <button id="loginModeBtn" class="mode-btn active" data-i18n="login">ログイン</button>
+                        <button id="signupModeBtn" class="mode-btn" data-i18n="signup">新規登録</button>
+                    </div>
+                    
+                    <button id="emailLoginBtn" class="email-login-btn" data-i18n="emailLogin">
+                        📧 メールでログイン
+                    </button>
+                    
+                    <div class="features-info">
+                        <p><strong>🎆 新機能</strong></p>
+                        <p>• 無料: 月5回まで解析</p>
+                        <p>• プレミアム: 無制限利用</p>
+                        <p>• 5言語対応: 日本語/🇰🇷/🇨🇳/🇹🇼/🇺🇸</p>
+                        <p><small>札幌の店舗・観光地・料理画像をAIが詳しく解析</small></p>
                     </div>
                 </div>
             </div>
@@ -780,22 +85,22 @@
                     <div class="language-options">
                         <label class="language-option">
                             <input type="radio" name="language" value="ja" checked>
-                            <span class="language-flag">🇯🇵</span>
                             <span class="language-name">日本語</span>
                         </label>
                         <label class="language-option">
                             <input type="radio" name="language" value="ko">
-                            <span class="language-flag">🇰🇷</span>
                             <span class="language-name">한국어</span>
                         </label>
                         <label class="language-option">
                             <input type="radio" name="language" value="zh">
-                            <span class="language-flag">🇨🇳</span>
                             <span class="language-name">简体中文</span>
                         </label>
                         <label class="language-option">
+                            <input type="radio" name="language" value="zh-tw">
+                            <span class="language-name">繁體中文</span>
+                        </label>
+                        <label class="language-option">
                             <input type="radio" name="language" value="en">
-                            <span class="language-flag">🇺🇸</span>
                             <span class="language-name">English</span>
                         </label>
                     </div>
@@ -854,7 +159,7 @@
                 <section id="resultsSection" class="results-section hidden">
                     <div class="results-header">
                         <h3 class="results-title">🏔️ 札幌観光AI解析結果</h3>
-                        <button onclick="newAnalysis()" class="new-analysis-btn">🔄 新しい解析</button>
+                        <button onclick="newAnalysis()" class="new-analysis-btn" data-i18n="newAnalysis">🔄 新しい解析</button>
                     </div>
                     <div id="resultsContent" class="results-content"></div>
                 </section>
@@ -877,8 +182,8 @@
         // Translation dictionary for UI internationalization
         const translations = {
             ja: {
-                title: "札幌観光AI画像解析",
-                description: "札幌の店舗・観光地・料理の画像をAIが詳しく解析し、地元情報やおすすめスポットをご紹介します",
+                title: "観光アナライザー",
+                description: "札幌の観光・グルメ画像をAI解析し、地元情報をご紹介",
                 languageSelect: "解析言語を選択",
                 analysisTypeSelect: "解析タイプを選択",
                 storeAnalysis: "店舗・観光地分析",
@@ -893,17 +198,26 @@
                 loading: "札幌観光AIが解析中...",
                 loadingSubtext: "すすきの・大通・札幌グルメ・観光スポット",
                 loadingDetail: "詳細な地元情報を分析しています",
-                loginTitle: "札幌観光AI - 画像解析ガイド",
-                loginUsername: "ユーザーID",
-                loginPassword: "パスワード",
-                loginButton: "ログイン",
+                loginTitle: "観光アナライザー",
+                googleLogin: "Googleでログイン",
+                emailLogin: "メールでログイン",
+                orDivider: "または",
                 loginProcessing: "認証中...",
-                currentUser: "sapporo-guide",
-                logout: "ログアウト"
+                signupPrompt: "アカウントをお持ちでない方は",
+                signupLink: "新規登録",
+                forgotPassword: "パスワードを忘れた方",
+                confirmPassword: "パスワード確認",
+                signup: "新規登録",
+                backToLogin: "ログインに戻る",
+                googleLoginNotReady: "Googleログインは現在設定中です。メールログインをご利用ください。",
+                currentUser: "ユーザー",
+                logout: "ログアウト",
+                newAnalysis: "新しい解析",
+                startText: "開始"
             },
             ko: {
-                title: "삿포로 관광 AI 화상 분석",
-                description: "삿포로의 상점・관광지・요리 이미지를 AI가 상세히 분석하여 지역 정보와 추천 스팟을 소개합니다",
+                title: "관광 애널라이저",
+                description: "삿포로 관광・미식 이미지 AI 분석으로 현지 정보 제공",
                 languageSelect: "분석 언어 선택",
                 analysisTypeSelect: "분석 유형 선택", 
                 storeAnalysis: "상점・관광지 분석",
@@ -918,17 +232,29 @@
                 loading: "삿포로 관광 AI가 분석중...",
                 loadingSubtext: "스스키노・오도리・삿포로 그루메・관광 스팟",
                 loadingDetail: "상세한 지역 정보를 분석하고 있습니다",
-                loginTitle: "삿포로 관광 AI - 화상 분석 가이드",
+                loginTitle: "관광 애널라이저",
                 loginUsername: "사용자 ID",
                 loginPassword: "비밀번호",
                 loginButton: "로그인",
+                googleLogin: "Google로 로그인",
+                emailLogin: "이메일로 로그인", 
+                orDivider: "또는",
                 loginProcessing: "인증중...",
-                currentUser: "sapporo-guide",
-                logout: "로그아웃"
+                signupPrompt: "계정이 없으신가요?",
+                signupLink: "회원가입",
+                forgotPassword: "비밀번호 찾기",
+                confirmPassword: "비밀번호 확인",
+                signup: "회원가입",
+                backToLogin: "로그인으로 돌아가기",
+                googleLoginNotReady: "Google 로그인은 현재 설정 중입니다. 이메일 로그인을 이용해 주세요.",
+                currentUser: "ユーザー",
+                logout: "로그아웃",
+                newAnalysis: "새로운 분석",
+                startText: "시작"
             },
             zh: {
-                title: "札幌观光AI图像分析",
-                description: "AI详细分析札幌店铺・观光地・料理图像，介绍当地信息和推荐景点",
+                title: "观光分析器",
+                description: "AI分析札幌观光・美食图像，提供当地信息",
                 languageSelect: "选择分析语言",
                 analysisTypeSelect: "选择分析类型",
                 storeAnalysis: "店铺・观光地分析",
@@ -943,17 +269,66 @@
                 loading: "札幌观光AI分析中...",
                 loadingSubtext: "薄野・大通・札幌美食・观光景点",
                 loadingDetail: "正在分析详细的当地信息",
-                loginTitle: "札幌观光AI - 图像分析向导",
+                loginTitle: "观光分析器",
                 loginUsername: "用户ID",
                 loginPassword: "密码",
                 loginButton: "登录",
+                googleLogin: "Google登录",
+                emailLogin: "邮箱登录",
+                orDivider: "或者",
                 loginProcessing: "认证中...",
-                currentUser: "sapporo-guide",
-                logout: "退出登录"
+                signupPrompt: "还没有账户？",
+                signupLink: "注册账户",
+                forgotPassword: "忘记密码？",
+                confirmPassword: "确认密码",
+                signup: "注册",
+                backToLogin: "返回登录",
+                googleLoginNotReady: "Google登录目前正在设置中。请使用邮箱登录。",
+                currentUser: "ユーザー",
+                logout: "退出登录",
+                newAnalysis: "新的分析",
+                startText: "开始"
+            },
+            'zh-tw': {
+                title: "觀光分析器",
+                description: "AI分析札幌觀光・美食圖像，提供當地資訊",
+                languageSelect: "選擇分析語言",
+                analysisTypeSelect: "選擇分析類型",
+                storeAnalysis: "店鋪・觀光地分析",
+                menuTranslation: "招牌・菜單翻譯",
+                uploadText: "上傳圖像",
+                uploadSubtext: "點擊或拖拽上傳札幌店鋪・觀光地・料理照片",
+                fileFormat: "支援格式: JPG, PNG, GIF (最大 10MB)",
+                storeRecommended: "推薦: 拉麵、成吉思汗烤肉、雪祭、薄野等",
+                menuRecommended: "特別有效: 手寫菜單、價格表、訂單等",
+                previewTitle: "上傳圖像預覽",
+                analyzeButton: "開始札幌觀光AI分析",
+                loading: "札幌觀光AI分析中...",
+                loadingSubtext: "薄野・大通・札幌美食・觀光景點",
+                loadingDetail: "正在分析詳細的當地資訊",
+                loginTitle: "觀光分析器",
+                loginUsername: "使用者ID",
+                loginPassword: "密碼",
+                loginButton: "登入",
+                googleLogin: "Google登入",
+                emailLogin: "電子郵件登入",
+                orDivider: "或",
+                loginProcessing: "認證中...",
+                signupPrompt: "還沒有帳號？",
+                signupLink: "註冊帳號",
+                forgotPassword: "忘記密碼？",
+                confirmPassword: "確認密碼",
+                signup: "註冊",
+                backToLogin: "返回登入",
+                googleLoginNotReady: "Google登入目前正在設置中。請使用電子郵件登入。",
+                currentUser: "ユーザー",
+                logout: "登出",
+                newAnalysis: "新的分析",
+                startText: "開始"
             },
             en: {
-                title: "Sapporo Tourism AI Image Analysis",
-                description: "AI analyzes images of Sapporo stores, tourist spots, and cuisine in detail, introducing local information and recommended spots",
+                title: "Tourism Analyzer",
+                description: "AI analysis of Sapporo tourism and gourmet images with local insights",
                 languageSelect: "Select Analysis Language",
                 analysisTypeSelect: "Select Analysis Type",
                 storeAnalysis: "Store・Tourism Analysis",
@@ -968,13 +343,25 @@
                 loading: "Sapporo Tourism AI Analyzing...",
                 loadingSubtext: "Susukino・Odori・Sapporo Gourmet・Tourist Spots",
                 loadingDetail: "Analyzing detailed local information",
-                loginTitle: "Sapporo Tourism AI - Image Analysis Guide",
+                loginTitle: "Tourism Analyzer",
                 loginUsername: "User ID", 
                 loginPassword: "Password",
                 loginButton: "Login",
+                googleLogin: "Login with Google",
+                emailLogin: "Login with Email",
+                orDivider: "or",
                 loginProcessing: "Authenticating...",
-                currentUser: "sapporo-guide",
-                logout: "Logout"
+                signupPrompt: "Don't have an account?",
+                signupLink: "Sign up",
+                forgotPassword: "Forgot password?",
+                confirmPassword: "Confirm Password",
+                signup: "Sign Up",
+                backToLogin: "Back to Login",
+                googleLoginNotReady: "Google login is currently being configured. Please use email login.",
+                currentUser: "ユーザー",
+                logout: "Logout",
+                newAnalysis: "New Analysis",
+                startText: "Start"
             }
         };
 
@@ -992,21 +379,122 @@
 
         function init() {
             setupEventListeners();
+            handleOAuthCallback();
             checkAuthStatus();
             initializeLanguage();
+            
+            // Update user info display if already logged in
+            if (sessionStorage.getItem('authToken')) {
+                updateHeaderUserInfo();
+            }
+        }
+
+        // Handle OAuth callback from Cognito
+        async function handleOAuthCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const authCode = urlParams.get('code');
+            
+            if (authCode) {
+                try {
+                    showMessage('Googleログイン処理中...', 'info');
+                    
+                    // Exchange authorization code for tokens
+                    const tokenResponse = await fetch('https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/token', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({
+                            grant_type: 'authorization_code',
+                            client_id: '2tctru78c2epl4mbhrt8asd55e',
+                            code: authCode,
+                            redirect_uri: window.location.origin + window.location.pathname
+                        })
+                    });
+
+                    if (tokenResponse.ok) {
+                        const tokens = await tokenResponse.json();
+                        
+                        // Get user info from token
+                        const userInfoResponse = await fetch('https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/userInfo', {
+                            headers: {
+                                'Authorization': `Bearer ${tokens.access_token}`
+                            }
+                        });
+
+                        if (userInfoResponse.ok) {
+                            const userInfo = await userInfoResponse.json();
+                            
+                            // Store tokens and user info
+                            sessionStorage.setItem('accessToken', tokens.access_token);
+                            sessionStorage.setItem('userInfo', JSON.stringify({
+                                user_id: userInfo.sub,
+                                email: userInfo.email,
+                                display_name: userInfo.name || userInfo.given_name,
+                                picture: userInfo.picture
+                            }));
+                            sessionStorage.setItem('sapporoAuth', 'true');
+                            sessionStorage.setItem('sapporoUser', userInfo.email);
+
+                            // Create user in DynamoDB if needed
+                            await createUserIfNeeded({
+                                user_id: userInfo.sub,
+                                email: userInfo.email,
+                                display_name: userInfo.name || userInfo.given_name,
+                                auth_provider: 'google'
+                            });
+
+                            isLoggedIn = true;
+                            showMessage('Googleログインに成功しました！', 'success');
+                            
+                            // Hide login screen and show main app
+                            showMainApp();
+                            updateHeaderUserInfo();
+                        }
+                    } else {
+                        throw new Error('Token exchange failed');
+                    }
+                } catch (error) {
+                    console.error('OAuth callback error:', error);
+                    showMessage('Googleログインでエラーが発生しました', 'error');
+                }
+                
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
 
         function setupEventListeners() {
-            // Login form
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            // Google login
+            const googleLoginBtn = document.getElementById('googleLoginBtn');
+            if (googleLoginBtn) {
+                googleLoginBtn.addEventListener('click', handleGoogleLogin);
+            }
+            
+            // Email login button
+            const emailLoginBtn = document.getElementById('emailLoginBtn');
+            if (emailLoginBtn) {
+                emailLoginBtn.addEventListener('click', handleEmailLogin);
+            }
+            
+            // Original login form (fallback)
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
 
             // File input
-            document.getElementById('imageInput').addEventListener('change', handleFileSelect);
+            const imageInput = document.getElementById('imageInput');
+            if (imageInput) {
+                imageInput.addEventListener('change', handleFileSelect);
+            }
 
             // Drag and drop
-            uploadSection.addEventListener('dragover', handleDragOver);
-            uploadSection.addEventListener('drop', handleDrop);
-            uploadSection.addEventListener('dragleave', handleDragLeave);
+            if (uploadSection) {
+                uploadSection.addEventListener('dragover', handleDragOver);
+                uploadSection.addEventListener('drop', handleDrop);
+                uploadSection.addEventListener('dragleave', handleDragLeave);
+            }
 
             // Language change listeners
             document.querySelectorAll('input[name="language"]').forEach(radio => {
@@ -1105,6 +593,558 @@
         }
 
         // Authentication
+        function handleGoogleLogin() {
+            // Redirect to Cognito OAuth Google login
+            const cognitoOAuthURL = `https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/authorize` +
+                `?client_id=2tctru78c2epl4mbhrt8asd55e` +
+                `&response_type=code` +
+                `&scope=email+openid+profile` +
+                `&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}` +
+                `&identity_provider=Google`;
+            
+            window.location.href = cognitoOAuthURL;
+        }
+        
+        function handleEmailLogin(e) {
+            if (e) e.preventDefault();
+            showEmailAuthForm();
+        }
+        
+        function showEmailAuthForm() {
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            const loginCard = document.querySelector('.login-card');
+            loginCard.innerHTML = `
+                <h1 class="login-title">🏔️</h1>
+                <h2 class="login-subtitle" data-i18n="loginTitle">${t.loginTitle}</h2>
+                
+                <!-- 言語選択 -->
+                <div class="language-selector" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ja" ${currentLanguage === 'ja' ? 'checked' : ''}> 日本語</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ko" ${currentLanguage === 'ko' ? 'checked' : ''}> 한국어</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh" ${currentLanguage === 'zh' ? 'checked' : ''}> 简体中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh-tw" ${currentLanguage === 'zh-tw' ? 'checked' : ''}> 繁體中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="en" ${currentLanguage === 'en' ? 'checked' : ''}> English</label>
+                </div>
+                
+                <!-- ログイン/サインアップ切り替え -->
+                <div class="auth-mode-switcher" style="display: flex; margin-bottom: 2rem; border-radius: 25px; background: #f5f5f5; overflow: hidden;">
+                    <button id="loginModeBtn" class="mode-btn active" style="flex: 1; padding: 0.8rem; border: none; background: var(--primary-color); color: white; font-weight: 600; cursor: pointer;" data-i18n="login">${t.login}</button>
+                    <button id="signupModeBtn" class="mode-btn" style="flex: 1; padding: 0.8rem; border: none; background: transparent; color: #666; font-weight: 600; cursor: pointer;" data-i18n="signup">${t.signup}</button>
+                </div>
+                
+                <!-- ログインフォーム -->
+                <form id="loginForm" style="display: block;">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <input type="email" id="loginEmail" placeholder="${t.emailPlaceholder || 'メールアドレス'}" required 
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <input type="password" id="loginPassword" placeholder="${t.loginPassword || 'パスワード'}" required
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 1rem; background: var(--primary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;" data-i18n="loginButton">${t.loginButton}</button>
+                </form>
+                
+                <!-- サインアップフォーム -->
+                <form id="signupForm" style="display: none;">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <input type="email" id="signupEmail" placeholder="${t.emailPlaceholder || 'メールアドレス'}" required
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <input type="password" id="signupPassword" placeholder="${t.loginPassword || 'パスワード'}" required minlength="8"
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <input type="password" id="confirmPassword" placeholder="${t.confirmPassword || 'パスワード確認'}" required
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 1rem; background: var(--secondary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;" data-i18n="signup">${t.signup}</button>
+                </form>
+                
+                <!-- 緊急ログインボタン -->
+                <button onclick="showEmergencyLogin()" style="width: 100%; padding: 0.8rem; background: #ff9800; color: white; border: none; border-radius: 12px; font-size: 0.9rem; cursor: pointer; margin-bottom: 0.5rem;">🈭 PoC緊急ログイン (Phase5.5同様)</button>
+                
+                <button onclick="backToMainLogin()" style="width: 100%; padding: 0.8rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 12px; font-size: 1rem; cursor: pointer;" data-i18n="backToLogin">${t.backToLogin}</button>
+            `;
+            
+            setupAuthFormListeners();
+        }
+        
+        async function sendVerificationCode(email) {
+            // This would integrate with Cognito's email verification
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    console.log('Verification code sent to:', email);
+                    resolve();
+                }, 1000);
+            });
+        }
+        
+        function showVerificationCodeInput(email) {
+            document.getElementById('loginSection').innerHTML = `
+                <h3>認証コード入力</h3>
+                <p>${email} に認証コードを送信しました</p>
+                <form onsubmit="handleVerificationCode(event, '${email}')">
+                    <input type="text" id="verificationCode" placeholder="認証コード" required maxlength="6">
+                    <button type="submit" id="verifyBtn">認証</button>
+                    <button type="button" onclick="backToLogin()">戻る</button>
+                </form>
+            `;
+        }
+        
+        function handleVerificationCode(e, email) {
+            e.preventDefault();
+            const code = document.getElementById('verificationCode').value;
+            
+            // Here we would verify with Cognito
+            console.log('Verifying code:', code, 'for email:', email);
+            
+            // Mock successful login for now
+            isLoggedIn = true;
+            sessionStorage.setItem('sapporoAuth', 'true');
+            sessionStorage.setItem('sapporoUser', email);
+            showMainApp();
+        }
+        
+        function backToMainLogin() {
+            location.reload();
+        }
+        
+        function showEmergencyLogin() {
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            const loginCard = document.querySelector('.login-card');
+            loginCard.innerHTML = `
+                <h1 class="login-title">🈭</h1>
+                <h2 class="login-subtitle">PoC緊急ログイン (Phase5.5)</h2>
+                <p style="color: #666; margin-bottom: 2rem; font-size: 0.9rem;">開発テスト用の簡易ログインです</p>
+                
+                <form id="emergencyLoginForm">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">ユーザーID:</label>
+                        <input type="text" id="emergencyUsername" value="sapporo-guide" 
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">パスワード:</label>
+                        <input type="password" id="emergencyPassword" value="hokkaido2024"
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 1rem; background: #ff9800; color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;">緊急ログイン</button>
+                </form>
+                
+                <button onclick="backToMainLogin()" style="width: 100%; padding: 0.8rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 12px; font-size: 1rem; cursor: pointer;">戻る</button>
+            `;
+            
+            // 緊急ログインフォームのリスナー
+            const emergencyLoginForm = document.getElementById('emergencyLoginForm');
+            if (emergencyLoginForm) {
+                emergencyLoginForm.addEventListener('submit', handleEmergencyLogin);
+            }
+        }
+        
+        function setupAuthFormListeners() {
+            // 言語変更リスナー
+            document.querySelectorAll('input[name="authLang"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    sessionStorage.setItem('selectedLanguage', this.value);
+                    showEmailAuthForm(); // 再描画
+                });
+            });
+            
+            // モード切り替え
+            const loginModeBtn = document.getElementById('loginModeBtn');
+            const signupModeBtn = document.getElementById('signupModeBtn');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            
+            if (loginModeBtn && signupModeBtn && loginForm && signupForm) {
+                loginModeBtn.addEventListener('click', function() {
+                    loginForm.style.display = 'block';
+                    signupForm.style.display = 'none';
+                    this.style.background = 'var(--primary-color)';
+                    this.style.color = 'white';
+                    signupModeBtn.style.background = 'transparent';
+                    signupModeBtn.style.color = '#666';
+                });
+                
+                signupModeBtn.addEventListener('click', function() {
+                    loginForm.style.display = 'none';
+                    signupForm.style.display = 'block';
+                    this.style.background = 'var(--secondary-color)';
+                    this.style.color = 'white';
+                    loginModeBtn.style.background = 'transparent';
+                    loginModeBtn.style.color = '#666';
+                });
+                
+                // フォーム送信リスナー
+                loginForm.addEventListener('submit', handleCognitoLogin);
+                signupForm.addEventListener('submit', handleCognitoSignup);
+            }
+        }
+        
+        async function handleCognitoLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            if (!email || !password) {
+                alert(t.googleLoginNotReady || 'すべてのフィールドを入力してください');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = t.loginProcessing;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // ログイン成功
+                    sessionStorage.setItem('accessToken', data.tokens.AccessToken);
+                    sessionStorage.setItem('userInfo', JSON.stringify(data.user_info));
+                    sessionStorage.setItem('sapporoAuth', 'true');
+                    sessionStorage.setItem('sapporoUser', data.user_info.email);
+                    
+                    isLoggedIn = true;
+                    showMainApp();
+                    updateHeaderUserInfo(); // Update user info and plan display
+                    showMessage('ログインに成功しました', 'success');
+                } else {
+                    if (data.error.includes('User not confirmed')) {
+                        showConfirmationCodeInput(email, password);
+                        showMessage('メール認証が必要です。メールをご確認ください', 'info');
+                    } else {
+                        throw new Error(data.error || 'ログインに失敗しました');
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('ログインエラー: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = t.loginButton;
+            }
+        }
+        
+        async function handleCognitoSignup(e) {
+            e.preventDefault();
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            if (!email || !password || !confirmPassword) {
+                showMessage('すべてのフィールドを入力してください', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('パスワードが一致しません', 'error');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showMessage('パスワードは8文字以上で入力してください', 'error');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = t.loginProcessing || '登録中...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        display_name: email.split('@')[0]
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    if (data.confirmation_required) {
+                        showConfirmationCodeInput(email, password);
+                        showMessage('メールに認証コードを送信しました', 'success');
+                    }
+                } else {
+                    if (data.error.includes('User already exists')) {
+                        showMessage('このメールアドレスは既に使用されています', 'error');
+                    } else {
+                        throw new Error(data.error || '新規登録に失敗しました');
+                    }
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showMessage('登録エラー: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = t.signup || '新規登録';
+            }
+        }
+        
+        function showConfirmationCodeInput(email, password) {
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            const loginCard = document.querySelector('.login-card');
+            loginCard.innerHTML = `
+                <h1 class="login-title">📧</h1>
+                <h2 class="login-subtitle">メール認証</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+                    <strong>${email}</strong><br>
+                    に認証コードを送信しました
+                </p>
+                
+                <form id="confirmationForm" onsubmit="handleConfirmationCode(event, '${email}', '${password}')">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <input type="text" id="confirmationCode" placeholder="認証コード (6桁)" required maxlength="6"
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1.2rem; text-align: center; letter-spacing: 0.2rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" id="verifyBtn" style="width: 100%; padding: 1rem; background: var(--primary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;">
+                        認証コード確認
+                    </button>
+                </form>
+                
+                <button onclick="resendConfirmationCode('${email}')" style="width: 100%; padding: 0.8rem; background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 12px; font-size: 1rem; cursor: pointer; margin-bottom: 1rem;">
+                    認証コードを再送信
+                </button>
+                
+                <button onclick="backToMainLogin()" style="width: 100%; padding: 0.8rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 12px; font-size: 1rem; cursor: pointer;">
+                    ログイン画面に戻る
+                </button>
+            `;
+            
+            // Focus on the confirmation code input
+            setTimeout(() => {
+                document.getElementById('confirmationCode').focus();
+            }, 100);
+        }
+
+        async function handleConfirmationCode(e, email, password) {
+            e.preventDefault();
+            
+            const confirmationCode = document.getElementById('confirmationCode').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '認証中...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/confirm-signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        confirmation_code: confirmationCode,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Confirmation successful, auto-login
+                    sessionStorage.setItem('accessToken', data.tokens.AccessToken);
+                    sessionStorage.setItem('userInfo', JSON.stringify(data.user_info));
+                    sessionStorage.setItem('sapporoAuth', 'true');
+                    sessionStorage.setItem('sapporoUser', data.user_info.email);
+                    
+                    isLoggedIn = true;
+                    showMainApp();
+                    updateHeaderUserInfo(); // Update user info and plan display
+                    showMessage('メール認証が完了しました！ログインしました', 'success');
+                } else {
+                    if (data.error.includes('Invalid confirmation code')) {
+                        showMessage('認証コードが間違っています', 'error');
+                    } else if (data.error.includes('Confirmation code expired')) {
+                        showMessage('認証コードの期限が切れました。再送信してください', 'error');
+                    } else {
+                        showMessage(data.error, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Confirmation error:', error);
+                showMessage('認証エラーが発生しました', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '認証コード確認';
+            }
+        }
+
+        async function resendConfirmationCode(email) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/resend-code`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('認証コードを再送信しました', 'success');
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Resend error:', error);
+                showMessage('再送信エラーが発生しました', 'error');
+            }
+        }
+
+        function handleEmergencyLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('emergencyUsername').value;
+            const password = document.getElementById('emergencyPassword').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'ログイン中...';
+            
+            setTimeout(() => {
+                if (username === 'sapporo-guide' && password === 'hokkaido2024') {
+                    isLoggedIn = true;
+                    sessionStorage.setItem('sapporoAuth', 'true');
+                    sessionStorage.setItem('sapporoUser', username);
+                    // Set a dummy token for emergency login to work with API
+                    sessionStorage.setItem('accessToken', 'emergency-login-token');
+                    showMainApp();
+                } else {
+                    alert('ユーザーIDまたはパスワードが正しくありません');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '緊急ログイン';
+                }
+            }, 1000);
+        }
+        
+        // Handle OAuth callback
+        function handleOAuthCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+            
+            if (error) {
+                console.error('OAuth error:', error);
+                alert('ログインに失敗しました: ' + error);
+                return;
+            }
+            
+            if (code) {
+                // Exchange code for tokens with Cognito
+                exchangeCodeForTokens(code)
+                    .then(tokens => {
+                        // Store tokens and user info
+                        sessionStorage.setItem('sapporoAuth', 'true');
+                        sessionStorage.setItem('accessToken', tokens.access_token);
+                        sessionStorage.setItem('sapporoUser', tokens.email || 'Google User');
+                        
+                        // Clean URL and show main app
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        isLoggedIn = true;
+                        showMainApp();
+                        
+                        // Create user record if new user
+                        createUserIfNeeded(tokens);
+                    })
+                    .catch(error => {
+                        console.error('Token exchange error:', error);
+                        alert('ログインに失敗しました');
+                    });
+            }
+        }
+        
+        async function exchangeCodeForTokens(code) {
+            const tokenUrl = 'https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/token';
+            const redirectUri = window.location.origin + window.location.pathname;
+            
+            const response = await fetch(tokenUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: '2tctru78c2epl4mbhrt8asd55e',
+                    code: code,
+                    redirect_uri: redirectUri
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Token exchange failed');
+            }
+            
+            const tokens = await response.json();
+            
+            // Get user info from access token
+            const userResponse = await fetch(`${API_BASE_URL}/auth/user-info`, {
+                headers: {
+                    'Authorization': `Bearer ${tokens.access_token}`
+                }
+            });
+            
+            if (userResponse.ok) {
+                const userInfo = await userResponse.json();
+                tokens.email = userInfo.email;
+                tokens.display_name = userInfo.display_name;
+            }
+            
+            return tokens;
+        }
+        
+        async function createUserIfNeeded(tokens) {
+            try {
+                await fetch(`${API_BASE_URL}/auth/create-user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${tokens.access_token}`
+                    },
+                    body: JSON.stringify({
+                        email: tokens.email,
+                        display_name: tokens.display_name,
+                        auth_provider: 'google'
+                    })
+                });
+            } catch (error) {
+                console.log('User creation error (may already exist):', error);
+            }
+        }
+        
         function handleLogin(e) {
             e.preventDefault();
             const username = document.getElementById('username').value;
@@ -1143,8 +1183,8 @@
             
             if (authStatus === 'true' && username) {
                 isLoggedIn = true;
-                document.getElementById('currentUser').textContent = username;
                 showMainApp();
+                updateHeaderUserInfo(); // Use the proper function that handles user info correctly
             }
         }
 
@@ -1158,6 +1198,8 @@
             isLoggedIn = false;
             sessionStorage.removeItem('sapporoAuth');
             sessionStorage.removeItem('sapporoUser');
+            sessionStorage.removeItem('accessToken');
+            sessionStorage.removeItem('userInfo');
             
             resetApp();
             
@@ -1165,7 +1207,19 @@
             userInfo.classList.remove('active');
             loginSection.classList.remove('hidden');
             
-            document.getElementById('loginForm').reset();
+            // Reset login form if it exists
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm && typeof loginForm.reset === 'function') {
+                loginForm.reset();
+            }
+            
+            // Reset other forms that might exist
+            const signupForm = document.getElementById('signupForm');
+            if (signupForm && typeof signupForm.reset === 'function') {
+                signupForm.reset();
+            }
+            
+            showMessage('ログアウトしました', 'info');
         }
 
         // File Handling
@@ -1328,11 +1382,19 @@
                         }
                         
                         // Proceed with analysis regardless of upload success
+                        const authToken = sessionStorage.getItem('accessToken');
+                        const headers = {
+                            'Content-Type': 'application/json'
+                        };
+                        
+                        // Add authorization header if available
+                        if (authToken) {
+                            headers['Authorization'] = `Bearer ${authToken}`;
+                        }
+                        
                         const response = await fetch(`${API_BASE_URL}/analyze`, {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
+                            headers: headers,
                             body: JSON.stringify({
                                 image: `data:image/jpeg;base64,${base64Data}`,
                                 language: selectedLanguage,
@@ -1376,6 +1438,9 @@
                 try {
                     const result = JSON.parse(responseText);
                     content = result.analysis || 'データの解析に失敗しました';
+                    
+                    // Update user plan display after successful analysis
+                    updateUserPlanDisplay();
                 } catch (e) {
                     content = responseText;
                 }
@@ -1407,36 +1472,302 @@
         }
 
         // Analysis type change handler
-        document.querySelectorAll('input[name="analysisType"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                updateAnalysisUI(this.value);
+        const analysisTypeRadios = document.querySelectorAll('input[name="analysisType"]');
+        if (analysisTypeRadios.length > 0) {
+            analysisTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateAnalysisUI(this.value);
+                });
             });
-        });
+        }
 
         function updateAnalysisUI(type) {
             const btnText = document.getElementById('analyzeBtnText');
-            const uploadText = document.querySelector('.upload-text');
-            const uploadSubtext = document.querySelector('.upload-subtext');
+            const recommendedText = document.getElementById('recommendedText');
+            
+            // 現在の言語を取得
+            const currentLang = document.getElementById('languageSelect').value;
+            const t = translations[currentLang];
             
             if (type === 'menu') {
-                btnText.textContent = '📋🍜 看板・メニュー翻訳を開始';
-                uploadText.textContent = '看板・メニューをアップロード';
-                uploadSubtext.innerHTML = '日本語の看板・メニューの写真をクリックまたはドラッグ＆ドロップ<br><strong>対応形式:</strong> JPG, PNG, GIF (最大 10MB)<br><strong>特に有効:</strong> 手書きメニュー、価格表、注文表等';
+                btnText.textContent = '📋🍜 ' + t.menuTranslation + t.startText;
+                // メニュー用の推奨テキストに切り替え
+                recommendedText.setAttribute('data-i18n', 'menuRecommended');
+                recommendedText.textContent = t.menuRecommended;
             } else {
-                btnText.textContent = '🤖 札幌観光AI解析を開始';
-                uploadText.textContent = '画像をアップロード';
-                uploadSubtext.innerHTML = '札幌の店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ<br><strong>対応形式:</strong> JPG, PNG, GIF (最大 10MB)<br><strong>推奨:</strong> ラーメン、ジンギスカン、雪まつり、すすきの等';
+                btnText.textContent = '🤖 ' + t.analyzeButton;
+                // 店舗用の推奨テキストに切り替え
+                recommendedText.setAttribute('data-i18n', 'storeRecommended');
+                recommendedText.textContent = t.storeRecommended;
+            }
+            
+            // data-i18n属性を使用してUIを更新
+            updateUILanguage(currentLang);
+        }
+
+        // Message display function
+        function showMessage(message, type = 'info') {
+            console.log(`${type.toUpperCase()}: ${message}`);
+            
+            // Create or update message element
+            let messageEl = document.getElementById('message-display');
+            if (!messageEl) {
+                messageEl = document.createElement('div');
+                messageEl.id = 'message-display';
+                messageEl.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    z-index: 10000;
+                    max-width: 400px;
+                    font-weight: 500;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                `;
+                document.body.appendChild(messageEl);
+            }
+            
+            // Set style based on type
+            const styles = {
+                success: 'background: #d1edda; color: #155724; border-left: 4px solid #28a745;',
+                error: 'background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545;',
+                info: 'background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8;'
+            };
+            
+            messageEl.style.cssText += styles[type] || styles.info;
+            messageEl.textContent = message;
+            messageEl.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                if (messageEl) {
+                    messageEl.style.display = 'none';
+                }
+            }, 5000);
+        }
+
+        // Auto-fill demo credentials on focus (only if elements exist)
+        const usernameField = document.getElementById('username');
+        const passwordField = document.getElementById('password');
+        
+        if (usernameField) {
+            usernameField.addEventListener('focus', function() {
+                if (!this.value) this.value = 'sapporo-guide';
+            });
+        }
+        
+        if (passwordField) {
+            passwordField.addEventListener('focus', function() {
+                if (!this.value) this.value = 'hokkaido2024';
+            });
+        }
+    </script>
+
+    <!-- Premium Upgrade Modal -->
+    <div id="upgradeModal" class="upgrade-modal">
+        <div class="upgrade-content">
+            <h2 class="upgrade-title">⭐ プレミアムプランにアップグレード</h2>
+            <p style="color: #666; margin-bottom: 2rem;">無制限でAI解析をお楽しみください</p>
+            
+            <div class="plan-options">
+                <div class="plan-card" onclick="selectPlan('7days')" id="plan7days">
+                    <div class="plan-name">7日間プラン</div>
+                    <div class="plan-price">¥980</div>
+                    <div class="plan-duration">1週間無制限</div>
+                    <ul class="plan-features">
+                        <li>AI解析無制限</li>
+                        <li>高優先度処理</li>
+                        <li>詳細分析レポート</li>
+                    </ul>
+                </div>
+                
+                <div class="plan-card selected" onclick="selectPlan('20days')" id="plan20days">
+                    <div class="plan-name">20日間プラン</div>
+                    <div class="plan-price">¥1,980</div>
+                    <div class="plan-duration">20日間無制限</div>
+                    <ul class="plan-features">
+                        <li>AI解析無制限</li>
+                        <li>高優先度処理</li>
+                        <li>詳細分析レポート</li>
+                        <li>お得！約50%オフ</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeUpgradeModal()">キャンセル</button>
+                <button class="modal-btn primary" onclick="proceedToPayment()">決済に進む</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPlan = '20days'; // デフォルトは20日間プラン
+
+        function showUpgradeModal() {
+            document.getElementById('upgradeModal').classList.add('show');
+        }
+
+        function closeUpgradeModal() {
+            document.getElementById('upgradeModal').classList.remove('show');
+        }
+
+        function selectPlan(planType) {
+            selectedPlan = planType;
+            
+            // Remove selection from all plans
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked plan
+            document.getElementById('plan' + planType).classList.add('selected');
+        }
+
+        function proceedToPayment() {
+            // Phase 6.5でSquare決済を実装予定
+            const plan = selectedPlan === '7days' ? '7日間プラン (¥980)' : '20日間プラン (¥1,980)';
+            
+            showMessage(`${plan}が選択されました。決済システムはPhase 6.5で実装予定です。`, 'info');
+            closeUpgradeModal();
+            
+            // TODO: Square決済システムとの連携
+            console.log('Selected plan:', selectedPlan);
+        }
+
+        // Update user plan display based on user info
+        async function updateUserPlanDisplay() {
+            console.log('🔄 updateUserPlanDisplay called');
+            
+            // Debug session storage contents
+            console.log('💾 SessionStorage contents:');
+            console.log('  - userInfo:', sessionStorage.getItem('userInfo'));
+            console.log('  - accessToken:', sessionStorage.getItem('accessToken'));
+            console.log('  - sapporoAuth:', sessionStorage.getItem('sapporoAuth'));
+            console.log('  - sapporoUser:', sessionStorage.getItem('sapporoUser'));
+            
+            const userInfo = sessionStorage.getItem('userInfo');
+            if (!userInfo) {
+                console.log('❌ No userInfo in sessionStorage');
+                return;
+            }
+            
+            const user = JSON.parse(userInfo);
+            console.log('👤 Current user from sessionStorage:', user);
+            const userPlanElement = document.getElementById('userPlan');
+            const upgradeBtn = document.getElementById('upgradeBtn');
+            
+            try {
+                // Get current usage info from backend
+                const authToken = sessionStorage.getItem('accessToken');
+                console.log('🔑 Auth token details:');
+                console.log('  - Present:', authToken ? 'Yes' : 'No');
+                console.log('  - Type:', typeof authToken);
+                console.log('  - Length:', authToken ? authToken.length : 0);
+                console.log('  - First 50 chars:', authToken ? authToken.substring(0, 50) + '...' : 'N/A');
+                
+                const response = await fetch(`${API_BASE_URL}/auth/user-info`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                console.log('📡 API response:', response.status, response.statusText);
+                
+                if (response.ok) {
+                    const userDetails = await response.json();
+                    console.log('📊 Fresh user data from API:', userDetails);
+                    
+                    const userType = userDetails.user_type || 'free';
+                    const monthlyCount = userDetails.monthly_analysis_count || 0;
+                    
+                    console.log('📈 User type:', userType, 'Monthly count:', monthlyCount);
+                    
+                    if (userType === 'free') {
+                        const remaining = 5 - monthlyCount;
+                        console.log('🆓 Free plan - Remaining:', remaining);
+                        userPlanElement.textContent = `Free (残り${remaining}回)`;
+                        userPlanElement.className = 'user-plan';
+                        upgradeBtn.style.display = remaining <= 2 ? 'block' : 'none'; // 残り2回以下で表示
+                    } else {
+                        console.log('💎 Premium plan detected');
+                        userPlanElement.textContent = `Premium (無制限)`;
+                        userPlanElement.className = 'user-plan premium';
+                        upgradeBtn.style.display = 'none';
+                    }
+                    
+                    // Update sessionStorage with fresh data
+                    sessionStorage.setItem('userInfo', JSON.stringify(userDetails));
+                    console.log('💾 Updated sessionStorage with fresh user data');
+                } else {
+                    console.log('❌ API Error Details:');
+                    console.log('  - Status:', response.status);
+                    console.log('  - Status Text:', response.statusText);
+                    
+                    if (response.status === 401) {
+                        console.log('⚠️ Authentication failed, using default free plan display');
+                        // Display default free plan info when auth fails
+                        userPlanElement.textContent = 'Free (残り5回)';
+                        userPlanElement.className = 'user-plan';
+                        upgradeBtn.style.display = 'none';
+                        
+                        // Don't show error to user for 401, just use defaults
+                        return;
+                    } else if (response.status === 500) {
+                        console.log('⚠️ Server error, using fallback display');
+                        // Server error: use sessionStorage data if available
+                        const userType = user.user_type || 'free';
+                        const monthlyCount = user.monthly_analysis_count || 0;
+                        
+                        if (userType === 'free') {
+                            const remaining = Math.max(0, 5 - monthlyCount);
+                            userPlanElement.textContent = `Free (残り${remaining}回)`;
+                            userPlanElement.className = 'user-plan';
+                            upgradeBtn.style.display = remaining <= 2 ? 'block' : 'none';
+                        } else {
+                            userPlanElement.textContent = `Premium (無制限)`;
+                            userPlanElement.className = 'user-plan premium';
+                            upgradeBtn.style.display = 'none';
+                        }
+                        return;
+                    }
+                    
+                    const errorText = await response.text();
+                    console.log('  - Response Body:', errorText);
+                }
+            } catch (error) {
+                console.error('❌ Network error:', error);
             }
         }
 
-        // Auto-fill demo credentials on focus
-        document.getElementById('username').addEventListener('focus', function() {
-            if (!this.value) this.value = 'sapporo-guide';
-        });
-        
-        document.getElementById('password').addEventListener('focus', function() {
-            if (!this.value) this.value = 'hokkaido2024';
-        });
+        // Call updateUserPlanDisplay when user logs in
+        function updateHeaderUserInfo() {
+            const userInfo = sessionStorage.getItem('userInfo');
+            const currentUserElement = document.getElementById('currentUser');
+            const userInfoElement = document.getElementById('userInfo');
+            
+            if (userInfo) {
+                const user = JSON.parse(userInfo);
+                currentUserElement.textContent = user.display_name || user.email || 'User';
+                userInfoElement.classList.add('active');
+                
+                // Update plan display
+                updateUserPlanDisplay();
+            } else {
+                userInfoElement.classList.remove('active');
+            }
+        }
+
+        // Close modal when clicking outside
+        const upgradeModal = document.getElementById('upgradeModal');
+        if (upgradeModal) {
+            upgradeModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeUpgradeModal();
+                }
+            });
+        }
     </script>
 </body>
 </html>
