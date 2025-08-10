@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ウズベキスタン観光・店舗アナライザー</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            margin: 0;
+            padding: 8px;
+            background: linear-gradient(135deg, #0099CC 0%, #FFFFFF 50%, #CE1126 100%);
+            color: #333;
+            min-height: 100vh;
+            font-size: 40px; /* 150%さらにアップ（27px → 40px） */
+            line-height: 1.7;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            width: calc(100vw - 16px);
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .flag-logo {
+            width: 80px;
+            height: 50px;
+            margin: 0 auto 15px;
+            background: linear-gradient(to bottom, #0099CC 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #CE1126 66.66%);
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .flag-logo::before {
+            content: "☪";
+            position: absolute;
+            left: 8px;
+            top: 2px;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .flag-logo::after {
+            content: "⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐";
+            position: absolute;
+            left: 25px;
+            top: 4px;
+            color: white;
+            font-size: 8px;
+            letter-spacing: 1px;
+            line-height: 10px;
+            width: 45px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 54px; /* 150%さらにアップ（36px → 54px） */
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-size: 36px; /* 150%さらにアップ（24px → 36px） */
+        }
+        
+        /* 機能選択タブ */
+        .tab-container {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 25px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 36px; /* 150%さらにアップ（24px → 36px） */
+            border: none;
+            outline: none;
+        }
+        
+        .tab.store {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .tab.tourism {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .tab.signboard {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+        
+        .tab.active {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            z-index: 2;
+            position: relative;
+        }
+        
+        /* アップロードエリア */
+        .upload-area {
+            border: 3px dashed #3498db;
+            border-radius: 15px;
+            padding: 35px 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .upload-area:hover {
+            border-color: #2980b9;
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: #27ae60;
+            background-color: rgba(39, 174, 96, 0.1);
+        }
+        
+        .upload-area.store-mode {
+            border-color: #e74c3c;
+        }
+        
+        .upload-area.tourism-mode {
+            border-color: #3498db;
+        }
+        
+        .upload-area.signboard-mode {
+            border-color: #9b59b6;
+        }
+        
+        .upload-text {
+            font-size: 45px; /* 150%さらにアップ（30px → 45px） */
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .upload-subtext {
+            font-size: 36px; /* 150%さらにアップ（24px → 36px） */
+            color: #7f8c8d;
+        }
+        
+        #imageFile {
+            display: none;
+        }
+        
+        .preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            margin: 20px auto;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            display: block;
+        }
+        
+        /* ボタン */
+        .analyze-btn {
+            width: 100%;
+            padding: 25px;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 40px; /* 150%さらにアップ（27px → 40px） */
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .analyze-btn.store {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+        
+        .analyze-btn.tourism {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+        }
+        
+        .analyze-btn.signboard {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+        }
+        
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* ローディング・結果表示 */
+        .loading {
+            text-align: center;
+            padding: 25px;
+            color: #7f8c8d;
+            font-size: 36px; /* 150%さらにアップ（24px → 36px） */
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 15px;
+            white-space: pre-line;
+            line-height: 1.8;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            font-size: 43px; /* 120%さらにアップ（36px → 43px） */
+        }
+        
+        .result h3 {
+            font-size: 54px; /* 120%さらにアップ（45px → 54px） */
+            margin-bottom: 15px;
+        }
+        
+        .result.store {
+            background: linear-gradient(135deg, #ffe5e5, #fff0f0);
+            border-left: 6px solid #e74c3c;
+        }
+        
+        .result.tourism {
+            background: linear-gradient(135deg, #e5f3ff, #f0f8ff);
+            border-left: 6px solid #3498db;
+        }
+        
+        .result.signboard {
+            background: linear-gradient(135deg, #f4e5ff, #f8f0ff);
+            border-left: 6px solid #9b59b6;
+        }
+        
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-size: 36px; /* 150%さらにアップ（24px → 36px） */
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 履歴ボタン */
+        
+        /* レスポンシブ対応 */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+                font-size: 38px; /* 150%さらにアップ（25px → 38px） */
+            }
+            
+            .container {
+                padding: 12px;
+                width: calc(100vw - 10px);
+            }
+            
+            h1 {
+                font-size: 48px; /* 150%さらにアップ（32px → 48px） */
+            }
+            
+            .tab {
+                font-size: 33px; /* 150%さらにアップ（22px → 33px） */
+                padding: 20px 8px;
+            }
+            
+            .upload-text {
+                font-size: 42px; /* 150%さらにアップ（28px → 42px） */
+            }
+            
+            .analyze-btn {
+                font-size: 38px; /* 150%さらにアップ（25px → 38px） */
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="flag-logo"></div>
+            <h1>ウズベキスタンアナライザー</h1>
+            <p class="subtitle">観光地・店舗を分析してご紹介します</p>
+        </div>
+        
+        <!-- 機能選択タブ -->
+        <div class="tab-container">
+            <button class="tab store active" onclick="switchMode('store')">
+                🏪🕌 店舗・観光分析
+            </button>
+            <button class="tab signboard" onclick="switchMode('signboard')">
+                📋 看板・メニュー翻訳
+            </button>
+        </div>
+        
+        <div class="upload-area store-mode" onclick="document.getElementById('imageFile').click()">
+            <div class="upload-text" id="upload-text">🏪 店舗の写真をアップロード</div>
+            <div class="upload-subtext">📱 タップまたはドラッグ＆ドロップ</div>
+        </div>
+        
+        <input type="file" id="imageFile" accept="image/*" onchange="handleImageSelect(event)">
+        
+        <img id="preview" class="preview" style="display:none;">
+        
+        <button id="analyzeBtn" class="analyze-btn store" onclick="analyzeImage()" disabled>
+            店舗を分析する
+        </button>
+        
+        
+        <div id="loading" class="loading" style="display:none;">
+            <div class="spinner"></div>
+            <p>分析中... 30-40秒お待ちください</p>
+        </div>
+        
+        <div id="result" class="result store" style="display:none;"></div>
+        <div id="error" class="error" style="display:none;"></div>
+    </div>
+
+    <script>
+        let selectedImage = null;
+        let currentMode = 'store';
+        
+        // モード切り替え
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.tab.${mode}`).classList.add('active');
+            
+            const uploadArea = document.querySelector('.upload-area');
+            uploadArea.className = `upload-area ${mode}-mode`;
+            
+            const uploadText = document.getElementById('upload-text');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const result = document.getElementById('result');
+            
+            if (mode === 'store') {
+                uploadText.textContent = '🏪🕌 店舗・観光地の写真をアップロード';
+                analyzeBtn.textContent = '店舗・観光地を分析する';
+                analyzeBtn.className = 'analyze-btn store';
+                result.className = 'result store';
+            } else if (mode === 'signboard') {
+                uploadText.textContent = '📋 看板・メニューの写真をアップロード';
+                analyzeBtn.textContent = '看板・メニューを翻訳する';
+                analyzeBtn.className = 'analyze-btn signboard';
+                result.className = 'result signboard';
+            }
+            
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+        }
+        
+        // ドラッグ＆ドロップの処理
+        const uploadArea = document.querySelector('.upload-area');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleImageFile(files[0]);
+            }
+        });
+        
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleImageFile(file);
+            }
+        }
+        
+        function handleImageFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('画像ファイルを選択してください');
+                return;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) {
+                showError('画像サイズは10MB以下にしてください');
+                return;
+            }
+            
+            // 画像を圧縮・リサイズして高速化
+            compressAndResizeImage(file, (compressedBase64) => {
+                const preview = document.getElementById('preview');
+                preview.src = `data:image/jpeg;base64,${compressedBase64}`;
+                preview.style.display = 'block';
+                selectedImage = compressedBase64;
+                document.getElementById('analyzeBtn').disabled = false;
+            });
+        }
+        
+        // 画像圧縮・リサイズ関数（高速化のため）
+        function compressAndResizeImage(file, callback) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                // 最大サイズを800px に制限（処理速度向上）
+                //const maxSize = 800;
+                const maxSize = 1200;
+                let { width, height } = img;
+                
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // 画質を調整して高速化（0.7 = 70%品質）
+                ctx.drawImage(img, 0, 0, width, height);
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+                
+                callback(compressedBase64);
+            };
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function analyzeImage() {
+            if (!selectedImage) {
+                showError('画像を選択してください');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('analyzeBtn').disabled = true;
+            
+            let functionName;
+            if (currentMode === 'store') {
+                functionName = 'analyzeStoreAndTourism';
+            } else if (currentMode === 'signboard') {
+                functionName = 'analyzeSignboard';
+            }
+            
+            google.script.run
+                .withSuccessHandler(showResult)
+                .withFailureHandler(showError)
+                [functionName](selectedImage);
+        }
+        
+        function showResult(result) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            
+            const resultDiv = document.getElementById('result');
+            let title;
+            if (currentMode === 'store') {
+                title = '🏪🕌 店舗・観光地分析結果';
+            } else if (currentMode === 'signboard') {
+                title = '📋 看板・メニュー翻訳結果';
+            }
+            resultDiv.innerHTML = `<h3>${title}</h3><div style="margin-top: 15px;">${result}</div>`;
+            
+            document.getElementById('analyzeBtn').disabled = false;
+        }
+        
+        function showError(error) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').textContent = 'エラー: ' + error;
+            document.getElementById('analyzeBtn').disabled = false;
+        }
+        
+        
+        // ページ読み込み時に設定状況をチェック
+        window.onload = function() {
+            google.script.run
+                .withSuccessHandler((status) => {
+                    if (!status.gemini) {
+                        console.log('Gemini APIキーが未設定です');
+                    }
+                    if (!status.drive) {
+                        console.log('Google Drive設定が未設定です');
+                    }
+                    if (!status.spreadsheet) {
+                        console.log('スプレッドシート設定が未設定です');
+                    }
+                })
+                .withFailureHandler(() => {})
+                .checkSetup();
+        };
+    </script>
+</body>
+</html>

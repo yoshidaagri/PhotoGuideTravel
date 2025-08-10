@@ -1,0 +1,56 @@
+# Claude Code Configuration (機密情報含む)
+CLAUDE.md
+
+# API Keys and Secrets
+.env
+.env.local
+.env.development
+.env.production
+*.key
+*.pem
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Coverage reports
+htmlcov/
+.coverage
+.pytest_cache/
+
+# AWS
+.aws/
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# Serverless Framework
+.serverless/
