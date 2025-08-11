@@ -537,7 +537,7 @@ issue作成時は必ず確認して必ずこの内容に従ってissue作成を�
 ## API設定
 ### Google Gemini API
 - **モデル**: gemini-2.0-flash
-- **APIキー**: AIzaSyDupwVOP1r6V2PlcCfwwyJl7ItRflzo0SQ
+- **APIキー**: [環境変数 GOOGLE_GEMINI_API_KEY で管理 - セキュリティのため非公開]
 - **用途**: 画像解析・観光地識別・多言語説明文生成
 - **重要**: 本番環境では環境変数で管理、開発時のみハードコード使用
 
