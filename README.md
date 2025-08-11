@@ -1,45 +1,85 @@
-# PhotoGuideTravel - スマートデバイス専用AI観光ガイド
+# 観光アナライザー - 札幌特化AI観光ガイド
 
-## 概要
-PhotoGuideTravelは、AI画像解析技術を活用してスマートデバイス専用の観光ガイド体験を提供するサービスです。Google Gemini APIを使用した高度な画像認識により、観光地の写真から詳細な情報と多言語での説明を提供します。
+## 🏔️ 概要
+観光アナライザーは、札幌に特化したAI画像解析観光サービスです。Google Gemini 2.0 Flashを活用し、札幌の店舗・観光地・料理画像から詳細な地元情報と多言語説明を提供します。
 
-## 🎯 主要機能
-- **AI画像解析**: Google Gemini 2.0-flash による高精度画像認識
-- **多言語対応**: リアルタイム翻訳・説明生成
-- **PWA対応**: スマートデバイス最適化
-- **サーバーレス**: AWS完全サーバーレス構成
-- **決済連携**: Stripe決済システム統合
+**🌐 稼働中サービス**: https://d22ztxm5q1c726.cloudfront.net/sapporo-mvp.html
 
-## 🏗️ アーキテクチャ
-- **フロントエンド**: React PWA (TypeScript)
-- **バックエンド**: AWS Lambda (Python)
-- **データベース**: DynamoDB
-- **認証**: AWS Cognito
-- **API**: AWS API Gateway
-- **CDN**: CloudFront
-- **CI/CD**: GitHub Actions
+## 🎯 主要機能（2025年8月11日現在）
 
-## 📁 プロジェクト構造
+### ✅ 完全実装済み機能
+- **🤖 二重AI解析システム**: 店舗観光分析 + 看板メニュー翻訳
+- **🌐 完全多言語UI**: 日本語・韓国語・中国語（簡体字・繁体字）・英語対応
+- **🔐 3way認証システム**: Google OAuth・メール認証・緊急ログイン
+- **💾 データ統合**: S3画像保存 + DynamoDB完全連携
+- **📱 モバイル最適化**: レスポンシブPWA設計
+- **🎨 美麗UI**: カスタムアニメーション・グラデーション
+
+### 🚧 実装中機能
+- **💳 課金システム**: Square決済（¥980/¥1,980プラン）
+- **🚫 使用制限**: 無料5回/月制限システム
+
+### 📍 札幌特化対応エリア
+- すすきの・大通・札幌駅周辺
+- ラーメン横丁・成吉思汗・海鮮市場
+- 雪まつり・時計台・大通公園
+
+## 🏗️ 技術スタック（本番稼働中）
+
+### フロントエンド
+- **React PWA**: モバイル最適化・オフライン対応
+- **CloudFront**: 高速CDN配信（SSL/TLS完全対応）
+- **S3**: 静的ホスティング
+- **カスタムCSS**: アニメーション・グラデーション・レスポンシブ
+
+### バックエンド
+- **AWS Lambda** (Python 3.11): サーバーレス関数
+- **API Gateway**: RESTful API・CORS対応
+- **DynamoDB**: NoSQLデータベース（PAY_PER_REQUEST）
+- **S3**: 画像ストレージ・ライフサイクル管理
+
+### 認証・セキュリティ
+- **Amazon Cognito**: OAuth 2.0・JWT認証
+- **Google OAuth**: カスタムUI統合
+- **IAM**: 最小権限アクセス制御
+
+### AI・解析
+- **Google Gemini 2.0 Flash**: 最新画像解析API
+- **多言語翻訳**: リアルタイム5言語対応
+
+## 📁 プロジェクト構造（実際のファイル配置）
 ```
-PhotoGuideTravel/
-├── .github/workflows/          # GitHub Actions CI/CD
-├── backend/                    # サーバーレスバックエンド
-│   ├── functions/              # Lambda関数
-│   │   ├── auth/              # 認証機能
-│   │   ├── image-analysis/    # AI画像解析
-│   │   ├── payment/           # 決済処理
-│   │   └── user-management/   # ユーザー管理
-│   ├── layers/                # Lambda Layers
-│   ├── tests/                 # バックエンドテスト
-│   └── serverless.yml         # Serverless Framework設定
-├── frontend/                   # React PWA
-│   ├── src/                   # ソースコード
-│   ├── public/                # 静的ファイル
-│   └── package.json          # 依存関係
-├── infrastructure/             # インフラ設定
-│   └── terraform/             # Terraform設定
-└── docs/                      # ドキュメント
+Multimodal_Japan/
+├── backend/                    # ✅ サーバーレスバックエンド（本番稼働中）
+│   ├── functions/              # Lambda関数群
+│   │   ├── auth/              # ✅ 認証機能（Cognito + 3way認証）
+│   │   ├── image-analysis/    # ✅ AI画像解析（Gemini 2.0 Flash）
+│   │   ├── payment/           # 🚧 決済処理（Square統合準備中）
+│   │   └── user-management/   # ✅ ユーザー管理（DynamoDB連携）
+│   ├── tests/                 # ✅ テストスイート（86テスト関数）
+│   └── serverless.yml         # ✅ AWS本番環境設定
+├── frontend/                   # ✅ PWA（CloudFront配信中）
+│   ├── sapporo-mvp.html       # ✅ メインアプリケーション
+│   ├── css/styles.css         # ✅ カスタムスタイル
+│   └── cognito-*.css         # ✅ Cognito UI カスタマイゼーション
+├── CLAUDE.md                  # 📋 プロジェクト設計・Phase管理
+├── README.md                  # 📖 本ドキュメント
+└── history*.md               # 📝 開発履歴（Git除外）
 ```
+
+## 🚀 現在の開発フェーズ（Phase 6.2完了）
+
+### ✅ 完了済みPhase
+- **Phase 1-3**: AWS環境・GitHub連携完了
+- **Phase 4-5**: サーバーレス基盤・AI解析実装完了  
+- **Phase 5.5**: MVP完全版（予定より早期完成）
+- **Phase 6.1**: CloudFront・3way認証システム完了
+- **Phase 6.2**: Google OAuth UI グラフィック強化完了
+
+### 🚧 次期実装予定（Phase 6.5）
+- Square Developer Account作成
+- プレミアムプラン決済フロー（¥980/¥1,980）
+- 月5回制限システム実装
 
 ## 🚀 開発環境セットアップ
 
@@ -97,56 +137,66 @@ python -m pytest
 npm run test:integration
 ```
 
-## 🚀 デプロイ
+## 🚀 デプロイ（実際の運用環境）
 
-### 開発環境
+### 本番環境（現在稼働中）
 ```bash
-# バックエンドデプロイ
+# バックエンドデプロイ（AWS Lambda）
 cd backend
-serverless deploy --stage dev
+serverless deploy --stage dev --aws-profile ai-tourism-poc
 
-# フロントエンドデプロイ
-cd frontend
-npm run build
-aws s3 sync dist/ s3://ai-tourism-poc-frontend-dev
+# フロントエンドデプロイ（CloudFront）
+aws s3 cp frontend/sapporo-mvp.html s3://ai-tourism-poc-frontend-dev/ --profile ai-tourism-poc
+aws s3 cp frontend/css/styles.css s3://ai-tourism-poc-frontend-dev/css/ --profile ai-tourism-poc
+aws cloudfront create-invalidation --distribution-id E38DCQ985NYREA --paths "/*" --profile ai-tourism-poc
 ```
 
-### 本番環境
-GitHub Actionsによる自動デプロイが設定されています。
-- `main`ブランチへのプッシュ → 本番環境デプロイ
-- `develop`ブランチへのプッシュ → 開発環境デプロイ
+### 環境情報
+- **本番URL**: https://d22ztxm5q1c726.cloudfront.net/sapporo-mvp.html
+- **CloudFront Distribution**: E38DCQ985NYREA
+- **S3 Bucket**: ai-tourism-poc-frontend-dev
+- **API Gateway**: ap-northeast-1リージョン
+- **DynamoDB**: PAY_PER_REQUEST・無料枠内運用
 
-## 📊 コスト管理
-- AWS無料枠最大活用
-- DynamoDB: オンデマンド課金
-- Lambda: 100万リクエスト/月まで無料
-- S3: 5GB/月まで無料
-- 緊急停止機能実装
+## 📊 コスト管理（実績）
+- **AWS無料枠完全活用**: 現在 $0-2/月で運用中
+- **DynamoDB**: PAY_PER_REQUEST・永続無料枠内
+- **Lambda**: 月間数千リクエスト・無料枠内
+- **S3**: 画像30日自動削除・容量制御
+- **CloudFront**: 12ヶ月無料枠活用中
+- **緊急停止機能**: コスト上限 $25/月設定済み
 
-## 🔒 セキュリティ
-- IAM最小権限の原則
-- API Gatewayレート制限
-- 環境変数による機密情報管理
-- AWS Secretsによる認証情報保護
+## 🔒 セキュリティ（本番対応済み）
+- **IAM**: 最小権限・プロファイル分離
+- **Cognito**: OAuth 2.0・JWT認証
+- **API Gateway**: CORS・レート制限設定
+- **SSL/TLS**: CloudFront完全暗号化
+- **データ保護**: S3暗号化・DynamoDB暗号化
 
-## 📖 ドキュメント
-- [開発ガイド](docs/development.md)
-- [デプロイガイド](docs/deployment.md)
-- [API仕様](docs/api.md)
-- [アーキテクチャ](docs/architecture.md)
+## 🎯 収益化ロードマップ
+### Phase 6.5（実装中）
+- Square決済統合
+- プレミアムプラン（¥980・¥1,980）
+- 使用制限システム
 
-## 🤝 コントリビューション
-1. フォーク
-2. フィーチャーブランチ作成
-3. コミット
-4. プルリクエスト
+### 目標
+- **月1目標**: ¥13,800（50ユーザー・10人課金）
+- **月3目標**: ¥55,000（200ユーザー・50人課金）
+- **月6目標**: ¥130,000（500ユーザー・120人課金）
+
+## 🤝 開発体制
+- **個人開発**: MVP・収益化優先
+- **AI支援**: Claude Code活用
+- **学習重視**: AWS段階的習得
 
 ## 📄 ライセンス
-Private Repository - All Rights Reserved
+個人開発・収益化プロジェクト - All Rights Reserved
 
-## 📞 サポート
-- Issues: GitHub Issues
-- 開発者: yoshidaagri
+## 📞 サポート・連絡
+- **開発者**: Manabu Yoshida
+- **GitHub**: yoshidaagri
+- **現在状況**: Phase 6.2完了・Phase 6.5準備中
 
 ---
-*Generated by Claude Code on 2025-01-09*
+*🏔️ 札幌特化AI観光ガイド「観光アナライザー」*  
+*Updated: 2025-08-11 - Phase 6.2 Google OAuth UI強化完了*
