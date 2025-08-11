@@ -67,13 +67,13 @@ functions:
           method: ANY
           cors: true
 
-  userManagement:
-    handler: functions/user-management/handler.main
-    events:
-      - http:
-          path: users/{proxy+}
-          method: ANY
-          cors: true
+  # userManagement: # Phase 6.5で再有効化予定（現在未使用のためコメントアウト）
+  #   handler: functions/user-management/handler.main
+  #   events:
+  #     - http:
+  #         path: users/{proxy+}
+  #         method: ANY
+  #         cors: true
 
   imageUpload:
     handler: functions/image-upload/handler.main
@@ -120,7 +120,6 @@ resources:
 
 # custom:
 #   pythonRequirements:
-#     pipCmdExtraArgs:
-#       - --python=/Library/Frameworks/Python.framework/Versions/3.13/bin/python3
+#     pythonBin: python3
 #     zip: true
 #     slim: true

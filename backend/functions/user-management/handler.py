@@ -1,8 +1,18 @@
 import json
 import boto3
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
+
+# JST時刻関数
+def get_jst_now():
+    """現在の日本時間（JST = UTC+9）を取得"""
+    return datetime.utcnow() + timedelta(hours=9)
+
+def get_jst_isoformat():
+    """現在の日本時間をISO形式の文字列で取得"""
+    jst_time = get_jst_now()
+    return jst_time.isoformat() + '+09:00'
 
 
 def main(event, context):
@@ -249,7 +259,7 @@ def update_user_info(user_id, name):
         ExpressionAttributeNames={'#name': 'name'},
         ExpressionAttributeValues={
             ':name': name,
-            ':timestamp': datetime.now().isoformat()
+            ':timestamp': get_jst_isoformat()
         }
     )
 
@@ -326,5 +336,5 @@ def get_user_statistics(user_id):
         'analysisCount': analysis_count,
         'paymentCount': payment_count,
         'totalSpent': total_spent,
-        'generatedAt': datetime.now().isoformat()
+        'generatedAt': get_jst_isoformat()
     }

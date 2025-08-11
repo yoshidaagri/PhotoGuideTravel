@@ -2,7 +2,17 @@ import json
 import boto3
 import stripe
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
+
+# JST時刻関数
+def get_jst_now():
+    """現在の日本時間（JST = UTC+9）を取得"""
+    return datetime.utcnow() + timedelta(hours=9)
+
+def get_jst_isoformat():
+    """現在の日本時間をISO形式の文字列で取得"""
+    jst_time = get_jst_now()
+    return jst_time.isoformat() + '+09:00'
 
 
 def main(event, context):
@@ -213,8 +223,8 @@ def save_payment_record(user_id, payment_id, amount, currency, service_type, sta
         'currency': currency,
         'serviceType': service_type,
         'status': status,
-        'createdAt': datetime.now().isoformat(),
-        'updatedAt': datetime.now().isoformat()
+        'createdAt': get_jst_isoformat(),
+        'updatedAt': get_jst_isoformat()
     }
     
     table.put_item(Item=item)
@@ -237,7 +247,7 @@ def update_payment_status(user_id, payment_id, status):
         ExpressionAttributeNames={'#status': 'status'},
         ExpressionAttributeValues={
             ':status': status,
-            ':timestamp': datetime.now().isoformat()
+            ':timestamp': get_jst_isoformat()
         }
     )
 

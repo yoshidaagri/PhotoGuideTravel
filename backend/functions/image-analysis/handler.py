@@ -2,9 +2,19 @@ import json
 import boto3
 import base64
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 import google.generativeai as genai
+
+# JST時刻関数
+def get_jst_now():
+    """現在の日本時間（JST = UTC+9）を取得"""
+    return datetime.utcnow() + timedelta(hours=9)
+
+def get_jst_isoformat():
+    """現在の日本時間をISO形式の文字列で取得"""
+    jst_time = get_jst_now()
+    return jst_time.isoformat() + '+09:00'
 
 # Usage checking functions (imported from auth handler)
 def check_usage_limit(user_id, user_type='free'):
@@ -50,7 +60,7 @@ def increment_usage_count(user_id):
         table.update_item(
             Key={'user_id': user_id},
             UpdateExpression='ADD monthly_analysis_count :inc, total_analysis_count :inc SET updated_at = :updated',
-            ExpressionAttributeValues={':inc': 1, ':updated': datetime.now().isoformat()}
+            ExpressionAttributeValues={':inc': 1, ':updated': get_jst_isoformat()}
         )
         print(f"Usage count incremented for user: {user_id}")
         return True
@@ -64,7 +74,7 @@ def create_new_user(user_id, email='', display_name='', auth_provider='cognito')
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
         
-        timestamp = datetime.now().isoformat()
+        timestamp = get_jst_isoformat()
         item = {
             'user_id': user_id, 'email': email, 'auth_provider': auth_provider, 'display_name': display_name,
             'profile_picture': '', 'preferred_language': 'ja', 'user_type': 'free', 'premium_expiry': None,
@@ -277,7 +287,7 @@ Please be informative and engaging for travelers.""",
         return {
             'analysis': response.text,
             'language': language,
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': get_jst_isoformat(),
             'model': 'gemini-2.0-flash-exp'
         }
         
@@ -286,7 +296,7 @@ Please be informative and engaging for travelers.""",
         return {
             'analysis': f'Image analysis failed: {str(e)}',
             'language': language,
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': get_jst_isoformat(),
             'error': True
         }
 
@@ -305,7 +315,7 @@ def save_analysis_log(user_id, result, image_data):
         
         item = {
             'userId': user_id,
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': get_jst_isoformat(),
             'analysis': result.get('analysis', ''),
             'language': result.get('language', 'en'),
             'model': result.get('model', 'unknown'),

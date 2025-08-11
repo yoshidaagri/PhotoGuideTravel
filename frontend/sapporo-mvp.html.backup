@@ -8,8 +8,6 @@
     <meta http-equiv="Expires" content="0">
     <title>観光アナライザー</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
-    <!-- Google Fonts for enhanced UI -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css?v=20250811002446">
 </head>
 <body>
@@ -54,6 +52,12 @@
                         <span data-i18n="orDivider">または</span>
                     </div>
                     
+                    <!-- ログイン・サインアップ切り替えボタン -->
+                    <div class="auth-mode-switcher">
+                        <button id="loginModeBtn" class="mode-btn active" data-i18n="login">ログイン</button>
+                        <button id="signupModeBtn" class="mode-btn" data-i18n="signup">新規登録</button>
+                    </div>
+                    
                     <button id="emailLoginBtn" class="email-login-btn" data-i18n="emailLogin">
                         📧 メールでログイン
                     </button>
@@ -62,7 +66,7 @@
                         <p><strong>🎆 新機能</strong></p>
                         <p>• 無料: 月5回まで解析</p>
                         <p>• プレミアム: 無制限利用</p>
-                        <p>• 5言語対応: 🇯🇵/🇰🇷/🇨🇳/🇹🇼/🌍</p>
+                        <p>• 5言語対応: 日本語/🇰🇷/🇨🇳/🇹🇼/🇺🇸</p>
                         <p><small>札幌の店舗・観光地・料理画像をAIが詳しく解析</small></p>
                     </div>
                 </div>
@@ -84,23 +88,23 @@
                     <div class="language-options">
                         <label class="language-option">
                             <input type="radio" name="language" value="ja" checked>
-                            <span class="language-name">🇯🇵 日本語</span>
+                            <span class="language-name">日本語</span>
                         </label>
                         <label class="language-option">
                             <input type="radio" name="language" value="ko">
-                            <span class="language-name">🇰🇷 한국어</span>
+                            <span class="language-name">한국어</span>
                         </label>
                         <label class="language-option">
                             <input type="radio" name="language" value="zh">
-                            <span class="language-name">🇨🇳 简体中文</span>
+                            <span class="language-name">简体中文</span>
                         </label>
                         <label class="language-option">
                             <input type="radio" name="language" value="zh-tw">
-                            <span class="language-name">🇹🇼 繁體中文</span>
+                            <span class="language-name">繁體中文</span>
                         </label>
                         <label class="language-option">
                             <input type="radio" name="language" value="en">
-                            <span class="language-name">🌍 English</span>
+                            <span class="language-name">English</span>
                         </label>
                     </div>
                 </section>
@@ -146,7 +150,7 @@
 
                 <!-- Loading Section -->
                 <section id="loadingSection" class="loading-section hidden">
-                    <div class="simple-loading-spinner"></div>
+                    <div class="loading-spinner">🤖</div>
                     <div class="loading-text" data-i18n="loading">札幌観光AIが解析中...</div>
                     <div class="loading-subtext">
                         <span data-i18n="loadingSubtext">すすきの・大通・札幌グルメ・観光スポット</span><br>
@@ -241,7 +245,6 @@
                 loadingDetail: "詳細な地元情報を分析しています",
                 loginTitle: "観光アナライザー",
                 googleLogin: "Googleでログイン",
-                googleRedirecting: "Googleへリダイレクト中...",
                 emailLogin: "メールでログイン",
                 orDivider: "または",
                 loginProcessing: "認証中...",
@@ -279,7 +282,6 @@
                 loginPassword: "비밀번호",
                 loginButton: "로그인",
                 googleLogin: "Google로 로그인",
-                googleRedirecting: "Google로 리디렉트 중...",
                 emailLogin: "이메일로 로그인", 
                 orDivider: "또는",
                 loginProcessing: "인증중...",
@@ -317,7 +319,6 @@
                 loginPassword: "密码",
                 loginButton: "登录",
                 googleLogin: "Google登录",
-                googleRedirecting: "正在跳转到Google...",
                 emailLogin: "邮箱登录",
                 orDivider: "或者",
                 loginProcessing: "认证中...",
@@ -355,7 +356,6 @@
                 loginPassword: "密碼",
                 loginButton: "登入",
                 googleLogin: "Google登入",
-                googleRedirecting: "正在轉至Google...",
                 emailLogin: "電子郵件登入",
                 orDivider: "或",
                 loginProcessing: "認證中...",
@@ -393,7 +393,6 @@
                 loginPassword: "Password",
                 loginButton: "Login",
                 googleLogin: "Login with Google",
-                googleRedirecting: "Redirecting to Google...",
                 emailLogin: "Login with Email",
                 orDivider: "or",
                 loginProcessing: "Authenticating...",
@@ -640,53 +639,15 @@
 
         // Authentication
         function handleGoogleLogin() {
-            // Add loading state to button
-            const googleBtn = document.getElementById('googleLoginBtn');
-            const originalHTML = googleBtn.innerHTML;
+            // Redirect to Cognito OAuth Google login
+            const cognitoOAuthURL = `https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/authorize` +
+                `?client_id=2tctru78c2epl4mbhrt8asd55e` +
+                `&response_type=code` +
+                `&scope=email+openid+profile` +
+                `&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}` +
+                `&identity_provider=Google`;
             
-            // Get current language for loading text
-            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
-            const t = translations[currentLanguage];
-            
-            // Set loading state with enhanced UI
-            googleBtn.innerHTML = `
-                <div class="loading-spinner"></div>
-                <span>${t.googleRedirecting}</span>
-            `;
-            googleBtn.disabled = true;
-            googleBtn.classList.add('loading');
-            
-            // Auto-logout before Google login to ensure clean session
-            console.log('🚨 Auto-logout before Google login...');
-            
-            // Clear all existing sessions and tokens
-            isLoggedIn = false;
-            sessionStorage.removeItem('sapporoAuth');
-            sessionStorage.removeItem('sapporoUser');
-            sessionStorage.removeItem('accessToken');
-            sessionStorage.removeItem('userInfo');
-            sessionStorage.removeItem('emergency-login-token');
-            localStorage.removeItem('sapporoAuth');
-            localStorage.removeItem('sapporoUser');
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('userInfo');
-            
-            console.log('✅ Session cleared, proceeding to Google OAuth...');
-            
-            // Add slight delay for better UX
-            setTimeout(() => {
-                // Use Cognito OAuth but with better UX
-                const cognitoOAuthURL = `https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/login` +
-                    `?client_id=2tctru78c2epl4mbhrt8asd55e` +
-                    `&response_type=code` +
-                    `&scope=email+openid+profile` +
-                    `&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}` +
-                    `&identity_provider=Google` +
-                    `&prompt=select_account`; // Force account selection for better UX
-                
-                console.log('🚀 Redirecting to Cognito Google OAuth:', cognitoOAuthURL);
-                window.location.href = cognitoOAuthURL;
-            }, 800);
+            window.location.href = cognitoOAuthURL;
         }
         
         function handleEmailLogin(e) {
@@ -705,11 +666,11 @@
                 
                 <!-- 言語選択 -->
                 <div class="language-selector" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ja" ${currentLanguage === 'ja' ? 'checked' : ''}> 🇯🇵 日本語</label>
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ko" ${currentLanguage === 'ko' ? 'checked' : ''}> 🇰🇷 한국어</label>
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh" ${currentLanguage === 'zh' ? 'checked' : ''}> 🇨🇳 简体中文</label>
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh-tw" ${currentLanguage === 'zh-tw' ? 'checked' : ''}> 🇹🇼 繁體中文</label>
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="en" ${currentLanguage === 'en' ? 'checked' : ''}> 🌍 English</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ja" ${currentLanguage === 'ja' ? 'checked' : ''}> 日本語</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ko" ${currentLanguage === 'ko' ? 'checked' : ''}> 한국어</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh" ${currentLanguage === 'zh' ? 'checked' : ''}> 简体中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh-tw" ${currentLanguage === 'zh-tw' ? 'checked' : ''}> 繁體中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="en" ${currentLanguage === 'en' ? 'checked' : ''}> English</label>
                 </div>
                 
                 <!-- ログイン/サインアップ切り替え -->
@@ -1141,59 +1102,39 @@
             const code = urlParams.get('code');
             const error = urlParams.get('error');
             
-            console.log('🔍 OAuth callback received:', { code: code ? 'present' : 'missing', error });
-            
             if (error) {
-                console.error('❌ OAuth error:', error);
+                console.error('OAuth error:', error);
                 alert('ログインに失敗しました: ' + error);
                 return;
             }
             
             if (code) {
-                console.log('✅ OAuth code received, exchanging for tokens...');
                 // Exchange code for tokens with Cognito
                 exchangeCodeForTokens(code)
                     .then(tokens => {
-                        console.log('✅ Token exchange successful:', {
-                            has_access_token: !!tokens.access_token,
-                            has_email: !!tokens.email,
-                            has_user_id: !!tokens.user_id
-                        });
-                        
                         // Store tokens and user info
                         sessionStorage.setItem('sapporoAuth', 'true');
                         sessionStorage.setItem('accessToken', tokens.access_token);
-                        sessionStorage.setItem('sapporoUser', tokens.display_name || tokens.email || 'Google User');
-                        sessionStorage.setItem('userInfo', JSON.stringify({
-                            user_id: tokens.user_id,
-                            email: tokens.email,
-                            display_name: tokens.display_name
-                        }));
+                        sessionStorage.setItem('sapporoUser', tokens.email || 'Google User');
                         
                         // Clean URL and show main app
                         window.history.replaceState({}, document.title, window.location.pathname);
                         isLoggedIn = true;
                         showMainApp();
-                        updateHeaderUserInfo(); // Update header with correct user info
                         
                         // Create user record if new user
-                        console.log('🔧 Proceeding to create user...');
                         createUserIfNeeded(tokens);
                     })
                     .catch(error => {
-                        console.error('❌ Token exchange error:', error);
+                        console.error('Token exchange error:', error);
                         alert('ログインに失敗しました');
                     });
-            } else {
-                console.log('ℹ️ No OAuth code found in URL');
             }
         }
         
         async function exchangeCodeForTokens(code) {
             const tokenUrl = 'https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/token';
             const redirectUri = window.location.origin + window.location.pathname;
-            
-            console.log('🔧 Exchanging code for tokens...', { tokenUrl, redirectUri, code: code.substring(0, 20) + '...' });
             
             const response = await fetch(tokenUrl, {
                 method: 'POST',
@@ -1208,91 +1149,44 @@
                 })
             });
             
-            console.log('📋 Token response status:', response.status);
-            
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error('❌ Token exchange failed:', errorText);
-                throw new Error('Token exchange failed: ' + errorText);
+                throw new Error('Token exchange failed');
             }
             
             const tokens = await response.json();
-            console.log('✅ Tokens received:', Object.keys(tokens));
             
-            // Get user info from Cognito OAuth userinfo endpoint
-            console.log('🔧 Getting user info from Cognito OAuth userinfo endpoint...');
-            const userInfoUrl = 'https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/userInfo';
-            const userResponse = await fetch(userInfoUrl, {
+            // Get user info from access token
+            const userResponse = await fetch(`${API_BASE_URL}/auth/user-info`, {
                 headers: {
                     'Authorization': `Bearer ${tokens.access_token}`
                 }
             });
             
-            console.log('📋 User info response status:', userResponse.status);
-            
             if (userResponse.ok) {
                 const userInfo = await userResponse.json();
-                console.log('✅ User info received from Cognito:', {
-                    email: userInfo.email,
-                    name: userInfo.name,
-                    sub: userInfo.sub,
-                    username: userInfo.username
-                });
                 tokens.email = userInfo.email;
-                tokens.display_name = userInfo.name || userInfo.given_name || userInfo.email;
-                tokens.user_id = userInfo.username || userInfo.sub;
-            } else {
-                const errorText = await userResponse.text();
-                console.warn('⚠️ User info fetch failed:', errorText);
-                // Fallback to decoded token info if available
-                try {
-                    const payload = JSON.parse(atob(tokens.access_token.split('.')[1]));
-                    console.log('🔧 Fallback: Using token payload:', payload);
-                    tokens.email = payload.email || 'unknown@example.com';
-                    tokens.display_name = payload.name || payload.given_name || 'Google User';
-                    tokens.user_id = payload.sub || payload.username;
-                } catch (e) {
-                    console.warn('⚠️ Could not decode token payload:', e);
-                }
+                tokens.display_name = userInfo.display_name;
             }
             
             return tokens;
         }
         
         async function createUserIfNeeded(tokens) {
-            console.log('🔧 Creating user if needed...', {
-                email: tokens.email,
-                display_name: tokens.display_name,
-                has_access_token: !!tokens.access_token,
-                user_id: tokens.user_id
-            });
-            
             try {
-                const response = await fetch(`${API_BASE_URL}/auth/create-user`, {
+                await fetch(`${API_BASE_URL}/auth/create-user`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${tokens.access_token}`
                     },
                     body: JSON.stringify({
-                        user_id: tokens.user_id,
                         email: tokens.email,
                         display_name: tokens.display_name,
                         auth_provider: 'google'
                     })
                 });
-                
-                console.log('✅ Create user API response status:', response.status);
-                
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.warn('⚠️ Create user API error:', errorText);
-                } else {
-                    const result = await response.json();
-                    console.log('✅ User created successfully:', result);
-                }
             } catch (error) {
-                console.error('❌ User creation error:', error);
+                console.log('User creation error (may already exist):', error);
             }
         }
         
@@ -1596,40 +1490,6 @@
             loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        // URL自動リンク変換関数
-        function convertUrlsToLinks(text) {
-            // URL正規表現パターン（http/https対応）
-            const urlPattern = /(https?:\/\/[^\s<>"]{2,})/gi;
-            
-            return text.replace(urlPattern, function(url) {
-                // 末尾の句読点を除去
-                let cleanUrl = url.replace(/[.,;!?）】\]}]+$/, '');
-                let punctuation = url.substring(cleanUrl.length);
-                
-                return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="analysis-link">${cleanUrl}</a>${punctuation}`;
-            });
-        }
-
-        // テキストをHTMLに変換（改行とURLリンク化）
-        function formatAnalysisText(text) {
-            // HTMLエスケープ（XSS対策）
-            const escapeHtml = (unsafe) => {
-                return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            };
-            
-            // テキストをエスケープしてから改行をBRタグに変換
-            let escaped = escapeHtml(text);
-            let withLineBreaks = escaped.replace(/\n/g, '<br>');
-            
-            // URLをリンクに変換
-            return convertUrlsToLinks(withLineBreaks);
-        }
-
         function showResults(success, responseText, uploadInfo = null) {
             loadingSection.classList.add('hidden');
             resultsSection.classList.remove('hidden');
@@ -1668,8 +1528,7 @@
                 content = `❌ ${responseText}`;
             }
             
-            // テキストを整形してHTMLとして挿入（URLを自動リンク化）
-            document.getElementById('resultsContent').innerHTML = formatAnalysisText(content);
+            document.getElementById('resultsContent').textContent = content;
             
             // Scroll to results
             resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });

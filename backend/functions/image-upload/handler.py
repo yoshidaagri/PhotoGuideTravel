@@ -2,8 +2,22 @@ import json
 import boto3
 import base64
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
+
+# JST時刻ユーティリティ関数（Lambda内実装）
+def get_jst_now():
+    """現在の日本時間（JST = UTC+9）を取得"""
+    return datetime.utcnow() + timedelta(hours=9)
+
+def get_jst_isoformat():
+    """現在の日本時間をISO形式の文字列で取得"""
+    jst_time = get_jst_now()
+    return jst_time.isoformat() + '+09:00'
+
+def get_jst_timestamp():
+    """ファイル名用のタイムスタンプ（JST）を取得"""
+    return get_jst_now().strftime('%Y%m%d_%H%M%S')
 
 def main(event, context):
     """
@@ -84,7 +98,7 @@ def upload_to_s3(image_data, filename, user_id):
         raise Exception(f"Invalid base64 image data: {str(e)}")
     
     # ユニークなファイル名生成
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    timestamp = get_jst_timestamp()
     unique_id = str(uuid.uuid4())[:8]
     file_extension = filename.split('.')[-1].lower() if '.' in filename else 'jpg'
     s3_filename = f"{timestamp}_{unique_id}.{file_extension}"
@@ -134,7 +148,7 @@ def save_image_metadata(s3_key, s3_url, user_id, filename, analysis_type, langua
     table = dynamodb.Table(table_name)
     
     image_id = str(uuid.uuid4())
-    timestamp = datetime.now().isoformat()
+    timestamp = get_jst_isoformat()
     
     # 返答文の先頭200文字を保存
     analysis_summary = ""
@@ -195,7 +209,7 @@ def update_image_with_analysis(image_id, analysis_result):
                 ':summary': analysis_summary,
                 ':truncated': response_truncated,
                 ':status': 'analyzed',
-                ':analyzed_at': datetime.now().isoformat()
+                ':analyzed_at': get_jst_isoformat()
             }
         )
         return True

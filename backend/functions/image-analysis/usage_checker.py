@@ -4,6 +4,16 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 import os
 
+# JST時刻関数
+def get_jst_now():
+    """現在の日本時間（JST = UTC+9）を取得"""
+    return datetime.utcnow() + timedelta(hours=9)
+
+def get_jst_isoformat():
+    """現在の日本時間をISO形式の文字列で取得"""
+    jst_time = get_jst_now()
+    return jst_time.isoformat() + '+09:00'
+
 def check_usage_limit(user_id, user_type='free'):
     """
     ユーザーの解析使用制限をチェック
@@ -111,7 +121,7 @@ def check_premium_user_validity(user_id, user_data):
         else:
             expiry_date = premium_expiry
             
-        current_time = datetime.now()
+        current_time = get_jst_now()
         
         if current_time > expiry_date:
             # 期限切れ → 無料ユーザーに降格
@@ -145,7 +155,7 @@ def create_new_user(user_id, email='', display_name='', auth_provider='cognito')
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
         
-        timestamp = datetime.now().isoformat()
+        timestamp = get_jst_isoformat()
         
         item = {
             'user_id': user_id,
@@ -182,7 +192,7 @@ def increment_usage_count(user_id):
             UpdateExpression='ADD monthly_analysis_count :inc, total_analysis_count :inc SET updated_at = :updated',
             ExpressionAttributeValues={
                 ':inc': 1,
-                ':updated': datetime.now().isoformat()
+                ':updated': get_jst_isoformat()
             }
         )
         
@@ -205,7 +215,7 @@ def downgrade_to_free(user_id):
             ExpressionAttributeValues={
                 ':type': 'free',
                 ':expiry': None,
-                ':updated': datetime.now().isoformat()
+                ':updated': get_jst_isoformat()
             }
         )
         

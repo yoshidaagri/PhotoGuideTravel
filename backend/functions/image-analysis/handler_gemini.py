@@ -1,11 +1,25 @@
 import json
 import os
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 import urllib.request
 import urllib.parse
 import boto3
 from decimal import Decimal
+
+# JST時刻ユーティリティ関数（Lambda内実装）
+def get_jst_now():
+    """現在の日本時間（JST = UTC+9）を取得"""
+    return datetime.utcnow() + timedelta(hours=9)
+
+def get_jst_isoformat():
+    """現在の日本時間をISO形式の文字列で取得"""
+    jst_time = get_jst_now()
+    return jst_time.isoformat() + '+09:00'
+
+def get_jst_timestamp():
+    """ファイル名用のタイムスタンプ（JST）を取得"""
+    return get_jst_now().strftime('%Y%m%d_%H%M%S')
 
 # Cognitoクライアント初期化
 cognito_client = boto3.client('cognito-idp', region_name='ap-northeast-1')
@@ -52,7 +66,7 @@ def create_new_user(user_id, email='', display_name='', auth_provider='cognito')
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
         
-        timestamp = datetime.now().isoformat()
+        timestamp = get_jst_isoformat()
         item = {
             'user_id': user_id, 'email': email, 'auth_provider': auth_provider, 'display_name': display_name,
             'profile_picture': '', 'preferred_language': 'ja', 'user_type': 'free', 'premium_expiry': None,
@@ -80,7 +94,7 @@ def increment_usage_count(user_id):
             UpdateExpression='ADD monthly_analysis_count :inc, total_analysis_count :inc SET updated_at = :updated',
             ExpressionAttributeValues={
                 ':inc': 1,
-                ':updated': datetime.now().isoformat()
+                ':updated': get_jst_isoformat()
             }
         )
         
@@ -329,7 +343,7 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
             return {
                 'analysis': analysis_text,
                 'language': language,
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': get_jst_isoformat(),
                 'model': 'gemini-2.0-flash-exp',
                 'status': 'success'
             }
@@ -362,7 +376,7 @@ def update_image_with_analysis(image_id, analysis_result):
                 ':summary': analysis_summary,
                 ':truncated': response_truncated,
                 ':status': 'analyzed',
-                ':analyzed_at': datetime.now().isoformat()
+                ':analyzed_at': get_jst_isoformat()
             }
         )
         print(f"Successfully updated analysis for image_id: {image_id}")
@@ -503,7 +517,7 @@ def generate_enhanced_mock_analysis(language='ja', analysis_type='store'):
     return {
         'analysis': analysis_text,
         'language': language,
-        'timestamp': datetime.now().isoformat(),
+        'timestamp': get_jst_isoformat(),
         'model': 'sapporo-tourism-ai-enhanced',
         'status': 'success'
     }
@@ -512,158 +526,277 @@ def generate_enhanced_mock_analysis(language='ja', analysis_type='store'):
 def get_store_tourism_prompts():
     """店舗・観光施設分析用プロンプト"""
     return {
-        'ja': """あなたは札幌観光のエキスパートガイドです。この画像を詳しく分析し、札幌の魅力を最大限に伝える観光ガイドとして回答してください。
+        'ja': """あなたは札幌生まれの地元の方です。この画像を詳しく分析し、札幌の魅力を最大限に伝える観光ガイドとして回答してください。
 
 🏔️ **札幌観光AI解析** 🏔️
 
+**重要な分析指示:**
+1. まず画像に写っている要素（建物、看板、人物、料理、風景など）を具体的に特定してください
+2. 看板や文字が見える場合は、それを読み取ってgoogleで検索して店名・場所・概要を調査してください
+3. 建築様式、装飾、雰囲気から場所のタイプを推測してください
+4. 実在する場所の場合は、正確な情報を提供してください
+5. 画像に写っているものが札幌のものでない場合は、札幌ではないと断りながら解説してください
+6. 画像の要素のURLが特定できた場合、URLを載せてください。googleで検索してであるお店の公式サイト、観光案内Webや食べログが良いです
+7. 画像に映る看板は複数ある場合があるので、総合的に判断してください。
+8. 回答の初めから場所・エリアで開始して、はい分かりましたというような文章は入れないでください。
+
 **📍 場所・エリア特定**
+- 画像から読み取れる具体的な店名・施設名を明記
 - 札幌市内の具体的な地区・エリアを特定（すすきの・大通・円山・豊平・白石・北区・手稲など）
 - 最寄り地下鉄駅（南北線・東西線・東豊線）との位置関係
 - JR札幌駅・新千歳空港からのアクセス情報
+- 具体的な住所（判明している場合）
 
-**🎌 札幌の名所・観光スポット**
-- さっぽろ雪まつり（2月開催、大通・すすきの・つどーむ会場）
-- 大通公園（札幌市のシンボル、季節ごとのイベント）
-- すすきの繁華街（北海道最大の歓楽街、グルメ・夜景）
-- 円山公園・北海道神宮（桜の名所、パワースポット）
-- サッポロビール園・ファクトリー（ジンギスカンとビール）
-- 札幌時計台・テレビ塔（歴史的建造物、札幌のランドマーク）
-- 白い恋人パーク・六花亭本店（北海道スイーツの聖地）
-
-**🍜 道民グルメ・食文化**
-- 札幌ラーメン：味噌ラーメン発祥地（白樺山荘・えびそば一幻・麺屋彩未）
-- ジンギスカン：だるま本店・ひつじ倶楽部・サッポロビール園
-- 海鮮グルメ：二条市場・札幌場外市場・勝手丼・海鮮居酒屋
-- 北海道スイーツ：六花亭（マルセイバターサンド）・ルタオ（チーズケーキ）・きのとや・ロイズ
-- 地ビール・酒造：サッポロビール・千歳鶴・北海道ワイン
-- ソウルフード：スープカレー・よつ葉牛乳・十勝産食材
+**🗣️ 言語サポート**
+- 英語対応の可否とレベル
+- 中国語・韓国語対応状況
+- 翻訳アプリで見せるべき重要フレーズ
 
 **💰 料金・アクセス情報**
-- 入場料・価格帯：（具体的な料金を円で表示）
+- 入場料・価格帯：（画像から推測できる場合は具体的な料金を円で表示）
+- 料理の価格帯：（メニューが見える場合は具体的に）
 - 追加料金：（ガイド・写真撮影・特別メニューなど）
 - アクセス方法：（交通手段・所要時間）
-- 営業時間：
-- 周辺の見どころ：
+- 営業時間：（看板等から読み取れる場合）
+- 定休日：（判明している場合）
+- 周辺の見どころ：（徒歩圏内の観光スポット）
 
-札幌の本当の魅力をお伝えし、忘れられない旅の思い出作りをお手伝いします！""",
+**❄️ 季節別の準備**
+- 現在の気温と適切な服装
+- 防寒具のレンタル・購入場所
+- 路面状況と転倒防止対策
+- 季節特有の注意点
 
-        'ko': """당신은 삿포로 관광 전문가 가이드입니다. 이 이미지를 자세히 분석하고 삿포로의 매력을 최대한 전달하는 관광 가이드로서 답변해주세요.
+**🌟 おすすめポイント**
+- この場所・料理の特徴的な魅力
+- 地元民からの評判
+- 観光客に人気の理由
+- 撮影スポットとしての価値
+
+**⚠️ 注意事項**
+- 混雑時間帯
+- 予約の必要性
+- 服装規定（あれば）
+- 外国語対応状況
+""",
+
+        'ko': """당신은 삿포로 태생의 지역 주민입니다. 이 이미지를 자세히 분석하고 샿포로의 매력을 최대한 전달하는 관광 가이드로서 답변해주세요.
 
 🏔️ **삿포로 관광 AI 분석** 🏔️
 
+**중요한 분석 지시사항:**
+1. 먼저 이미지에 보이는 요소(건물, 간판, 사람, 요리, 풍경 등)를 구체적으로 파악해주세요
+2. 간판이나 문자가 보이면 그것을 읽어서 구글로 검색하여 점포명・장소・개요를 조사해주세요
+3. 건축 양식, 장식, 분위기로부터 장소의 타입을 추측해주세요
+4. 실재하는 장소인 경우 정확한 정보를 제공해주세요
+5. 이미지의 대상이 삿포로가 아닌 경우, 삿포로가 아니라고 명시하며 설명해주세요
+6. 이미지 요소의 URL을 특정할 수 있다면 URL을 게재해주세요. 구글로 검색하여 찾은 매장의 공식 사이트, 관광안내 웹사이트나 타베로그가 좋습니다
+7. 이미지에 나타나는 간판은 여러 개 있을 수 있으므로 종합적으로 판단해주세요.
+8. 답변은 처음부터 장소・지역으로 시작하고, '네 알겠습니다'와 같은 문장은 넣지 마세요.
+
 **📍 위치・지역 특정**
+- 이미지에서 읽을 수 있는 구체적인 점포명・시설명을 명기
 - 삿포로시 내 구체적인 지구・지역 특정 (스스키노・오도리・마루야마・토요히라・시로이시・키타구・테이네 등)
 - 가장 가까운 지하철역 (남북선・동서선・토호선)과의 위치 관계
 - JR삿포로역・신치토세공항에서의 접근 정보
+- 구체적인 주소 (판명된 경우)
 
-**🎌 삿포로 명소・관광지**
-- 삿포로 눈축제 (2월 개최: 오도리・스스키노・츠도무 회장)
-- 오도리 공원 (삿포로의 상징, 계절별 이벤트)
-- 스스키노 번화가 (홋카이도 최대 유흥가, 그루메・야경)
-- 마루야마 공원・홋카이도 신궁 (벚꽃 명소, 파워 스팟)
-- 삿포로 맥주원・팩토리 (징기스칸과 맥주 체험)
-
-**🍜 홋카이도 그루메・음식 문화**
-- 삿포로 라멘: 된장라멘 발상지 (시라카바 산소, 에비소바 이치겐, 멘야 사이미)
-- 징기스칸: 다루마 혼텐, 히츠지 클럽, 삿포로 맥주원
-- 해산물 그루메: 니조 시장, 삿포로 조가이 시장, 카이센동
+**🗣️ 언어 서포트**
+- 영어 대응 가능 여부와 레벨
+- 중국어・한국어 대응 상황
+- 번역 앱으로 보여줄 중요한 프레이즈
 
 **💰 요금・접근 정보**
-- 입장료・가격대: (구체적 요금을 엔으로 표시, 원 환산 목안)
+- 입장료・가격대: (이미지에서 추측 가능한 경우 구체적 요금을 엔으로 표시)
+- 요리 가격대: (메뉴가 보이는 경우 구체적으로)
 - 추가요금: (가이드・사진촬영・특별메뉴 등)
 - 접근방법: (교통수단・소요시간)
-- 영업시간:
-- 주변 볼거리:
+- 영업시간: (간판 등에서 읽을 수 있는 경우)
+- 정기휴일: (판명된 경우)
+- 주변 볼거리: (도보권 내 관광지)
+
+**❄️ 계절별 준비사항**
+- 현재 기온과 적절한 복장
+- 방한용품 렌탈・구입 장소
+- 노면 상황과 낙상 방지 대책
+- 계절 특유의 주의점
+
+**🌟 추천 포인트**
+- 이 장소・요리의 특징적인 매력
+- 현지인들의 평판
+- 관광객에게 인기 있는 이유
+- 촬영 스팟으로서의 가치
+
+**⚠️ 주의사항**
+- 혼잡 시간대
+- 예약의 필요성
+- 복장 규정 (있는 경우)
+- 외국어 대응 상황
 
 진정한 삿포로를 체험하고 잊을 수 없는 여행 추억을 만들어보세요!""",
 
-        'zh': """您是札幌旅游专家导游。请详细分析这张图像，作为旅游向导最大程度地传达札幌的魅力。
+        'zh': """您是札幌出生的当地人。请详细分析这张图像，作为旅游向导最大程度地传达札幌的魅力。
 
 🏔️ **札幌旅游AI分析** 🏔️
 
-**📍 位置・地区特定**
-- 札幌市内具体地区・区域特定（薄野・大通・圆山・丰平・白石・北区・手稻等）
+**重要分析指示：**
+1. 首先请具体识别图像中显示的元素（建筑、招牌、人物、料理、风景等）
+2. 如果能看到招牌或文字，请读取并通过Google搜索调查店名・地点・概要
+3. 从建筑风格、装饰、氛围推测场所的类型
+4. 如果是实际存在的地点，请提供准确信息
+5. 如果图像中的内容不是札幌的，请说明不是札幌并进行解说
+6. 如果能特定图像元素的URL，请载入URL。通过Google搜索找到的店铺官方网站、旅游指南网站或食べログ（Tabelog）最佳
+7. 图像中可能有多个招牌，请综合判断。
+8. 请从场所・区域开始回答，不要加入"好的我明白了"之类的开场白。
+
+**📍 地点・区域特定**
+- 明确记载从图像中可读取的具体店名・设施名
+- 特定札幌市内的具体地区・区域（薄野・大通・圆山・丰平・白石・北区・手稻等）
 - 与最近地铁站（南北线・东西线・东丰线）的位置关系
 - 从JR札幌站・新千岁机场的交通信息
+- 具体地址（如果能确定）
 
-**🎌 札幌名所・观光景点**
-- 札幌雪祭（2月举办：大通・薄野・TSUDOME会场）
-- 大通公园（札幌象征，四季活动）
-- 薄野繁华街（北海道最大娱乐区，美食・夜景）
-- 圆山公园・北海道神宫（赏樱名所，能量景点）
-- 札幌啤酒园・工厂（成吉思汗烤肉与啤酒）
-
-**🍜 北海道美食・饮食文化**
-- 札幌拉面：味噌拉面发源地（白桦山庄・虾味拉面一幻・面屋彩未）
-- 成吉思汗烤肉：达摩本店・羊俱乐部・札幌啤酒园
-- 海鲜美食：二条市场・札幌场外市场・海鲜丼
+**🗣️ 语言支持**
+- 英语应对可否及水平
+- 中文・韩语应对状况
+- 使用翻译APP时应展示的重要短语
 
 **💰 费用・交通信息**
-- 门票・价格区间：（具体费用以日元显示，人民币换算参考）
+- 门票・价格区间：（如果能从图像推测，请用日元显示具体费用）
+- 料理价格区间：（如果能看到菜单请具体说明）
 - 附加费用：（导游・拍照・特别菜单等）
 - 交通方式：（交通工具・所需时间）
-- 营业时间：
-- 周边景点：
+- 营业时间：（如果能从招牌等读取）
+- 定休日：（如果能确定）
+- 周边景点：（步行范围内的观光景点）
 
-体验真正的札幌，创造难忘的旅行回忆！""",
+**❄️ 季节性准备**
+- 当前气温和适合的服装
+- 防寒用品的租赁・购买地点
+- 路面状况和防滑对策
+- 季节特有的注意事项
 
-        'zh-tw': """您是札幌觀光專家導遊。請詳細分析這張圖像，作為旅遊向導最大程度地傳達札幌的魅力。
+**🌟 推荐要点**
+- 此地点・料理的特色魅力
+- 当地人的评价
+- 受游客欢迎的理由
+- 作为拍照地点的价值
+
+**⚠️ 注意事项**
+- 拥挤时间段
+- 预约的必要性
+- 着装规定（如有）
+- 外语应对状况
+
+为您传达札幌的真正魅力，帮助您创造难忘的旅行回忆！""",
+
+        'zh-tw': """您是札幌出生的當地人。請詳細分析這張圖像，作為旅遊向導最大程度地傳達札幌的魅力。
 
 🏔️ **札幌觀光AI分析** 🏔️
 
-**📍 位置・地區特定**
-- 札幌市內具體地區・區域特定（薄野・大通・圓山・豐平・白石・北區・手稻等）
+**重要分析指示：**
+1. 首先請具體識別圖像中顯示的元素（建築、招牌、人物、料理、風景等）
+2. 如果能看到招牌或文字，請讀取並透過Google搜尋調查店名・地點・概要
+3. 從建築風格、裝飾、氛圍推測場所的類型
+4. 如果是實際存在的地點，請提供準確資訊
+5. 如果圖像中的內容不是札幌的，請說明不是札幌並進行解說
+6. 如果能特定圖像元素的URL，請載入URL。透過Google搜尋找到的店鋪官方網站、旅遊指南網站或食べログ（Tabelog）最佳
+7. 圖像中可能有多個招牌，請綜合判斷。
+8. 請從場所・區域開始回答，不要加入「好的我明白了」之類的開場白。
+
+**📍 地點・區域特定**
+- 明確記載從圖像中可讀取的具體店名・設施名
+- 特定札幌市內的具體地區・區域（薄野・大通・圓山・豐平・白石・北區・手稻等）
 - 與最近地鐵站（南北線・東西線・東豐線）的位置關係
 - 從JR札幌站・新千歲機場的交通資訊
+- 具體地址（如果能確定）
 
-**🎌 札幌名所・觀光景點**
-- 札幌雪祭（2月舉辦：大通・薄野・TSUDOME會場）
-- 大通公園（札幌象徵，四季活動）
-- 薄野繁華街（北海道最大娛樂區，美食・夜景）
-- 圓山公園・北海道神宮（賞櫻名所，能量景點）
-- 札幌啤酒園・工廠（成吉思汗烤肉與啤酒）
-
-**🍜 北海道美食・飲食文化**
-- 札幌拉麵：味噌拉麵發源地（白樺山莊・蝦味拉麵一幻・麵屋彩未）
-- 成吉思汗烤肉：達摩本店・羊俱樂部・札幌啤酒園
-- 海鮮美食：二條市場・札幌場外市場・海鮮丼
+**🗣️ 語言支援**
+- 英語應對可否及水準
+- 中文・韓語應對狀況
+- 使用翻譯APP時應展示的重要短語
 
 **💰 費用・交通資訊**
-- 門票・價格區間：（具體費用以日圓顯示，台幣換算參考）
+- 門票・價格區間：（如果能從圖像推測，請用日圓顯示具體費用）
+- 料理價格區間：（如果能看到菜單請具體說明）
 - 附加費用：（導遊・拍照・特別菜單等）
 - 交通方式：（交通工具・所需時間）
-- 營業時間：
-- 周邊景點：
+- 營業時間：（如果能從招牌等讀取）
+- 定休日：（如果能確定）
+- 周邊景點：（步行範圍內的觀光景點）
 
-體驗真正的札幌，創造難忘的旅行回憶！""",
+**❄️ 季節性準備**
+- 當前氣溫和適合的服裝
+- 防寒用品的租賃・購買地點
+- 路面狀況和防滑對策
+- 季節特有的注意事項
 
-        'en': """You are an expert Sapporo tourism guide. Analyze this image in detail and provide comprehensive tourism guidance showcasing Sapporo's attractions.
+**🌟 推薦要點**
+- 此地點・料理的特色魅力
+- 當地人的評價
+- 受遊客歡迎的理由
+- 作為拍照地點的價值
+
+**⚠️ 注意事項**
+- 擁擠時間段
+- 預約的必要性
+- 著裝規定（如有）
+- 外語應對狀況
+
+為您傳達札幌的真正魅力，幫助您創造難忘的旅行回憶！""",
+
+        'en': """You are a native-born local resident of Sapporo. Analyze this image in detail and provide comprehensive tourism guidance showcasing Sapporo's attractions.
 
 🏔️ **SAPPORO TOURISM AI ANALYSIS** 🏔️
 
+**Important Analysis Instructions:**
+1. First, specifically identify elements shown in the image (buildings, signs, people, food, scenery, etc.)
+2. If signs or text are visible, read them and research store names/locations/details through Google search
+3. Infer the type of location from architectural style, decorations, and atmosphere
+4. For real existing locations, provide accurate information
+5. If the image content is not from Sapporo, clarify it's not Sapporo while explaining
+6. If URLs of image elements can be identified, include the URLs. Official websites of stores found through Google search, tourism guide websites or Tabelog are preferred
+7. There may be multiple signs in the image, so please make a comprehensive judgment.
+8. Start your response directly with the location/area, and do not include phrases like "Yes, I understand" at the beginning.
+
 **📍 Location & Area Identification**
-- Specific districts in Sapporo (Susukino, Odori, Maruyama, Toyohira, Shiroishi, Kita-ku, Teine, etc.)
+- Clearly state specific store names/facility names readable from the image
+- Identify specific districts/areas in Sapporo (Susukino, Odori, Maruyama, Toyohira, Shiroishi, Kita-ku, Teine, etc.)
 - Nearest subway stations (Nanboku, Tozai, Toho Lines) and location relationships
 - Access from JR Sapporo Station and New Chitose Airport
+- Specific address (if determinable)
 
-**🎌 Sapporo Attractions & Landmarks**
-- Sapporo Snow Festival (February: Odori, Susukino, Tsudome venues)
-- Odori Park (Sapporo's symbol, seasonal events throughout the year)
-- Susukino Entertainment District (Hokkaido's largest nightlife area)
-- Maruyama Park & Hokkaido Shrine (cherry blossom spot, spiritual power spot)
-- Sapporo Beer Garden & Factory (Genghis Khan and beer experience)
-
-**🍜 Hokkaido Gourmet & Food Culture**
-- Sapporo Ramen: Birthplace of miso ramen (Shirakaba Sanso, Ebisoba Ichigen, Menya Saimi)
-- Genghis Khan: Daruma Honten, Hitsuji Club, Sapporo Beer Garden
-- Seafood Delicacies: Nijo Market, Sapporo Jogai Market, kaisendon
+**🗣️ Language Support**
+- English support availability and level
+- Chinese/Korean language support status
+- Important phrases to show using translation apps
 
 **💰 Fee & Access Information**
-- Admission fees/price range: (specific fees in JPY with USD conversion estimate)
+- Admission fees/price range: (if inferable from image, show specific fees in JPY)
+- Food price range: (if menu is visible, provide specifics)
 - Additional charges: (guide, photography, special menus, etc.)
 - Access methods: (transportation, travel time)
-- Operating hours:
-- Nearby attractions:
+- Operating hours: (if readable from signs, etc.)
+- Regular holidays: (if determinable)
+- Nearby attractions: (tourist spots within walking distance)
+
+**❄️ Seasonal Preparations**
+- Current temperature and appropriate clothing
+- Cold weather gear rental/purchase locations
+- Road conditions and slip prevention measures
+- Season-specific precautions
+
+**🌟 Recommended Points**
+- Distinctive attractions of this location/cuisine
+- Local reputation
+- Reasons for tourist popularity
+- Value as a photo spot
+
+**⚠️ Important Notes**
+- Crowded time periods
+- Reservation necessity
+- Dress codes (if any)
+- Foreign language support status
 
 Experience authentic Sapporo and create unforgettable travel memories!"""
     }
@@ -692,12 +825,6 @@ def get_menu_analysis_prompts():
 - 税込み・税別の表記確認
 - セットメニュー・単品の価格比較
 - お得情報・割引・クーポン情報
-
-**🏪 店舗・注文情報**
-- 営業時間・定休日・連絡先
-- 注文方法・支払い方法（現金・カード・電子マネー対応）
-- 席数・予約の可否・待ち時間の目安
-- 特別サービス（テイクアウト・デリバリー等）
 
 **🗣️ 実用フレーズ・注文方法**
 - 基本的な注文フレーズ（日本語・ローマ字・英語併記）
@@ -863,18 +990,20 @@ Providing detailed support so overseas visitors can enjoy Sapporo gourmet with c
 def get_store_summary_instructions():
     """店舗・観光地分析用要約指示"""
     return {
-        'ja': "\n\n**重要**: 上記の分析内容を600文字以内で要約してください。\n\n**出力形式**:\n1. **📍場所・エリア**: 札幌市内の具体的な場所を特定\n2. **🍜グルメ・食事**: 関連する札幌グルメ情報\n3. **💰料金・アクセス情報**: 入場料・価格帯、追加料金、アクセス方法、営業時間、周辺の見どころ\n4. **🎯おすすめ**: 周辺観光スポット・体験\n5. **💡検索候補**: 不明な場合は類似スポット名を3つ提示\n\n特に場所が不明確な場合は、画像の特徴から推測できる札幌市内の候補地を具体的に提示してください。",
-        'ko': "\n\n**중요**: 위 분석 내용을 600자 이내로 요약해주세요.\n\n**출력 형식**:\n1. **📍장소・지역**: 삿포로시내 구체적 장소 특정\n2. **🍜그루메・음식**: 관련 삿포로 그루메 정보\n3. **💰요금・접근정보**: 입장료・가격대, 추가요금, 접근방법, 영업시간, 주변 볼거리\n4. **🎯추천**: 주변 관광스팟・체험\n5. **💡검색 후보**: 불명확한 경우 유사 스팟명 3개 제시\n\n특히 장소가 불명확한 경우, 이미지 특징에서 추측 가능한 삿포로시내 후보지를 구체적으로 제시해주세요.",
-        'zh': "\n\n**重要**: 请在600字内总结上述分析内容。\n\n**输出格式**:\n1. **📍场所・区域**: 札幌市内具体场所特定\n2. **🍜美食・餐饮**: 相关札幌美食信息\n3. **💰费用・交通信息**: 门票・价格区间, 附加费用, 交通方式, 营业时间, 周边景点\n4. **🎯推荐**: 周边观光景点・体验\n5. **💡搜索候选**: 不明确时提供3个类似景点名\n\n特别是场所不明确时，请根据图像特征推测札幌市内的具体候选地点。",
-        'en': "\n\n**Important**: Summarize the above analysis within 600 characters.\n\n**Output Format**:\n1. **📍Location・Area**: Identify specific places in Sapporo\n2. **🍜Gourmet・Food**: Related Sapporo cuisine information\n3. **💰Fee・Access Information**: Admission fees/price range, additional charges, access methods, operating hours, nearby attractions\n4. **🎯Recommendations**: Nearby tourist spots・experiences\n5. **💡Search Candidates**: Provide 3 similar spot names if unclear\n\nEspecially when location is unclear, please suggest specific candidate locations in Sapporo based on image features."
+        'ja': "\n\n**重要**: 上記の分析内容を600文字以内で要約してください。\n\n**出力形式**:\n1. **📍場所・エリア**: 札幌市内の具体的な場所を特定\n2. **💡検索候補**: 不明な場合は類似スポット名を3つ提示\n\n特に場所が不明確な場合は、画像の特徴から推測できる札幌市内の候補地を具体的に提示してください。",
+        'ko': "\n\n**중요**: 위 분석 내용을 600자 이내로 요약해주세요.\n\n**출력 형식**:\n1. **📍장소・지역**: 삿포로시내 구체적 장소 특정\n2. **💡검색 후보**: 불명확한 경우 유사 스팟명 3개 제시\n\n특히 장소가 불명확한 경우, 이미지 특징에서 추측 가능한 삿포로시내 후보지를 구체적으로 제시해주세요.",
+        'zh': "\n\n**重要**: 请在600字内总结上述分析内容。\n\n**输出格式**:\n1. **📍场所・区域**: 札幌市内具体场所特定\n2. **💡搜索候选**: 不明确时提供3个类似景点名\n\n特别是场所不明确时，请根据图像特征推测札幌市内的具体候选地点。",
+        'zh-tw': "\n\n**重要**: 請在600字內總結上述分析內容。\n\n**輸出格式**:\n1. **📍場所・區域**: 札幌市內具體場所特定\n2. **💡搜尋候選**: 不明確時提供3個類似景點名\n\n特別是場所不明確時，請根據圖像特徵推測札幌市內的具體候選地點。",
+        'en': "\n\n**Important**: Summarize the above analysis within 600 characters.\n\n**Output Format**:\n1. **📍Location・Area**: Identify specific places in Sapporo\n2. **💡Search Candidates**: Provide 3 similar spot names if unclear\n\nEspecially when location is unclear, please suggest specific candidate locations in Sapporo based on image features."
     }
 
 
 def get_menu_summary_instructions():
     """看板・メニュー分析用要約指示"""
     return {
-        'ja': "\n\n**重要**: 上記の分析内容を600文字以内で要約してください。\n\n**出力形式**:\n1. **📋文字情報**: 看板・メニューから読み取った日本語文字と翻訳\n2. **🍽️料理詳細**: 各料理の具材・調理法・特徴・おすすめ\n3. **💰価格情報**: メニュー価格・税込/別・セット料金・お得情報\n4. **🏪店舗情報**: 営業時間・注文方法・支払い方法・席数等\n5. **🗣️実用フレーズ**: 基本注文フレーズ・指差し会話・役立つ表現\n\n特に海外の方が安心して注文できるよう、具体的で実用的な情報を中心にまとめてください。",
-        'ko': "\n\n**중요**: 위 분석 내용을 600자 이내로 요약해주세요.\n\n**출력 형식**:\n1. **📋문자정보**: 간판・메뉴에서 읽은 일본어 문자와 번역\n2. **🍽️요리상세**: 각 요리의 재료・조리법・특징・추천\n3. **💰가격정보**: 메뉴 가격・세금포함/별도・세트요금・할인정보\n4. **🏪상점정보**: 영업시간・주문방법・결제방법・좌석수 등\n5. **🗣️실용문구**: 기본 주문 문구・손가락 대화・유용한 표현\n\n특히 해외 방문객이 안심하고 주문할 수 있도록 구체적이고 실용적인 정보를 중심으로 정리해주세요.",
-        'zh': "\n\n**重要**: 请在600字内总结上述分析内容。**必须用简体中文回答。**\n\n**输出格式**:\n1. **📋文字信息**: 招牌・菜单读取的日语文字和翻译\n2. **🍽️料理详情**: 各菜品的食材・烹饪法・特色・推荐\n3. **💰价格信息**: 菜单价格・含税/不含税・套餐费用・优惠信息\n4. **🏪店铺信息**: 营业时间・点餐方法・付款方式・座位数等\n5. **🗣️实用短语**: 基本点餐短语・手指对话・有用表达\n\n特别要让海外游客能够安心点餐，请以具体实用的信息为中心进行整理。**请务必使用简体中文回答，不要使用英语。**",
-        'en': "\n\n**Important**: Summarize the above analysis within 600 characters.\n\n**Output Format**:\n1. **📋Text Information**: Japanese text read from signs/menus and translation\n2. **🍽️Cuisine Details**: Ingredients, cooking methods, characteristics, recommendations for each dish\n3. **💰Price Information**: Menu prices, tax inclusive/exclusive, set meal costs, discount info\n4. **🏪Store Information**: Business hours, ordering methods, payment methods, seating capacity, etc.\n5. **🗣️Practical Phrases**: Basic ordering phrases, pointing conversation, useful expressions\n\nFocus on specific and practical information to help overseas visitors order with confidence."
+        'ja': "\n\n**重要**: 上記の分析内容を600文字以内で要約してください。\n\n**出力形式**:\n1. **📋文字情報**: 看板・メニューから読み取った日本語文字と翻訳\n2. **🍽️料理詳細**: 各料理の具材・調理法・特徴・おすすめ\n3. **💰価格情報**: メニュー価格・税込/別・セット料金・お得情報\n4. **🗣️実用フレーズ**: 基本注文フレーズ・指差し会話・役立つ表現\n\n特に海外の方が安心して注文できるよう、具体的で実用的な情報を中心にまとめてください。",
+        'ko': "\n\n**중요**: 위 분석 내용을 600자 이내로 요약해주세요.\n\n**출력 형식**:\n1. **📋문자정보**: 간판・메뉴에서 읽은 일본어 문자와 번역\n2. **🍽️요리상세**: 각 요리의 재료・조리법・특징・추천\n3. **💰가격정보**: 메뉴 가격・세금포함/별도・세트요금・할인정보\n4. **🗣️실용문구**: 기본 주문 문구・손가락 대화・유용한 표현\n\n특히 해외 방문객이 안심하고 주문할 수 있도록 구체적이고 실용적인 정보를 중심으로 정리해주세요.",
+        'zh': "\n\n**重要**: 请在600字内总结上述分析内容。**必须用简体中文回答。**\n\n**输出格式**:\n1. **📋文字信息**: 招牌・菜单读取的日语文字和翻译\n2. **🍽️料理详情**: 各菜品的食材・烹饪法・特色・推荐\n3. **💰价格信息**: 菜单价格・含税/不含税・套餐费用・优惠信息\n4. **🗣️实用短语**: 基本点餐短语・手指对话・有用表达\n\n特别要让海外游客能够安心点餐，请以具体实用的信息为中心进行整理。**请务必使用简体中文回答，不要使用英语。**",
+        'zh-tw': "\n\n**重要**: 請在600字內總結上述分析內容。**必須用繁體中文回答。**\n\n**輸出格式**:\n1. **📋文字資訊**: 招牌・菜單讀取的日語文字和翻譯\n2. **🍽️料理詳情**: 各菜品的食材・烹飪法・特色・推薦\n3. **💰價格資訊**: 菜單價格・含稅/不含稅・套餐費用・優惠資訊\n4. **🗣️實用短語**: 基本點餐短語・手指對話・有用表達\n\n特別要讓海外遊客能夠安心點餐，請以具體實用的資訊為中心進行整理。**請務必使用繁體中文回答，不要使用英語。**",
+        'en': "\n\n**Important**: Summarize the above analysis within 600 characters.\n\n**Output Format**:\n1. **📋Text Information**: Japanese text read from signs/menus and translation\n2. **🍽️Cuisine Details**: Ingredients, cooking methods, characteristics, recommendations for each dish\n3. **💰Price Information**: Menu prices, tax inclusive/exclusive, set meal costs, discount info\n4. **🗣️Practical Phrases**: Basic ordering phrases, pointing conversation, useful expressions\n\nFocus on specific and practical information to help overseas visitors order with confidence."
     }
