@@ -1,0 +1,71 @@
+/* Minimal Cognito Hosted UI Customization */
+
+/* Main background */
+.background-customizable {
+    background: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 30%, #81C784 70%, #66BB6A 100%) !important;
+}
+
+/* Input fields styling */
+.inputField-customizable {
+    border-radius: 8px !important;
+    border: 2px solid #e1e5e9 !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+    transition: border-color 0.3s ease !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.inputField-customizable:focus {
+    border-color: #4285f4 !important;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1) !important;
+}
+
+/* Button styling */
+.button-customizable {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border: 2px solid #dadce0 !important;
+    border-radius: 12px !important;
+    padding: 12px 20px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    color: #1a73e8 !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+}
+
+.button-customizable:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e8f0fe 100%) !important;
+    border-color: #4285f4 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2) !important;
+}
+
+/* Main container */
+.banner-customizable {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(46, 125, 50, 0.15) !important;
+    backdrop-filter: blur(10px) !important;
+    padding: 2rem !important;
+    border: none !important;
+}
+
+/* Logo enhancement */
+.logo-customizable {
+    max-width: 150px !important;
+    height: auto !important;
+    margin: 0 auto 1rem auto !important;
+    display: block !important;
+}
+
+/* Link styling */
+.link-customizable {
+    color: #1a73e8 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+}
+
+.link-customizable:hover {
+    color: #4285f4 !important;
+    text-decoration: underline !important;
+}

@@ -1,0 +1,9 @@
+/* Basic Cognito Hosted UI Customization */
+
+.background-customizable {
+    background: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 30%, #81C784 70%, #66BB6A 100%) !important;
+}
+
+.logo-customizable {
+    max-width: 200px !important;
+}

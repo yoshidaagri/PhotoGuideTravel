@@ -8,6 +8,8 @@
     <meta http-equiv="Expires" content="0">
     <title>観光アナライザー</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+    <!-- Google Fonts for enhanced UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css?v=20250811002446">
 </head>
 <body>
@@ -50,12 +52,6 @@
                     <!-- メールログイン -->
                     <div class="divider">
                         <span data-i18n="orDivider">または</span>
-                    </div>
-                    
-                    <!-- ログイン・サインアップ切り替えボタン -->
-                    <div class="auth-mode-switcher">
-                        <button id="loginModeBtn" class="mode-btn active" data-i18n="login">ログイン</button>
-                        <button id="signupModeBtn" class="mode-btn" data-i18n="signup">新規登録</button>
                     </div>
                     
                     <button id="emailLoginBtn" class="email-login-btn" data-i18n="emailLogin">
@@ -245,6 +241,7 @@
                 loadingDetail: "詳細な地元情報を分析しています",
                 loginTitle: "観光アナライザー",
                 googleLogin: "Googleでログイン",
+                googleRedirecting: "Googleへリダイレクト中...",
                 emailLogin: "メールでログイン",
                 orDivider: "または",
                 loginProcessing: "認証中...",
@@ -282,6 +279,7 @@
                 loginPassword: "비밀번호",
                 loginButton: "로그인",
                 googleLogin: "Google로 로그인",
+                googleRedirecting: "Google로 리디렉트 중...",
                 emailLogin: "이메일로 로그인", 
                 orDivider: "또는",
                 loginProcessing: "인증중...",
@@ -319,6 +317,7 @@
                 loginPassword: "密码",
                 loginButton: "登录",
                 googleLogin: "Google登录",
+                googleRedirecting: "正在跳转到Google...",
                 emailLogin: "邮箱登录",
                 orDivider: "或者",
                 loginProcessing: "认证中...",
@@ -356,6 +355,7 @@
                 loginPassword: "密碼",
                 loginButton: "登入",
                 googleLogin: "Google登入",
+                googleRedirecting: "正在轉至Google...",
                 emailLogin: "電子郵件登入",
                 orDivider: "或",
                 loginProcessing: "認證中...",
@@ -393,6 +393,7 @@
                 loginPassword: "Password",
                 loginButton: "Login",
                 googleLogin: "Login with Google",
+                googleRedirecting: "Redirecting to Google...",
                 emailLogin: "Login with Email",
                 orDivider: "or",
                 loginProcessing: "Authenticating...",
@@ -639,6 +640,22 @@
 
         // Authentication
         function handleGoogleLogin() {
+            // Add loading state to button
+            const googleBtn = document.getElementById('googleLoginBtn');
+            const originalHTML = googleBtn.innerHTML;
+            
+            // Get current language for loading text
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            // Set loading state with enhanced UI
+            googleBtn.innerHTML = `
+                <div class="loading-spinner"></div>
+                <span>${t.googleRedirecting}</span>
+            `;
+            googleBtn.disabled = true;
+            googleBtn.classList.add('loading');
+            
             // Auto-logout before Google login to ensure clean session
             console.log('🚨 Auto-logout before Google login...');
             
@@ -656,15 +673,20 @@
             
             console.log('✅ Session cleared, proceeding to Google OAuth...');
             
-            // Redirect to Cognito OAuth Google login
-            const cognitoOAuthURL = `https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/login` +
-                `?client_id=2tctru78c2epl4mbhrt8asd55e` +
-                `&response_type=code` +
-                `&scope=email+openid+profile` +
-                `&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}` +
-                `&identity_provider=Google`;
-            
-            window.location.href = cognitoOAuthURL;
+            // Add slight delay for better UX
+            setTimeout(() => {
+                // Use Cognito OAuth but with better UX
+                const cognitoOAuthURL = `https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/login` +
+                    `?client_id=2tctru78c2epl4mbhrt8asd55e` +
+                    `&response_type=code` +
+                    `&scope=email+openid+profile` +
+                    `&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}` +
+                    `&identity_provider=Google` +
+                    `&prompt=select_account`; // Force account selection for better UX
+                
+                console.log('🚀 Redirecting to Cognito Google OAuth:', cognitoOAuthURL);
+                window.location.href = cognitoOAuthURL;
+            }, 800);
         }
         
         function handleEmailLogin(e) {
@@ -1119,39 +1141,59 @@
             const code = urlParams.get('code');
             const error = urlParams.get('error');
             
+            console.log('🔍 OAuth callback received:', { code: code ? 'present' : 'missing', error });
+            
             if (error) {
-                console.error('OAuth error:', error);
+                console.error('❌ OAuth error:', error);
                 alert('ログインに失敗しました: ' + error);
                 return;
             }
             
             if (code) {
+                console.log('✅ OAuth code received, exchanging for tokens...');
                 // Exchange code for tokens with Cognito
                 exchangeCodeForTokens(code)
                     .then(tokens => {
+                        console.log('✅ Token exchange successful:', {
+                            has_access_token: !!tokens.access_token,
+                            has_email: !!tokens.email,
+                            has_user_id: !!tokens.user_id
+                        });
+                        
                         // Store tokens and user info
                         sessionStorage.setItem('sapporoAuth', 'true');
                         sessionStorage.setItem('accessToken', tokens.access_token);
-                        sessionStorage.setItem('sapporoUser', tokens.email || 'Google User');
+                        sessionStorage.setItem('sapporoUser', tokens.display_name || tokens.email || 'Google User');
+                        sessionStorage.setItem('userInfo', JSON.stringify({
+                            user_id: tokens.user_id,
+                            email: tokens.email,
+                            display_name: tokens.display_name
+                        }));
                         
                         // Clean URL and show main app
                         window.history.replaceState({}, document.title, window.location.pathname);
                         isLoggedIn = true;
                         showMainApp();
+                        updateHeaderUserInfo(); // Update header with correct user info
                         
                         // Create user record if new user
+                        console.log('🔧 Proceeding to create user...');
                         createUserIfNeeded(tokens);
                     })
                     .catch(error => {
-                        console.error('Token exchange error:', error);
+                        console.error('❌ Token exchange error:', error);
                         alert('ログインに失敗しました');
                     });
+            } else {
+                console.log('ℹ️ No OAuth code found in URL');
             }
         }
         
         async function exchangeCodeForTokens(code) {
             const tokenUrl = 'https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/token';
             const redirectUri = window.location.origin + window.location.pathname;
+            
+            console.log('🔧 Exchanging code for tokens...', { tokenUrl, redirectUri, code: code.substring(0, 20) + '...' });
             
             const response = await fetch(tokenUrl, {
                 method: 'POST',
@@ -1166,44 +1208,91 @@
                 })
             });
             
+            console.log('📋 Token response status:', response.status);
+            
             if (!response.ok) {
-                throw new Error('Token exchange failed');
+                const errorText = await response.text();
+                console.error('❌ Token exchange failed:', errorText);
+                throw new Error('Token exchange failed: ' + errorText);
             }
             
             const tokens = await response.json();
+            console.log('✅ Tokens received:', Object.keys(tokens));
             
-            // Get user info from access token
-            const userResponse = await fetch(`${API_BASE_URL}/auth/user-info`, {
+            // Get user info from Cognito OAuth userinfo endpoint
+            console.log('🔧 Getting user info from Cognito OAuth userinfo endpoint...');
+            const userInfoUrl = 'https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/userInfo';
+            const userResponse = await fetch(userInfoUrl, {
                 headers: {
                     'Authorization': `Bearer ${tokens.access_token}`
                 }
             });
             
+            console.log('📋 User info response status:', userResponse.status);
+            
             if (userResponse.ok) {
                 const userInfo = await userResponse.json();
+                console.log('✅ User info received from Cognito:', {
+                    email: userInfo.email,
+                    name: userInfo.name,
+                    sub: userInfo.sub,
+                    username: userInfo.username
+                });
                 tokens.email = userInfo.email;
-                tokens.display_name = userInfo.display_name;
+                tokens.display_name = userInfo.name || userInfo.given_name || userInfo.email;
+                tokens.user_id = userInfo.username || userInfo.sub;
+            } else {
+                const errorText = await userResponse.text();
+                console.warn('⚠️ User info fetch failed:', errorText);
+                // Fallback to decoded token info if available
+                try {
+                    const payload = JSON.parse(atob(tokens.access_token.split('.')[1]));
+                    console.log('🔧 Fallback: Using token payload:', payload);
+                    tokens.email = payload.email || 'unknown@example.com';
+                    tokens.display_name = payload.name || payload.given_name || 'Google User';
+                    tokens.user_id = payload.sub || payload.username;
+                } catch (e) {
+                    console.warn('⚠️ Could not decode token payload:', e);
+                }
             }
             
             return tokens;
         }
         
         async function createUserIfNeeded(tokens) {
+            console.log('🔧 Creating user if needed...', {
+                email: tokens.email,
+                display_name: tokens.display_name,
+                has_access_token: !!tokens.access_token,
+                user_id: tokens.user_id
+            });
+            
             try {
-                await fetch(`${API_BASE_URL}/auth/create-user`, {
+                const response = await fetch(`${API_BASE_URL}/auth/create-user`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${tokens.access_token}`
                     },
                     body: JSON.stringify({
+                        user_id: tokens.user_id,
                         email: tokens.email,
                         display_name: tokens.display_name,
                         auth_provider: 'google'
                     })
                 });
+                
+                console.log('✅ Create user API response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.warn('⚠️ Create user API error:', errorText);
+                } else {
+                    const result = await response.json();
+                    console.log('✅ User created successfully:', result);
+                }
             } catch (error) {
-                console.log('User creation error (may already exist):', error);
+                console.error('❌ User creation error:', error);
             }
         }
         
