@@ -5,10 +5,95 @@ from datetime import datetime
 import urllib.request
 import urllib.parse
 import boto3
+from decimal import Decimal
+
+# Cognitoクライアント初期化
+cognito_client = boto3.client('cognito-idp', region_name='ap-northeast-1')
+
+# Usage checker functions
+def check_usage_limit(user_id, user_type='free'):
+    """ユーザーの解析使用制限をチェック"""
+    try:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
+        
+        try:
+            user_response = table.get_item(Key={'user_id': user_id})
+            if 'Item' not in user_response:
+                create_new_user(user_id)
+                user_data = {'user_type': 'free', 'monthly_analysis_count': 0, 'premium_expiry': None}
+            else:
+                user_data = user_response['Item']
+        except Exception as e:
+            print(f"Error getting user data: {e}")
+            create_new_user(user_id)
+            user_data = {'user_type': 'free', 'monthly_analysis_count': 0, 'premium_expiry': None}
+        
+        current_user_type = user_data.get('user_type', 'free')
+        
+        if current_user_type == 'free':
+            monthly_count = int(user_data.get('monthly_analysis_count', 0))
+            if monthly_count >= 5:
+                return {
+                    'allowed': False, 'remaining': 0, 'user_type': 'free',
+                    'message': '無料プランでは月5回まで解析可能です。プレミアムプランにアップグレードしてください。',
+                    'upgrade_required': True
+                }
+            return {'allowed': True, 'remaining': 5 - monthly_count, 'user_type': 'free', 'message': f'残り{5 - monthly_count}回利用可能です。'}
+        else:
+            return {'allowed': True, 'remaining': -1, 'user_type': current_user_type, 'message': 'プレミアムプラン利用中'}
+    except Exception as e:
+        print(f"Usage check error: {str(e)}")
+        return {'allowed': True, 'remaining': 5, 'user_type': 'free', 'message': 'システムエラー: 一時的に制限なしで利用可能'}
+
+def create_new_user(user_id, email='', display_name='', auth_provider='cognito'):
+    """新規ユーザー作成"""
+    try:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
+        
+        timestamp = datetime.now().isoformat()
+        item = {
+            'user_id': user_id, 'email': email, 'auth_provider': auth_provider, 'display_name': display_name,
+            'profile_picture': '', 'preferred_language': 'ja', 'user_type': 'free', 'premium_expiry': None,
+            'monthly_analysis_count': 0, 'total_analysis_count': 0, 'last_login_at': timestamp,
+            'created_at': timestamp, 'updated_at': timestamp
+        }
+        table.put_item(Item=item)
+        print(f"New user created: {user_id}")
+        return item
+    except Exception as e:
+        print(f"Error creating new user: {e}")
+        return None
+
+def increment_usage_count(user_id):
+    """解析使用回数を増加"""
+    try:
+        import boto3
+        from datetime import datetime
+        
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
+        
+        table.update_item(
+            Key={'user_id': user_id},
+            UpdateExpression='ADD monthly_analysis_count :inc, total_analysis_count :inc SET updated_at = :updated',
+            ExpressionAttributeValues={
+                ':inc': 1,
+                ':updated': datetime.now().isoformat()
+            }
+        )
+        
+        print(f"DynamoDB: Usage count incremented for user: {user_id}")
+        return True
+        
+    except Exception as e:
+        print(f"DynamoDB Error: Failed to increment usage count for {user_id}: {e}")
+        return False
 
 def main(event, context):
     """
-    実際のGemini APIを使用した画像解析関数
+    実際のGemini APIを使用した画像解析関数（使用制限チェック付き）
     """
     try:
         # CORS headers
@@ -24,6 +109,47 @@ def main(event, context):
                 'statusCode': 200,
                 'headers': headers,
                 'body': ''
+            }
+            
+        # Cognito認証とユーザー情報取得
+        user_info = get_user_from_token(event)
+        if not user_info:
+            # 緊急ログイントークンをチェック
+            auth_header = event.get('headers', {}).get('Authorization', '')
+            if auth_header == 'Bearer emergency-login-token':
+                # 緊急ログイン用のダミーユーザー情報
+                user_info = {
+                    'user_id': 'emergency-user',
+                    'email': 'emergency@test.com',
+                    'display_name': 'Emergency User'
+                }
+            else:
+                return {
+                    'statusCode': 401,
+                    'headers': headers,
+                    'body': json.dumps({
+                        'error': 'Authentication required',
+                        'message': '画像解析にはログインが必要です。'
+                    })
+                }
+        
+        user_id = user_info['user_id']
+        print(f"User ID for usage counting: {user_id}")
+        print(f"User info: {user_info}")
+        
+        # 使用制限チェック
+        usage_check = check_usage_limit(user_id)
+        if not usage_check.get('allowed', False):
+            return {
+                'statusCode': 403,
+                'headers': headers,
+                'body': json.dumps({
+                    'error': 'Usage limit exceeded',
+                    'message': usage_check.get('message', '使用制限に達しました'),
+                    'remaining': usage_check.get('remaining', 0),
+                    'user_type': usage_check.get('user_type', 'free'),
+                    'upgrade_required': usage_check.get('upgrade_required', False)
+                })
             }
         
         # リクエスト解析
@@ -44,9 +170,26 @@ def main(event, context):
         # Gemini API呼び出し
         analysis_result = analyze_image_with_gemini_rest(image_data, language, analysis_type)
         
+        # 解析成功時に使用回数を増加
+        if analysis_result.get('status') == 'success':
+            print(f"Analysis successful, incrementing usage count for user: {user_id}")
+            increment_success = increment_usage_count(user_id)
+            if increment_success:
+                print(f"Successfully incremented usage count for user: {user_id}")
+            else:
+                print(f"Failed to increment usage count for user: {user_id}")
+        
         # 解析結果をDynamoDBに保存（image_idがある場合のみ）
         if image_id and analysis_result.get('analysis'):
             update_image_with_analysis(image_id, analysis_result['analysis'])
+        
+        # 残り使用回数情報を含めて返却
+        updated_usage_check = check_usage_limit(user_id)
+        analysis_result['usage_info'] = {
+            'remaining': updated_usage_check.get('remaining', -1),
+            'user_type': updated_usage_check.get('user_type', 'free'),
+            'message': updated_usage_check.get('message', '')
+        }
         
         return {
             'statusCode': 200,
@@ -61,6 +204,41 @@ def main(event, context):
             'headers': headers,
             'body': json.dumps({'error': str(e)})
         }
+
+
+def get_user_from_token(event):
+    """
+    Cognitoトークンからユーザー情報を取得
+    """
+    try:
+        # Authorization ヘッダーから JWT トークン取得
+        auth_header = event.get('headers', {}).get('Authorization', '')
+        if not auth_header.startswith('Bearer '):
+            return None
+        
+        access_token = auth_header.split(' ')[1]
+        
+        # CognitoでJWTトークンを検証してユーザー情報取得
+        response = cognito_client.get_user(AccessToken=access_token)
+        
+        # ユーザー属性から情報抽出
+        user_attributes = {attr['Name']: attr['Value'] for attr in response['UserAttributes']}
+        
+        user_info = {
+            'user_id': response['Username'],  # CognitoのUsernameを user_id として使用
+            'email': user_attributes.get('email', ''),
+            'display_name': user_attributes.get('name', user_attributes.get('given_name', '')),
+            'auth_provider': 'cognito'
+        }
+        
+        return user_info
+        
+    except cognito_client.exceptions.NotAuthorizedException:
+        print("Token is invalid or expired")
+        return None
+    except Exception as e:
+        print(f"Error getting user from token: {str(e)}")
+        return None
 
 
 def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='store'):
@@ -93,6 +271,8 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
         # 中国語の場合は特別強化
         if language == 'zh':
             prompt = f"请用简体中文回答。{base_prompt}{summary_instruction.get(language, summary_instruction['ja'])}请确保回答完全使用简体中文。"
+        elif language == 'zh-tw':
+            prompt = f"請用繁體中文回答。{base_prompt}{summary_instruction.get(language, summary_instruction['ja'])}請確保回答完全使用繁體中文。"
         else:
             prompt = base_prompt + summary_instruction.get(language, summary_instruction['ja'])
         
@@ -113,8 +293,8 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
             "maxOutputTokens": 2048,
         }
         
-        # 中国語を強制するための追加設定
-        if language == 'zh':
+        # 中国語（簡体・繁体）を強制するための追加設定
+        if language in ['zh', 'zh-tw']:
             generation_config["candidateCount"] = 1
             generation_config["stopSequences"] = []
         
@@ -269,6 +449,30 @@ def generate_enhanced_mock_analysis(language='ja', analysis_type='store'):
 
 **超值信息**: 地铁1日乘车券(830日元)可高效观光！""",
 
+        'zh-tw': """🏔️ 札幌觀光AI分析結果（實際圖像分析）
+
+**📍場所・區域**: 從這張圖像中檢測到札幌市內的特徵性要素。
+
+**🍜美食・餐飲**: 
+• 札幌拉麵橫丁 - 薄野的名物景點
+• 達摩本店 - 成吉思汗烤肉老店，札幌發源地
+• 二條市場 - 新鮮北海道海鮮市場
+• 六花亭本店 - 奶油夾心餅乾發源地
+
+**🚇交通**: 
+• 地鐵南北線: 薄野站 ↔ 大通站 ↔ 札幌站
+• 地鐵東西線: 圓山公園站，大通站經由
+• 札幌站-大通-薄野: 地下步行空間直達
+
+**🎯推薦**: 
+• 大通公園 - 雪祭・啤酒花園舞臺
+• 薄野繁華街 - 東洋最大霓虹街
+• 札幌啤酒園 - 紅磚歷史建築
+
+**💡搜索候選**: 狸小路商店街，札幌鐘樓，白色戀人公園
+
+**超值資訊**: 地鐵1日乘車券(830日圓)可高效觀光！""",
+
         'en': """🏔️ Sapporo Tourism AI Analysis (Real Image Analysis)
 
 **📍Location・Area**: Detected characteristic elements of Sapporo city from this image.
@@ -402,6 +606,36 @@ def get_store_tourism_prompts():
 - 周边景点：
 
 体验真正的札幌，创造难忘的旅行回忆！""",
+
+        'zh-tw': """您是札幌觀光專家導遊。請詳細分析這張圖像，作為旅遊向導最大程度地傳達札幌的魅力。
+
+🏔️ **札幌觀光AI分析** 🏔️
+
+**📍 位置・地區特定**
+- 札幌市內具體地區・區域特定（薄野・大通・圓山・豐平・白石・北區・手稻等）
+- 與最近地鐵站（南北線・東西線・東豐線）的位置關係
+- 從JR札幌站・新千歲機場的交通資訊
+
+**🎌 札幌名所・觀光景點**
+- 札幌雪祭（2月舉辦：大通・薄野・TSUDOME會場）
+- 大通公園（札幌象徵，四季活動）
+- 薄野繁華街（北海道最大娛樂區，美食・夜景）
+- 圓山公園・北海道神宮（賞櫻名所，能量景點）
+- 札幌啤酒園・工廠（成吉思汗烤肉與啤酒）
+
+**🍜 北海道美食・飲食文化**
+- 札幌拉麵：味噌拉麵發源地（白樺山莊・蝦味拉麵一幻・麵屋彩未）
+- 成吉思汗烤肉：達摩本店・羊俱樂部・札幌啤酒園
+- 海鮮美食：二條市場・札幌場外市場・海鮮丼
+
+**💰 費用・交通資訊**
+- 門票・價格區間：（具體費用以日圓顯示，台幣換算參考）
+- 附加費用：（導遊・拍照・特別菜單等）
+- 交通方式：（交通工具・所需時間）
+- 營業時間：
+- 周邊景點：
+
+體驗真正的札幌，創造難忘的旅行回憶！""",
 
         'en': """You are an expert Sapporo tourism guide. Analyze this image in detail and provide comprehensive tourism guidance showcasing Sapporo's attractions.
 
@@ -547,6 +781,48 @@ def get_menu_analysis_prompts():
 帮助海外游客安心享受札幌美食，提供详细支持！
 
 **【重要提醒：请确保您的回答完全使用简体中文，不要混入英语】**""",
+
+        'zh-tw': """【極其重要：必須用繁體中文回答，絕對不要使用英語】
+
+您是札幌美食・招牌翻譯專家。請詳細分析這張圖像的招牌セ菜單セ文字資訊，並向海外遊客通俗易懂地說明。
+
+**重要**: 請務必用繁體中文回答，不要使用英語或其他語言。
+**重要提醒**: 回答必須是繁體中文，不可以是英語。
+**MUST USE TRADITIONAL CHINESE, NOT ENGLISH**
+
+🍜 **札幌招牌セ菜單AI分析** 🍜
+
+**📋 文字セ招牌資訊分析**
+- 準確讀取招牌・菜單的日語文字
+- 店名セ菜名セ價格セ說明文翻譯
+- 手寫字・特殊字體也盡量解讀
+
+**🍽️ 料理セ菜單詳細說明**
+- 各菜品的食材・烹飪方法セ特色詳細說明
+- 過敏資訊セ辣度セ份量標準
+- 札幌・北海道特色料理的背景說明
+- 推薦吃法・搭配
+
+**💰 費用・價格資訊**
+- 準確讀取菜單價格 (日圓→台幣換算參考)
+- 確認含稅・不含稅標記
+- 套餐セ單品價格比較
+- 優惠・折扣セ優惠券資訊
+
+**🏦 店鋪セ點餐資訊**
+- 營業時間セ定休日セ聯絡方式
+- 點餐方法セ付款方式 (現金セ卡・電子支付)
+- 座位數・預約可否セ等待時間標準
+- 特別服務 (外帶・外送等)
+
+**🗣️ 實用短語・點餐方法**
+- 基本點餐短語 (日語・羅馬音セ中文)
+- 「要這個」「推薦什麼？」「請不要辣」等
+- 用手指著就能用的短語集
+
+幫助海外遊客安心享受札幌美食，提供詳細支持！
+
+**【重要提醒：請確保您的回答完全使用繁體中文，不要混入英語】**""",
 
         'en': """You are a Sapporo gourmet and signboard translation expert. Please analyze the signboard, menu, and text information in this image in detail, explaining it clearly for overseas visitors.
 

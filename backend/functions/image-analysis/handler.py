@@ -6,6 +6,124 @@ from datetime import datetime
 from decimal import Decimal
 import google.generativeai as genai
 
+# Usage checking functions (imported from auth handler)
+def check_usage_limit(user_id, user_type='free'):
+    """ユーザーの解析使用制限をチェック"""
+    try:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
+        
+        try:
+            user_response = table.get_item(Key={'user_id': user_id})
+            if 'Item' not in user_response:
+                create_new_user(user_id)
+                user_data = {'user_type': 'free', 'monthly_analysis_count': 0, 'premium_expiry': None}
+            else:
+                user_data = user_response['Item']
+        except Exception as e:
+            print(f"Error getting user data: {e}")
+            create_new_user(user_id)
+            user_data = {'user_type': 'free', 'monthly_analysis_count': 0, 'premium_expiry': None}
+        
+        current_user_type = user_data.get('user_type', 'free')
+        
+        if current_user_type == 'free':
+            monthly_count = int(user_data.get('monthly_analysis_count', 0))
+            if monthly_count >= 5:
+                return {
+                    'allowed': False, 'remaining': 0, 'user_type': 'free',
+                    'message': '無料プランでは月5回まで解析可能です。プレミアムプランにアップグレードしてください。',
+                    'upgrade_required': True
+                }
+            return {'allowed': True, 'remaining': 5 - monthly_count, 'user_type': 'free', 'message': f'残り{5 - monthly_count}回利用可能です。'}
+        else:
+            return {'allowed': True, 'remaining': -1, 'user_type': current_user_type, 'message': 'プレミアムプラン利用中'}
+    except Exception as e:
+        print(f"Usage check error: {str(e)}")
+        return {'allowed': True, 'remaining': 5, 'user_type': 'free', 'message': 'システムエラー: 一時的に制限なしで利用可能'}
+
+def increment_usage_count(user_id):
+    """解析使用回数を増加"""
+    try:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
+        table.update_item(
+            Key={'user_id': user_id},
+            UpdateExpression='ADD monthly_analysis_count :inc, total_analysis_count :inc SET updated_at = :updated',
+            ExpressionAttributeValues={':inc': 1, ':updated': datetime.now().isoformat()}
+        )
+        print(f"Usage count incremented for user: {user_id}")
+        return True
+    except Exception as e:
+        print(f"Error incrementing usage: {e}")
+        return False
+
+def create_new_user(user_id, email='', display_name='', auth_provider='cognito'):
+    """新規ユーザー作成"""
+    try:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
+        
+        timestamp = datetime.now().isoformat()
+        item = {
+            'user_id': user_id, 'email': email, 'auth_provider': auth_provider, 'display_name': display_name,
+            'profile_picture': '', 'preferred_language': 'ja', 'user_type': 'free', 'premium_expiry': None,
+            'monthly_analysis_count': 0, 'total_analysis_count': 0, 'last_login_at': timestamp,
+            'created_at': timestamp, 'updated_at': timestamp
+        }
+        table.put_item(Item=item)
+        print(f"New user created: {user_id}")
+        return item
+    except Exception as e:
+        print(f"Error creating new user: {e}")
+        return None
+
+def get_user_from_token(event):
+    """
+    Cognitoトークンからユーザー情報を取得（緊急ログイントークン対応）
+    """
+    try:
+        # Authorization ヘッダーから JWT トークン取得
+        auth_header = event.get('headers', {}).get('Authorization', '')
+        if not auth_header.startswith('Bearer '):
+            print("No Bearer token found in Authorization header")
+            return None
+        
+        access_token = auth_header.split(' ')[1]
+        print(f"Processing token: {access_token[:50]}...")
+        
+        # 緊急ログイン用トークンのチェック
+        if access_token == 'emergency-login-token':
+            print("Emergency login token detected")
+            return {
+                'user_id': 'emergency-user',
+                'email': 'emergency@test.com',
+                'display_name': 'Emergency User',
+                'auth_provider': 'emergency'
+            }
+        
+        # CognitoでJWTトークンを検証してユーザー情報取得
+        cognito_client = boto3.client('cognito-idp', region_name='ap-northeast-1')
+        response = cognito_client.get_user(AccessToken=access_token)
+        print(f"Cognito user response: {response['Username']}")
+        
+        # ユーザー属性から情報抽出
+        user_attributes = {attr['Name']: attr['Value'] for attr in response['UserAttributes']}
+        
+        user_info = {
+            'user_id': response['Username'],  # CognitoのUsernameを user_id として使用
+            'email': user_attributes.get('email', ''),
+            'display_name': user_attributes.get('name', user_attributes.get('given_name', '')),
+            'auth_provider': 'cognito'
+        }
+        
+        print(f"Extracted user info: {user_info}")
+        return user_info
+        
+    except Exception as e:
+        print(f"Error getting user from token: {str(e)}")
+        return None
+
 
 def main(event, context):
     """
@@ -28,11 +146,39 @@ def main(event, context):
                 'body': ''
             }
         
+        # ユーザー認証とID取得
+        user_info = get_user_from_token(event)
+        if not user_info:
+            return {
+                'statusCode': 401,
+                'headers': headers,
+                'body': json.dumps({'error': 'Authentication required'})
+            }
+        
+        user_id = user_info['user_id']
+        print(f"Processing image analysis for user: {user_id}")
+        
+        # 使用制限チェック
+        usage_check = check_usage_limit(user_id)
+        print(f"Usage check result: {usage_check}")
+        
+        if not usage_check['allowed']:
+            return {
+                'statusCode': 403,
+                'headers': headers,
+                'body': json.dumps({
+                    'error': 'Usage limit exceeded',
+                    'message': 'Free上限に達しました。アップグレードをお願いします',
+                    'user_type': usage_check['user_type'],
+                    'remaining': 0,
+                    'upgrade_required': True
+                })
+            }
+        
         # リクエスト解析
         body = json.loads(event.get('body', '{}'))
         image_data = body.get('image')
         language = body.get('language', 'en')
-        user_id = body.get('userId')
         
         if not image_data:
             return {
@@ -44,9 +190,21 @@ def main(event, context):
         # Google Gemini API呼び出し
         analysis_result = analyze_image_with_gemini(image_data, language)
         
+        # 解析成功時のみ使用回数を増加
+        if not analysis_result.get('error', False):
+            increment_result = increment_usage_count(user_id)
+            print(f"Usage count increment result: {increment_result}")
+        
         # DynamoDB記録
-        if user_id:
-            save_analysis_log(user_id, analysis_result, image_data)
+        save_analysis_log(user_id, analysis_result, image_data)
+        
+        # 使用状況を結果に追加
+        updated_usage = check_usage_limit(user_id)
+        analysis_result['usage_info'] = {
+            'remaining': updated_usage.get('remaining', 0),
+            'user_type': updated_usage.get('user_type', 'free'),
+            'message': updated_usage.get('message', '')
+        }
         
         return {
             'statusCode': 200,

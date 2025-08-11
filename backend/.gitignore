@@ -1,0 +1,46 @@
+# Environment files
+.env
+.env.local
+.env.production
+
+# AWS
+.aws/
+
+# Serverless
+.serverless/
+.build/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Test
+.coverage
+.pytest_cache/
+coverage.xml
