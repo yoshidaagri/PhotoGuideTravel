@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>観光アナライザー</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=20250811002446">
 </head>
 <body>
     <div class="app">
@@ -63,7 +66,7 @@
                         <p><strong>🎆 新機能</strong></p>
                         <p>• 無料: 月5回まで解析</p>
                         <p>• プレミアム: 無制限利用</p>
-                        <p>• 5言語対応: 日本語/🇰🇷/🇨🇳/🇹🇼/🇺🇸</p>
+                        <p>• 5言語対応: 🇯🇵/🇰🇷/🇨🇳/🇹🇼/🌍</p>
                         <p><small>札幌の店舗・観光地・料理画像をAIが詳しく解析</small></p>
                     </div>
                 </div>
@@ -85,23 +88,23 @@
                     <div class="language-options">
                         <label class="language-option">
                             <input type="radio" name="language" value="ja" checked>
-                            <span class="language-name">日本語</span>
+                            <span class="language-name">🇯🇵 日本語</span>
                         </label>
                         <label class="language-option">
                             <input type="radio" name="language" value="ko">
-                            <span class="language-name">한국어</span>
+                            <span class="language-name">🇰🇷 한국어</span>
                         </label>
                         <label class="language-option">
                             <input type="radio" name="language" value="zh">
-                            <span class="language-name">简体中文</span>
+                            <span class="language-name">🇨🇳 简体中文</span>
                         </label>
                         <label class="language-option">
                             <input type="radio" name="language" value="zh-tw">
-                            <span class="language-name">繁體中文</span>
+                            <span class="language-name">🇹🇼 繁體中文</span>
                         </label>
                         <label class="language-option">
                             <input type="radio" name="language" value="en">
-                            <span class="language-name">English</span>
+                            <span class="language-name">🌍 English</span>
                         </label>
                     </div>
                 </section>
@@ -178,6 +181,48 @@
         // State
         let selectedImage = null;
         let isLoggedIn = false;
+        
+        // Message display function - defined early to be available everywhere
+        function showMessage(message, type = 'info') {
+            console.log(`${type.toUpperCase()}: ${message}`);
+            
+            // Create or update message element
+            let messageEl = document.getElementById('message-display');
+            if (!messageEl) {
+                messageEl = document.createElement('div');
+                messageEl.id = 'message-display';
+                messageEl.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    z-index: 10000;
+                    max-width: 400px;
+                    font-weight: 500;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                `;
+                document.body.appendChild(messageEl);
+            }
+            
+            // Set style based on type
+            const styles = {
+                success: 'background: #d1edda; color: #155724; border-left: 4px solid #28a745;',
+                error: 'background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545;',
+                info: 'background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8;'
+            };
+            
+            messageEl.style.cssText += styles[type] || styles.info;
+            messageEl.textContent = message;
+            messageEl.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                if (messageEl) {
+                    messageEl.style.display = 'none';
+                }
+            }, 5000);
+        }
 
         // Translation dictionary for UI internationalization
         const translations = {
@@ -594,8 +639,25 @@
 
         // Authentication
         function handleGoogleLogin() {
+            // Auto-logout before Google login to ensure clean session
+            console.log('🚨 Auto-logout before Google login...');
+            
+            // Clear all existing sessions and tokens
+            isLoggedIn = false;
+            sessionStorage.removeItem('sapporoAuth');
+            sessionStorage.removeItem('sapporoUser');
+            sessionStorage.removeItem('accessToken');
+            sessionStorage.removeItem('userInfo');
+            sessionStorage.removeItem('emergency-login-token');
+            localStorage.removeItem('sapporoAuth');
+            localStorage.removeItem('sapporoUser');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('userInfo');
+            
+            console.log('✅ Session cleared, proceeding to Google OAuth...');
+            
             // Redirect to Cognito OAuth Google login
-            const cognitoOAuthURL = `https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/authorize` +
+            const cognitoOAuthURL = `https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/login` +
                 `?client_id=2tctru78c2epl4mbhrt8asd55e` +
                 `&response_type=code` +
                 `&scope=email+openid+profile` +
@@ -621,11 +683,11 @@
                 
                 <!-- 言語選択 -->
                 <div class="language-selector" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ja" ${currentLanguage === 'ja' ? 'checked' : ''}> 日本語</label>
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ko" ${currentLanguage === 'ko' ? 'checked' : ''}> 한국어</label>
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh" ${currentLanguage === 'zh' ? 'checked' : ''}> 简体中文</label>
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh-tw" ${currentLanguage === 'zh-tw' ? 'checked' : ''}> 繁體中文</label>
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="en" ${currentLanguage === 'en' ? 'checked' : ''}> English</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ja" ${currentLanguage === 'ja' ? 'checked' : ''}> 🇯🇵 日本語</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ko" ${currentLanguage === 'ko' ? 'checked' : ''}> 🇰🇷 한국어</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh" ${currentLanguage === 'zh' ? 'checked' : ''}> 🇨🇳 简体中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh-tw" ${currentLanguage === 'zh-tw' ? 'checked' : ''}> 🇹🇼 繁體中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="en" ${currentLanguage === 'en' ? 'checked' : ''}> 🌍 English</label>
                 </div>
                 
                 <!-- ログイン/サインアップ切り替え -->
@@ -1405,6 +1467,23 @@
                         });
 
                         const responseText = await response.text();
+                        
+                        // Check for usage limit exceeded (403 status)
+                        if (response.status === 403) {
+                            try {
+                                const errorData = JSON.parse(responseText);
+                                if (errorData.upgrade_required) {
+                                    // Show upgrade message and modal
+                                    showMessage(errorData.message || 'Free上限に達しました。アップグレードをお願いします', 'error');
+                                    showUpgradeModal();
+                                    loadingSection.classList.add('hidden');
+                                    return;
+                                }
+                            } catch (e) {
+                                console.error('Error parsing 403 response:', e);
+                            }
+                        }
+                        
                         showResults(response.ok, responseText, imageUploadResult);
                         
                     } catch (error) {
@@ -1439,8 +1518,24 @@
                     const result = JSON.parse(responseText);
                     content = result.analysis || 'データの解析に失敗しました';
                     
-                    // Update user plan display after successful analysis
-                    updateUserPlanDisplay();
+                    // Update user plan display with usage info from response
+                    if (result.usage_info) {
+                        console.log('Updating user plan display with usage info:', result.usage_info);
+                        const userPlan = document.querySelector('.user-plan');
+                        if (userPlan && result.usage_info.user_type === 'free') {
+                            const remaining = result.usage_info.remaining || 0;
+                            userPlan.textContent = `Free (残り${remaining}回)`;
+                            
+                            // Show upgrade button if remaining <= 2
+                            const upgradeBtn = document.querySelector('.upgrade-btn');
+                            if (upgradeBtn) {
+                                upgradeBtn.style.display = remaining <= 2 ? 'inline-block' : 'none';
+                            }
+                        }
+                    } else {
+                        // Fallback: Update user plan display after successful analysis
+                        updateUserPlanDisplay();
+                    }
                 } catch (e) {
                     content = responseText;
                 }
@@ -1505,47 +1600,6 @@
             updateUILanguage(currentLang);
         }
 
-        // Message display function
-        function showMessage(message, type = 'info') {
-            console.log(`${type.toUpperCase()}: ${message}`);
-            
-            // Create or update message element
-            let messageEl = document.getElementById('message-display');
-            if (!messageEl) {
-                messageEl = document.createElement('div');
-                messageEl.id = 'message-display';
-                messageEl.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 12px 20px;
-                    border-radius: 8px;
-                    z-index: 10000;
-                    max-width: 400px;
-                    font-weight: 500;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                `;
-                document.body.appendChild(messageEl);
-            }
-            
-            // Set style based on type
-            const styles = {
-                success: 'background: #d1edda; color: #155724; border-left: 4px solid #28a745;',
-                error: 'background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545;',
-                info: 'background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8;'
-            };
-            
-            messageEl.style.cssText += styles[type] || styles.info;
-            messageEl.textContent = message;
-            messageEl.style.display = 'block';
-            
-            // Auto hide after 5 seconds
-            setTimeout(() => {
-                if (messageEl) {
-                    messageEl.style.display = 'none';
-                }
-            }, 5000);
-        }
 
         // Auto-fill demo credentials on focus (only if elements exist)
         const usernameField = document.getElementById('username');
