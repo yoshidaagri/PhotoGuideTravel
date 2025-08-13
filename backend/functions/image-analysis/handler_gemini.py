@@ -299,7 +299,7 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
         # === 分析タイプによるAPI分岐 ===
         if analysis_type == 'menu':
             # メニュー翻訳の場合は従来のAPIを使用（Search不要）
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-latest:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
             
             # 中国語の場合は特別な設定を追加
             generation_config = {
@@ -331,7 +331,7 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
             
             # タイムアウトは標準の30秒
             timeout_seconds = 30
-            model_name = 'gemini-2.0-flash-latest'
+            model_name = 'gemini-2.0-flash-exp'
             search_enhanced = False
             
         else:  # analysis_type == 'store' または その他
