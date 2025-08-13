@@ -532,13 +532,18 @@ def get_store_tourism_prompts():
 
 **重要な分析指示:**
 1. まず画像に写っている要素（建物、看板、人物、料理、風景など）を具体的に特定してください
-2. 看板や文字が見える場合は、それを読み取ってgoogleで検索して店名・場所・概要を調査してください
+2. 看板や文字が見える場合は、それを正確に読み取ってください
 3. 建築様式、装飾、雰囲気から場所のタイプを推測してください
-4. 実在する場所の場合は、正確な情報を提供してください
-5. 画像に写っている場所・内容を正確に特定し、その地域の情報を提供してください
-6. 画像の要素のURLが特定できた場合、URLを載せてください。googleで検索してであるお店の公式サイト、観光案内Webや食べログが良いです
-7. 画像に映る看板は複数ある場合があるので、総合的に判断してください。
-8. 回答の初めから場所・エリアで開始して、はい分かりましたというような文章は入れないでください。
+4. 店舗や場所の情報を提供する際は、以下のルールに従ってください：
+   - 確実に分かる情報（看板の文字など）と推測を明確に区別する
+   - 場所が特定できない場合は「場所は特定できません」と明記
+   - 住所や詳細情報は「推測」「可能性」という言葉を必ず使用
+5. 存在が確認できない情報は提供せず、「詳細は不明です」と回答
+6. URLは絶対に創作せず、実在が100%確実な場合のみ掲載してください
+7. 画像に映る看板は複数ある場合があるので、総合的に判断してください
+8. 回答の初めから場所・エリアで開始して、はい分かりましたというような文章は入れないでください
+
+**重要**: 存在しない情報を創作してはいけません。不明な点は「不明」と答えてください。
 
 **📍 場所・エリア特定**
 - 画像から読み取れる具体的な店名・施設名を明記
@@ -586,13 +591,18 @@ def get_store_tourism_prompts():
 
 **중요한 분석 지시사항:**
 1. 먼저 이미지에 보이는 요소(건물, 간판, 사람, 요리, 풍경 등)를 구체적으로 파악해주세요
-2. 간판이나 문자가 보이면 그것을 읽어서 구글로 검색하여 점포명・장소・개요를 조사해주세요
+2. 간판이나 문자가 보이면 그것을 정확히 읽어주세요
 3. 건축 양식, 장식, 분위기로부터 장소의 타입을 추측해주세요
-4. 실재하는 장소인 경우 정확한 정보를 제공해주세요
-5. 이미지에 나타난 장소・내용을 정확히 특정하고, 그 지역의 정보를 제공해주세요
-6. 이미지 요소의 URL을 특정할 수 있다면 URL을 게재해주세요. 구글로 검색하여 찾은 매장의 공식 사이트, 관광안내 웹사이트나 타베로그가 좋습니다
+4. 점포나 장소의 정보를 제공할 때는 다음 규칙을 따라주세요:
+   - 확실히 알 수 있는 정보(간판 문자 등)와 추측을 명확히 구별
+   - 장소를 특정할 수 없는 경우 "장소를 특정할 수 없습니다"라고 명기
+   - 주소나 상세 정보는 "추측" "가능성"이라는 단어를 반드시 사용
+5. 존재를 확인할 수 없는 정보는 제공하지 말고 "상세 정보는 불명확합니다"라고 답변
+6. URL은 절대로 창작하지 말고, 실재가 100% 확실한 경우에만 게재해주세요
 7. 이미지에 나타나는 간판은 여러 개 있을 수 있으므로 종합적으로 판단해주세요.
 8. 답변은 처음부터 장소・지역으로 시작하고, '네 알겠습니다'와 같은 문장은 넣지 마세요.
+
+**중요**: 존재하지 않는 정보를 창작해서는 안 됩니다. 불명확한 점은 "불명확"이라고 답변해주세요.
 
 **📍 위치・지역 특정**
 - 이미지에서 읽을 수 있는 구체적인 점포명・시설명을 명기
@@ -641,13 +651,18 @@ def get_store_tourism_prompts():
 
 **重要分析指示：**
 1. 首先请具体识别图像中显示的元素（建筑、招牌、人物、料理、风景等）
-2. 如果能看到招牌或文字，请读取并通过Google搜索调查店名・地点・概要
+2. 如果能看到招牌或文字，请准确地读取它们
 3. 从建筑风格、装饰、氛围推测场所的类型
-4. 如果是实际存在的地点，请提供准确信息
-5. 请准确特定图像中的地点・内容，并提供该地区的信息
-6. 如果能特定图像元素的URL，请载入URL。通过Google搜索找到的店铺官方网站、旅游指南网站或食べログ（Tabelog）最佳
+4. 提供店铺或场所信息时，请遵循以下规则：
+   - 明确区分确实可知的信息（招牌文字等）和推测
+   - 如果无法特定场所，请明确说明"无法特定场所"
+   - 地址或详细信息必须使用"推测""可能"等词汇
+5. 无法确认存在的信息不要提供，请回答"详细信息不明"
+6. 绝对不要创作URL，只有在100%确定实际存在时才提供
 7. 图像中可能有多个招牌，请综合判断。
 8. 请从场所・区域开始回答，不要加入"好的我明白了"之类的开场白。
+
+**重要**：不得创作不存在的信息。不明确的内容请回答"不明确"。
 
 **📍 地点・区域特定**
 - 明确记载从图像中可读取的具体店名・设施名
@@ -696,13 +711,18 @@ def get_store_tourism_prompts():
 
 **重要分析指示：**
 1. 首先請具體識別圖像中顯示的元素（建築、招牌、人物、料理、風景等）
-2. 如果能看到招牌或文字，請讀取並透過Google搜尋調查店名・地點・概要
+2. 如果能看到招牌或文字，請準確地讀取它們
 3. 從建築風格、裝飾、氛圍推測場所的類型
-4. 如果是實際存在的地點，請提供準確資訊
-5. 請準確特定圖像中的地點・內容，並提供該地區的資訊
-6. 如果能特定圖像元素的URL，請載入URL。透過Google搜尋找到的店鋪官方網站、旅遊指南網站或食べログ（Tabelog）最佳
+4. 提供店鋪或場所資訊時，請遵循以下規則：
+   - 明確區分確實可知的資訊（招牌文字等）和推測
+   - 如果無法特定場所，請明確說明「無法特定場所」
+   - 地址或詳細資訊必須使用「推測」「可能」等詞彙
+5. 無法確認存在的資訊不要提供，請回答「詳細資訊不明」
+6. 絕對不要創作URL，只有在100%確定實際存在時才提供
 7. 圖像中可能有多個招牌，請綜合判斷。
 8. 請從場所・區域開始回答，不要加入「好的我明白了」之類的開場白。
+
+**重要**：不得創作不存在的資訊。不明確的內容請回答「不明確」。
 
 **📍 地點・區域特定**
 - 明確記載從圖像中可讀取的具體店名・設施名
@@ -751,13 +771,18 @@ def get_store_tourism_prompts():
 
 **Important Analysis Instructions:**
 1. First, specifically identify elements shown in the image (buildings, signs, people, food, scenery, etc.)
-2. If signs or text are visible, read them and research store names/locations/details through Google search
+2. If signs or text are visible, read them accurately
 3. Infer the type of location from architectural style, decorations, and atmosphere
-4. For real existing locations, provide accurate information
-5. Provide accurate location information based on the image content
-6. If URLs of image elements can be identified, include the URLs. Official websites of stores found through Google search, tourism guide websites or Tabelog are preferred
+4. When providing information about stores or locations, follow these rules:
+   - Clearly distinguish between certain information (sign text, etc.) and speculation
+   - If location cannot be identified, clearly state "Location cannot be determined"
+   - For addresses or detailed information, always use words like "possibly" or "likely"
+5. Do not provide information that cannot be confirmed to exist, answer "Details are unclear"
+6. Never create URLs, only include them when 100% certain they exist
 7. There may be multiple signs in the image, so please make a comprehensive judgment.
 8. Start your response directly with the location/area, and do not include phrases like "Yes, I understand" at the beginning.
+
+**Important**: Do not create non-existent information. Answer "unclear" for uncertain points.
 
 **📍 Location & Area Identification**
 - Clearly state specific store names/facility names readable from the image
