@@ -553,7 +553,7 @@ def get_store_tourism_prompts():
 - 翻訳アプリで見せるべき重要フレーズ
 
 **💰 料金・アクセス情報**
-- 入場料・価格帯：（画像から推測できる場合は具体的な料金を円で表示）
+- 入場料・価格帯：（画像から推測できる場合は現地通貨で表示）
 - 料理の価格帯：（メニューが見える場合は具体的に）
 - 追加料金：（ガイド・写真撮影・特別メニューなど）
 - アクセス方法：（交通手段・所要時間）
@@ -607,7 +607,7 @@ def get_store_tourism_prompts():
 - 번역 앱으로 보여줄 중요한 프레이즈
 
 **💰 요금・접근 정보**
-- 입장료・가격대: (이미지에서 추측 가능한 경우 구체적 요금을 엔으로 표시)
+- 입장료・가격대: (이미지에서 추측 가능한 경우 현지 통화로 표시)
 - 요리 가격대: (메뉴가 보이는 경우 구체적으로)
 - 추가요금: (가이드・사진촬영・특별메뉴 등)
 - 접근방법: (교통수단・소요시간)
@@ -662,7 +662,7 @@ def get_store_tourism_prompts():
 - 使用翻译APP时应展示的重要短语
 
 **💰 费用・交通信息**
-- 门票・价格区间：（如果能从图像推测，请用日元显示具体费用）
+- 门票・价格区间：（如果能从图像推测，请用当地货币显示具体费用）
 - 料理价格区间：（如果能看到菜单请具体说明）
 - 附加费用：（导游・拍照・特别菜单等）
 - 交通方式：（交通工具・所需时间）
@@ -717,7 +717,7 @@ def get_store_tourism_prompts():
 - 使用翻譯APP時應展示的重要短語
 
 **💰 費用・交通資訊**
-- 門票・價格區間：（如果能從圖像推測，請用日圓顯示具體費用）
+- 門票・價格區間：（如果能從圖像推測，請用當地貨幣顯示具體費用）
 - 料理價格區間：（如果能看到菜單請具體說明）
 - 附加費用：（導遊・拍照・特別菜單等）
 - 交通方式：（交通工具・所需時間）
@@ -772,7 +772,7 @@ def get_store_tourism_prompts():
 - Important phrases to show using translation apps
 
 **💰 Fee & Access Information**
-- Admission fees/price range: (if inferable from image, show specific fees in JPY)
+- Admission fees/price range: (if inferable from image, show specific fees in local currency)
 - Food price range: (if menu is visible, provide specifics)
 - Additional charges: (guide, photography, special menus, etc.)
 - Access methods: (transportation, travel time)
@@ -823,10 +823,10 @@ def get_menu_analysis_prompts():
 - メニューの価格を正確に読み取り
 - 税込み・税別の表記確認
 - セットメニュー・単品の価格比較
-- 日本円での価格目安
+- 現地価格
 
 **🗣️ 実用フレーズ・注文方法**
-- 基本的な注文フレーズ（日本語・ローマ字・英語併記）
+- 基本的な注文フレーズ（現地語・ローマ字・日本語併記）
 - 「これください」「おすすめは？」「辛くしないでください」等
 - 指差しで使えるフレーズ集
 
@@ -851,10 +851,10 @@ def get_menu_analysis_prompts():
 - 메뉴 가격 정확히 읽기
 - 세금 포함・별도 표기 확인
 - 세트 메뉴・단품 가격 비교
-- 일본 엔 (원화 환산 참고)
+- 현지 가격 (원화 환산 참고)
 
 **🗣️ 실용 문구・주문 방법**
-- 기본 주문 문구 (일본어・로마자・한국어)
+- 기본 주문 문구 (현지어・로마자・한국어)
 - "이것 주세요" "추천은?" "맵지 않게 해주세요" 등
 - 손가락으로 가리켜 쓸 수 있는 문구집
 
@@ -871,7 +871,7 @@ def get_menu_analysis_prompts():
 🍜 **招牌・菜单AI分析** 🍜
 
 **📋 文字・招牌信息分析**
-- 准确读取招牌・菜单的日语文字
+- 准确读取招牌・菜单的文字
 - 店名・菜名・价格・说明文翻译
 - 手写字・特殊字体也尽量解读
 
@@ -885,10 +885,10 @@ def get_menu_analysis_prompts():
 - 准确读取菜单价格
 - 确认含税・不含税标记
 - 套餐・单品价格比较
-- 日元价格 (人民币换算参考)
+- 当地价格 (人民币换算参考)
 
 **🗣️ 实用短语・点餐方法**
-- 基本点餐短语 (日语・罗马音・中文)
+- 基本点餐短语 (当地语言・罗马音・中文)
 - "要这个" "推荐什么?" "请不要辣" 等
 - 用手指着就能用的短语集
 
@@ -907,7 +907,7 @@ def get_menu_analysis_prompts():
 🍜 **招牌・菜單AI分析** 🍜
 
 **📋 文字・招牌資訊分析**
-- 準確讀取招牌・菜單的日語文字
+- 準確讀取招牌・菜單的文字
 - 店名・菜名・價格・說明文翻譯
 - 手寫字・特殊字體也盡量解讀
 
@@ -921,10 +921,10 @@ def get_menu_analysis_prompts():
 - 準確讀取菜單價格
 - 確認含稅・不含稅標記
 - 套餐・單品價格比較
-- 日圓價格 (台幣換算參考)
+- 當地價格 (台幣換算參考)
 
 **🗣️ 實用短語・點餐方法**
-- 基本點餐短語 (日語・羅馬音・中文)
+- 基本點餐短語 (當地語言・羅馬音・中文)
 - 「要這個」「推薦什麼？」「請不要辣」等
 - 用手指著就能用的短語集
 
@@ -937,7 +937,7 @@ def get_menu_analysis_prompts():
 🍜 **SIGNBOARD & MENU AI ANALYSIS** 🍜
 
 **📋 Text & Signboard Information Analysis**
-- Accurately read Japanese characters on signs and menus
+- Accurately read characters and text on signs and menus
 - Translation of store names, dish names, prices, and descriptions
 - Decode handwritten text and special fonts as much as possible
 
@@ -951,10 +951,10 @@ def get_menu_analysis_prompts():
 - Accurately read menu prices
 - Check tax-inclusive/exclusive notation
 - Set menu vs. single item price comparison
-- JPY prices (USD conversion reference)
+- Local prices (with USD conversion reference)
 
 **🗣️ Practical Phrases & Ordering Methods**
-- Basic ordering phrases (Japanese, romaji, English)
+- Basic ordering phrases (local language, romanization, English)
 - "I'll have this", "What do you recommend?", "Not spicy please", etc.
 - Phrase collection that can be used by pointing
 
