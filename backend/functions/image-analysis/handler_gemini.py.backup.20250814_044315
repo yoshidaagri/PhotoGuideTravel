@@ -296,9 +296,6 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
         print(f"Available languages in summary: {list(summary_instruction.keys())}")
         print(f"Selected base prompt starts with: {base_prompt[:100]}...")
         
-        # === SEARCH AS A TOOL 対応開始 ===
-        # 既存のコードをコメントアウト [ORIGINAL_API_CALL_START]
-        """
         # Gemini REST API リクエスト構築
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
         
@@ -329,48 +326,6 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
             }],
             "generationConfig": generation_config
         }
-        """
-        # [ORIGINAL_API_CALL_END]
-        
-        # Search as a tool 対応の新しいAPI呼び出し [SEARCH_API_CALL_START]
-        # v1alpha APIエンドポイントを使用
-        url = f"https://generativelanguage.googleapis.com/v1alpha/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
-        
-        # 中国語の場合は特別な設定を追加
-        generation_config = {
-            "temperature": 0.7,
-            "topP": 0.8,
-            "topK": 40,
-            "maxOutputTokens": 3000,  # 検索結果を含むため増量
-        }
-        
-        # 中国語（簡体・繁体）を強制するための追加設定
-        if language in ['zh', 'zh-tw']:
-            generation_config["candidateCount"] = 1
-            generation_config["stopSequences"] = []
-        
-        # プロンプトにWeb検索を活用する指示を追加
-        search_enhanced_prompt = prompt + "\n\n必要に応じてWeb検索を活用し、店舗の営業時間、価格、最新情報を含めて回答してください。"
-        
-        payload = {
-            "contents": [{
-                "parts": [
-                    {"text": search_enhanced_prompt},
-                    {
-                        "inline_data": {
-                            "mime_type": "image/jpeg",
-                            "data": image_data
-                        }
-                    }
-                ]
-            }],
-            "tools": [{
-                "google_search": {}  # Search as a toolを有効化
-            }],
-            "generationConfig": generation_config
-        }
-        # [SEARCH_API_CALL_END]
-        # === SEARCH AS A TOOL 対応終了 ===
         
         # HTTP リクエスト送信
         req = urllib.request.Request(
@@ -379,9 +334,7 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
             headers={'Content-Type': 'application/json'}
         )
         
-        # タイムアウトを増やす（検索時間を考慮） [TIMEOUT_CHANGE]
-        # with urllib.request.urlopen(req) as response:  # 元: デフォルト
-        with urllib.request.urlopen(req, timeout=60) as response:  # 新: 60秒
+        with urllib.request.urlopen(req) as response:
             result = json.loads(response.read().decode('utf-8'))
         
         # レスポンス解析
@@ -391,25 +344,14 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
                 'analysis': analysis_text,
                 'language': language,
                 'timestamp': get_jst_isoformat(),
-                'model': 'gemini-2.0-flash-exp-with-search',  # モデル名を更新 [MODEL_NAME_CHANGE]
-                'status': 'success',
-                'search_enhanced': True  # Search使用フラグを追加 [SEARCH_FLAG_ADD]
+                'model': 'gemini-2.0-flash-exp',
+                'status': 'success'
             }
         else:
             return generate_enhanced_mock_analysis(language, analysis_type)
         
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode('utf-8')
-        print(f"HTTP Error {e.code}: {error_body}")
-        # 検索機能が使えない場合は通常のAPIにフォールバック [FALLBACK_LOGIC]
-        if "v1alpha" in url and e.code in [400, 403, 404]:
-            print("Search feature may not be available. Consider fallback to standard API.")
-        return generate_enhanced_mock_analysis(language, analysis_type)
-        
     except Exception as e:
         print(f"Gemini API error: {str(e)}")
-        import traceback
-        print(f"Traceback: {traceback.format_exc()}")
         return generate_enhanced_mock_analysis(language, analysis_type)
 
 
