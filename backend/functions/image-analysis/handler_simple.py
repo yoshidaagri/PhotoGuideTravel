@@ -69,81 +69,81 @@ def main(event, context):
 
 def generate_mock_analysis(language='ja'):
     """
-    札幌特化のモック解析結果
+    観光地のモック解析結果
     """
     if language == 'ja':
-        analysis_text = """🏔️ 札幌観光AI解析結果
+        analysis_text = """🏔️ 観光AI解析結果
 
-**札幌内の場所**: この画像は札幌市内の典型的な風景を示しています。
+**場所の特定**: この画像は観光地の典型的な風景を示しています。
 
-**札幌の名所との関連**:
-• すすきの繁華街 - 北海道最大の歓楽街
-• 大通公園 - 札幌雪まつりのメイン会場
-• 円山公園 - 桜の名所として有名
-• サッポロビール園 - ジンギスカンで有名
+**主要な観光名所**:
+• 繁華街・ショッピングエリア
+• 中心部の公園・イベント会場
+• 桜の名所・自然公園
+• 地元名物料理の名店
 
-**道民文化・グルメ**:
-🍜 札幌ラーメン - 味噌ラーメン発祥の地
-🥩 ジンギスカン - 北海道のソウルフード
-🦀 海鮮丼 - 新鮮な北海道産海産物
-🍰 六花亭・ルタオ - 札幌銘菓
+**地元文化・グルメ**:
+🍜 地元の名物ラーメン
+🥩 地域の名物肉料理
+🦀 新鮮な海鮮料理
+🍰 地元の銘菓・スイーツ
 
 **季節体験**:
-❄️ 冬: さっぽろ雪まつり、スキー場
-🌸 春: 円山公園の桜、暖かな気候
-☀️ 夏: ビアガーデン、涼しい気候
-🍂 秋: 紅葉、北海道グルメ
+❄️ 冬: 雪まつり、ウィンタースポーツ
+🌸 春: 桜の名所、温暖な気候
+☀️ 夏: ビアガーデン、避暑地
+🍂 秋: 紅葉、秋の味覚
 
 **アクセス情報**:
-🚇 札幌市営地下鉄（南北線・東西線・東豊線）
-🚶‍♂️ JR札幌駅から徒歩圏内の主要スポット
+🚇 地下鉄・公共交通機関
+🚶‍♂️ 主要駅から徒歩圏内
 
 **地元おすすめ**:
-• 狸小路商店街でショッピング
-• 札幌場外市場で海鮮グルメ
-• モエレ沼公園でアート体験
-• 定山渓温泉でリラックス
+• 商店街でショッピング
+• 市場で新鮮な海鮮
+• 公園でアート体験
+• 温泉でリラックス
 
-札幌の魅力を存分にお楽しみください！"""
+この地域の魅力を存分にお楽しみください！"""
     else:
-        analysis_text = """🏔️ Sapporo Tourism AI Analysis
+        analysis_text = """🏔️ Tourism AI Analysis
 
-**Location in Sapporo**: This image shows typical scenery from Sapporo city.
+**Location Analysis**: This image shows typical scenery from this tourist destination.
 
-**Sapporo Attractions**:
-• Susukino - Hokkaido's largest entertainment district
-• Odori Park - Main venue for Sapporo Snow Festival
-• Maruyama Park - Famous cherry blossom spot
-• Sapporo Beer Garden - Famous for Genghis Khan
+**Major Attractions**:
+• Entertainment district
+• Central park - Main event venue
+• Nature park - Famous cherry blossom spot
+• Local cuisine restaurants
 
-**Local Hokkaido Culture**:
-🍜 Sapporo Ramen - Birthplace of miso ramen
-🥩 Genghis Khan - Hokkaido soul food
-🦀 Seafood bowls - Fresh Hokkaido seafood
-🍰 Rokkatei & LeTAO - Sapporo confections
+**Local Culture**:
+🍜 Regional ramen specialties
+🥩 Local meat dishes
+🦀 Fresh seafood bowls
+🍰 Regional confections
 
 **Seasonal Experiences**:
-❄️ Winter: Sapporo Snow Festival, skiing
-🌸 Spring: Cherry blossoms at Maruyama Park
+❄️ Winter: Snow festivals, skiing
+🌸 Spring: Cherry blossoms in parks
 ☀️ Summer: Beer gardens, cool climate
-🍂 Autumn: Fall foliage, Hokkaido cuisine
+🍂 Autumn: Fall foliage, local cuisine
 
 **Getting Around**:
-🚇 Sapporo Municipal Subway (Nanboku, Tozai, Toho lines)
-🚶‍♂️ Walking distance from JR Sapporo Station
+🚇 Local subway and public transport
+🚶‍♂️ Walking distance from major stations
 
 **Local Recommendations**:
-• Shopping at Tanuki-koji Shopping Street
-• Seafood at Sapporo Jogai Market
-• Art experience at Moerenuma Park
-• Relax at Jozankei Onsen
+• Shopping at local shopping streets
+• Fresh seafood at local markets
+• Art experiences in parks
+• Relax at hot springs
 
-Enjoy the full charm of Sapporo!"""
+Enjoy the full charm of this destination!"""
     
     return {
         'analysis': analysis_text,
         'language': language,
         'timestamp': get_jst_isoformat(),
-        'model': 'sapporo-tourism-ai-mock',
+        'model': 'tourism-ai-mock',
         'status': 'success'
     }

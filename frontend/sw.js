@@ -1,10 +1,10 @@
-// Service Worker for Sapporo Tourism AI PWA
-const CACHE_NAME = 'sapporo-tourism-ai-v1.0.0';
-const API_CACHE_NAME = 'sapporo-api-cache-v1';
+// Service Worker for Tourism AI PWA
+const CACHE_NAME = 'tourism-ai-v1.0.0';
+const API_CACHE_NAME = 'tourism-api-cache-v1';
 
 // Files to cache for offline use
 const STATIC_CACHE_FILES = [
-  './sapporo-mvp.html',
+  './tourism-guide.html',
   './manifest.json',
   // Add any other static assets
 ];
@@ -107,7 +107,7 @@ async function handleAPIRequest(request) {
     return new Response(
       JSON.stringify({
         error: 'オフライン状態です',
-        analysis: '現在オフライン状態のため、画像解析を実行できません。インターネット接続を確認してから再度お試しください。\n\n札幌観光AIは以下の情報を提供できます：\n• すすきの・大通・円山の詳細情報\n• 札幌ラーメン・ジンギスカン・海鮮グルメ\n• 季節ごとの観光スポット\n• 地下鉄・アクセス情報\n• 地元おすすめの穴場スポット',
+        analysis: '現在オフライン状態のため、画像解析を実行できません。インターネット接続を確認してから再度お試しください。\n\n観光AIは以下の情報を提供できます：\n• 各地域の詳細情報\n• 名物料理・ご当地グルメ\n• 季節ごとの観光スポット\n• 交通・アクセス情報\n• 地元おすすめの穴場スポット',
         offline: true,
         timestamp: new Date().toISOString()
       }),
@@ -154,7 +154,7 @@ async function handleStaticRequest(request) {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>オフライン - 札幌観光AI</title>
+          <title>オフライン - 観光AI</title>
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: center; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
             .offline-card { background: rgba(255,255,255,0.95); color: #333; padding: 2rem; border-radius: 20px; max-width: 400px; margin: 0 auto; }
@@ -168,7 +168,7 @@ async function handleStaticRequest(request) {
         <body>
           <div class="offline-card">
             <div class="offline-icon">🏔️</div>
-            <h1>札幌観光AI</h1>
+            <h1>観光AI</h1>
             <p><strong>オフライン状態です</strong></p>
             <p>インターネット接続を確認してから再度お試しください。</p>
             <button onclick="window.location.reload()">🔄 再読み込み</button>
@@ -199,10 +199,10 @@ self.addEventListener('push', (event) => {
   console.log('Service Worker: Push notification received');
   
   const options = {
-    body: '新しい札幌観光情報が利用可能です',
+    body: '新しい観光情報が利用可能です',
     icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" fill="%232196F3" rx="16"/><text x="48" y="60" font-size="40" text-anchor="middle" fill="white">🏔️</text></svg>',
     badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" fill="%232196F3" rx="4"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="white">🏔️</text></svg>',
-    tag: 'sapporo-tourism-update',
+    tag: 'tourism-update',
     actions: [
       {
         action: 'open',
@@ -213,7 +213,7 @@ self.addEventListener('push', (event) => {
   };
   
   event.waitUntil(
-    self.registration.showNotification('札幌観光AI', options)
+    self.registration.showNotification('観光AI', options)
   );
 });
 
@@ -224,7 +224,7 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   
   event.waitUntil(
-    clients.openWindow('./sapporo-mvp.html')
+    clients.openWindow('./tourism-guide.html')
   );
 });
 
@@ -248,7 +248,7 @@ async function processOfflineAnalysis() {
 async function clearOldCaches() {
   const cacheNames = await caches.keys();
   const oldCaches = cacheNames.filter(name => 
-    name.startsWith('sapporo-') && name !== CACHE_NAME && name !== API_CACHE_NAME
+    name.startsWith('tourism-') && name !== CACHE_NAME && name !== API_CACHE_NAME
   );
   
   return Promise.all(oldCaches.map(name => caches.delete(name)));

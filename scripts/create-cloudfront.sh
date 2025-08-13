@@ -30,7 +30,7 @@ cat > $CONFIG_FILE << EOF
     "Quantity": 0,
     "Items": []
   },
-  "DefaultRootObject": "sapporo-mvp.html",
+  "DefaultRootObject": "tourism-guide.html",
   "Comment": "AI Tourism PoC Frontend Distribution ($STAGE)",
   "Enabled": true,
   "Origins": {

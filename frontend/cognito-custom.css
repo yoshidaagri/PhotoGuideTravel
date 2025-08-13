@@ -103,7 +103,7 @@
 
 /* Custom footer with our branding */
 .modal-footer::after {
-    content: "🏔️ 観光アナライザー - 札幌特化AI観光ガイド";
+    content: "🏔️ 観光アナライザー - AI観光ガイド";
     display: block;
     text-align: center;
     font-size: 0.9rem;

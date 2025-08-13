@@ -1,9 +1,9 @@
-# 観光アナライザー - 札幌特化AI観光ガイド
+# 観光アナライザー - AI観光ガイド
 
 ## 🏔️ 概要
-観光アナライザーは、札幌に特化したAI画像解析観光サービスです。Google Gemini 2.0 Flashを活用し、札幌の店舗・観光地・料理画像から詳細な地元情報と多言語説明を提供します。
+観光アナライザーは、AI画像解析を活用した観光サービスです。Google Gemini 2.0 Flashを活用し、店舗・観光地・料理画像から詳細な地元情報と多言語説明を提供します。
 
-**🌐 稼働中サービス**: https://d22ztxm5q1c726.cloudfront.net/sapporo-mvp.html
+**🌐 稼働中サービス**: https://d22ztxm5q1c726.cloudfront.net/tourism-guide.html
 
 ## 🎯 主要機能（2025年8月11日現在）
 
@@ -19,10 +19,10 @@
 - **💳 課金システム**: Square決済（¥980/¥1,980プラン）
 - **🚫 使用制限**: 無料5回/月制限システム
 
-### 📍 札幌特化対応エリア
-- すすきの・大通・札幌駅周辺
-- ラーメン横丁・成吉思汗・海鮮市場
-- 雪まつり・時計台・大通公園
+### 📍 対応機能
+- 各地の観光地・名所解析
+- 地元グルメ・名物料理解析
+- イベント・シーズン情報提供
 
 ## 🏗️ 技術スタック（本番稼働中）
 
@@ -59,7 +59,7 @@ Multimodal_Japan/
 │   ├── tests/                 # ✅ テストスイート（86テスト関数）
 │   └── serverless.yml         # ✅ AWS本番環境設定
 ├── frontend/                   # ✅ PWA（CloudFront配信中）
-│   ├── sapporo-mvp.html       # ✅ メインアプリケーション
+│   ├── tourism-guide.html     # ✅ メインアプリケーション
 │   ├── css/styles.css         # ✅ カスタムスタイル
 │   └── cognito-*.css         # ✅ Cognito UI カスタマイゼーション
 ├── CLAUDE.md                  # 📋 プロジェクト設計・Phase管理
@@ -146,13 +146,13 @@ cd backend
 serverless deploy --stage dev --aws-profile ai-tourism-poc
 
 # フロントエンドデプロイ（CloudFront）
-aws s3 cp frontend/sapporo-mvp.html s3://ai-tourism-poc-frontend-dev/ --profile ai-tourism-poc
+aws s3 cp frontend/tourism-guide.html s3://ai-tourism-poc-frontend-dev/ --profile ai-tourism-poc
 aws s3 cp frontend/css/styles.css s3://ai-tourism-poc-frontend-dev/css/ --profile ai-tourism-poc
 aws cloudfront create-invalidation --distribution-id E38DCQ985NYREA --paths "/*" --profile ai-tourism-poc
 ```
 
 ### 環境情報
-- **本番URL**: https://d22ztxm5q1c726.cloudfront.net/sapporo-mvp.html
+- **本番URL**: https://d22ztxm5q1c726.cloudfront.net/tourism-guide.html
 - **CloudFront Distribution**: E38DCQ985NYREA
 - **S3 Bucket**: ai-tourism-poc-frontend-dev
 - **API Gateway**: ap-northeast-1リージョン
@@ -198,5 +198,5 @@ aws cloudfront create-invalidation --distribution-id E38DCQ985NYREA --paths "/*"
 - **現在状況**: Phase 6.2完了・Phase 6.5準備中
 
 ---
-*🏔️ 札幌特化AI観光ガイド「観光アナライザー」*  
+*🏔️ AI観光ガイド「観光アナライザー」*  
 *Updated: 2025-08-11 - Phase 6.2 Google OAuth UI強化完了*

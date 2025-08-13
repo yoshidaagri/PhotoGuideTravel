@@ -351,7 +351,7 @@ def get_client_id():
 # デモ用：固定ユーザーの自動作成
 def create_demo_user_if_not_exists():
     """
-    デモユーザー 'sapporo-guide' を自動作成
+    デモユーザー 'tourist-guide' を自動作成
     """
     try:
         cognito_client = boto3.client('cognito-idp')
@@ -361,16 +361,16 @@ def create_demo_user_if_not_exists():
             # ユーザーが存在するか確認
             cognito_client.admin_get_user(
                 UserPoolId=user_pool_id,
-                Username='sapporo-guide@example.com'
+                Username='tourist-guide@example.com'
             )
         except cognito_client.exceptions.UserNotFoundException:
             # ユーザーが存在しない場合は作成
             cognito_client.admin_create_user(
                 UserPoolId=user_pool_id,
-                Username='sapporo-guide@example.com',
+                Username='tourist-guide@example.com',
                 UserAttributes=[
-                    {'Name': 'email', 'Value': 'sapporo-guide@example.com'},
-                    {'Name': 'name', 'Value': 'Sapporo Guide'},
+                    {'Name': 'email', 'Value': 'tourist-guide@example.com'},
+                    {'Name': 'name', 'Value': 'Tourist Guide'},
                     {'Name': 'email_verified', 'Value': 'true'}
                 ],
                 TemporaryPassword='TempPass123!',
@@ -380,7 +380,7 @@ def create_demo_user_if_not_exists():
             # パスワードを恒久的に設定
             cognito_client.admin_set_user_password(
                 UserPoolId=user_pool_id,
-                Username='sapporo-guide@example.com',
+                Username='tourist-guide@example.com',
                 Password='hokkaido2024',
                 Permanent=True
             )

@@ -270,12 +270,12 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
         
         # 分析タイプ別プロンプト選択
         if analysis_type == 'menu':
-            sapporo_prompts = get_menu_analysis_prompts()
+            tourism_prompts = get_menu_analysis_prompts()
         else:
-            sapporo_prompts = get_store_tourism_prompts()
+            tourism_prompts = get_store_tourism_prompts()
         
         # 分析タイプ別の要約指示を追加
-        base_prompt = sapporo_prompts.get(language, sapporo_prompts['ja'])
+        base_prompt = tourism_prompts.get(language, tourism_prompts['ja'])
         
         if analysis_type == 'menu':
             summary_instruction = get_menu_summary_instructions()
@@ -292,7 +292,7 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
         
         # デバッグログ
         print(f"Analysis type: {analysis_type}, Language: {language}")
-        print(f"Available languages in prompts: {list(sapporo_prompts.keys())}")
+        print(f"Available languages in prompts: {list(tourism_prompts.keys())}")
         print(f"Available languages in summary: {list(summary_instruction.keys())}")
         print(f"Selected base prompt starts with: {base_prompt[:100]}...")
         
@@ -388,126 +388,126 @@ def update_image_with_analysis(image_id, analysis_result):
 
 def generate_enhanced_mock_analysis(language='ja', analysis_type='store'):
     """
-    強化された札幌特化モック解析（Gemini API使用不可時）
+    強化されたモック解析（Gemini API使用不可時）
     """
     mock_responses = {
-        'ja': """🏔️ 札幌観光AI解析結果 (実画像解析版)
+        'ja': """🏔️ 観光AI解析結果 (実画像解析版)
 
-**📍場所・エリア**: この画像から札幌市内の特徴的な要素を検出しました。
+**📍場所・エリア**: この画像から観光地の特徴的な要素を検出しました。
 
 **🍜グルメ・食事**: 
-• 札幌ラーメン横丁 - すすきのの名物スポット
-• だるま本店 - ジンギスカンの老舗、札幌発祥の味
-• 二条市場 - 新鮮な北海道海鮮の台所
-• 六花亭本店 - マルセイバターサンド発祥地
+• 地元の名物ラーメン - 人気のグルメスポット
+• 名物料理店 - 伝統の味が楽しめる老舗
+• 新鮮市場 - 海鮮・地元食材の宝庫
+• スイーツ店 - ご当地スイーツの発祥地
 
 **🚇アクセス**: 
-• 地下鉄南北線: すすきの駅 ↔ 大通駅 ↔ 札幌駅
-• 地下鉄東西線: 円山公園駅、大通駅経由
-• 札幌駅-大通-すすきの: 地下歩行空間で直結
+• 公共交通機関が充実
+• 主要駅からのアクセスが便利
+• 観光スポットへの移動がスムーズ
 
 **🎯おすすめ**: 
-• 大通公園 - 雪まつり・ビアガーデンの舞台
-• すすきの繁華街 - 東洋一のネオン街
-• サッポロビール園 - 赤レンガの歴史的建造物
+• 中心部の公園 - イベント・憩いの場
+• 繁華街 - 夜景が美しいエンターテインメントエリア
+• 歴史的建造物 - 赤レンガの美しい建築
 
-**💡検索候補**: 狸小路商店街、札幌時計台、白い恋人パーク
+**💡検索候補**: ショッピング街、歴史的名所、テーマパーク
 
 **お得情報**: 地下鉄1日乗車券(830円)で効率的に観光できます！""",
 
-        'ko': """🏔️ 삿포로 관광 AI 분석 결과 (실제 이미지 분석)
+        'ko': """🏔️ 관광 AI 분석 결과 (실제 이미지 분석)
 
-**📍장소・지역**: 이 이미지에서 삿포로시내 특징적 요소를 감지했습니다.
+**📍장소・지역**: 이 이미지에서 관광지의 특징적 요소를 감지했습니다.
 
 **🍜그루메・음식**: 
-• 삿포로 라멘 요코초 - 스스키노의 명물 스팟
-• 다루마 혼텐 - 징기스칸 노포, 삿포로 발상지
-• 니조 시장 - 신선한 홋카이도 해산물 시장
-• 롯카테이 본점 - 마루세이 버터 샌드 발상지
+• 지역 명물 라멘 - 인기 그루메 스팟
+• 명물 요리점 - 전통의 맛을 즐길 수 있는 노포
+• 신선 시장 - 해산물・지역 식재료의 보고
+• 스위츠 가게 - 당지 스위츠의 발상지
 
 **🚇접근**: 
-• 지하철 남북선: 스스키노역 ↔ 오도리역 ↔ 삿포로역
-• 지하철 동서선: 마루야마 공원역, 오도리역 경유
-• 삿포로역-오도리-스스키노: 지하보행공간 직결
+• 대중교통이 충실
+• 주요 역에서의 접근이 편리
+• 관광 스팟으로의 이동이 스무즈
 
 **🎯추천**: 
-• 오도리 공원 - 눈축제・맥주 가든 무대
-• 스스키노 번화가 - 동양 최대 네온 거리
-• 삿포로 맥주원 - 빨간 벽돌 역사 건축물
+• 중심부의 공원 - 이벤트・쉼터
+• 번화가 - 야경이 아름다운 엔터테인먼트 에리어
+• 역사적 건물 - 빨간 벽돌의 아름다운 건축
 
-**💡검색 후보**: 타누키코지 상점가, 삿포로 시계탑, 시로이 코이비토 파크
+**💡검색 후보**: 쇼핑가, 역사적 명소, 테마 파크
 
 **알찬 정보**: 지하철 1일 승차권(830엔)으로 효율적 관광 가능!""",
 
-        'zh': """🏔️ 札幌旅游AI分析结果（实际图像分析）
+        'zh': """🏔️ 旅游AI分析结果（实际图像分析）
 
-**📍场所・区域**: 从这张图像中检测到札幌市内的特征性要素。
+**📍场所・区域**: 从这张图像中检测到旅游地的特征性要素。
 
 **🍜美食・餐饮**: 
-• 札幌拉面横丁 - 薄野的名物景点
-• 达摩本店 - 成吉思汗烤肉老店，札幌发源地
-• 二条市场 - 新鲜北海道海鲜市场
-• 六花亭本店 - 奶油夹心饼干发源地
+• 地元名物拉面 - 人气美食景点
+• 名物料理店 - 传统美味的老店
+• 新鲜市场 - 海鲜・地元食材的宝库
+• 甜点店 - 当地甜点的发源地
 
 **🚇交通**: 
-• 地铁南北线: 薄野站 ↔ 大通站 ↔ 札幌站
-• 地铁东西线: 圆山公园站，大通站经由
-• 札幌站-大通-薄野: 地下步行空间直达
+• 公共交通完善
+• 主要车站访问便利
+• 旅游景点移动顺畅
 
 **🎯推荐**: 
-• 大通公园 - 雪祭・啤酒花园舞台
-• 薄野繁华街 - 东洋最大霓虹街
-• 札幌啤酒园 - 红砖历史建筑
+• 中心区公园 - 活动・休息场所
+• 繁华街 - 夜景美丽的娱乐区
+• 历史建筑 - 红砖美丽建筑
 
-**💡搜索候选**: 狸小路商店街，札幌钟楼，白色恋人公园
+**💡搜索候选**: 购物街，历史名胜，主题公园
 
 **超值信息**: 地铁1日乘车券(830日元)可高效观光！""",
 
-        'zh-tw': """🏔️ 札幌觀光AI分析結果（實際圖像分析）
+        'zh-tw': """🏔️ 觀光AI分析結果（實際圖像分析）
 
-**📍場所・區域**: 從這張圖像中檢測到札幌市內的特徵性要素。
+**📍場所・區域**: 從這張圖像中檢測到旅遊地的特徵性要素。
 
 **🍜美食・餐飲**: 
-• 札幌拉麵橫丁 - 薄野的名物景點
-• 達摩本店 - 成吉思汗烤肉老店，札幌發源地
-• 二條市場 - 新鮮北海道海鮮市場
-• 六花亭本店 - 奶油夾心餅乾發源地
+• 地元名物拉麵 - 人氣美食景點
+• 名物料理店 - 傳統美味的老店
+• 新鮮市場 - 海鮮・地元食材的寶庫
+• 甜點店 - 當地甜點的發源地
 
 **🚇交通**: 
-• 地鐵南北線: 薄野站 ↔ 大通站 ↔ 札幌站
-• 地鐵東西線: 圓山公園站，大通站經由
-• 札幌站-大通-薄野: 地下步行空間直達
+• 公共交通完善
+• 主要車站訪問便利
+• 旅遊景點移動順暢
 
 **🎯推薦**: 
-• 大通公園 - 雪祭・啤酒花園舞臺
-• 薄野繁華街 - 東洋最大霓虹街
-• 札幌啤酒園 - 紅磚歷史建築
+• 中心區公園 - 活動・休息場所
+• 繁華街 - 夜景美麗的娛樂區
+• 歷史建築 - 紅磚美麗建築
 
-**💡搜索候選**: 狸小路商店街，札幌鐘樓，白色戀人公園
+**💡搜索候選**: 購物街，歷史名勝，主題公園
 
 **超值資訊**: 地鐵1日乘車券(830日圓)可高效觀光！""",
 
-        'en': """🏔️ Sapporo Tourism AI Analysis (Real Image Analysis)
+        'en': """🏔️ Tourism AI Analysis (Real Image Analysis)
 
-**📍Location・Area**: Detected characteristic elements of Sapporo city from this image.
+**📍Location・Area**: Detected characteristic elements of tourist destination from this image.
 
 **🍜Gourmet・Food**: 
-• Sapporo Ramen Yokocho - Famous ramen alley in Susukino
-• Daruma Honten - Long-established Genghis Khan restaurant
-• Nijo Market - Fresh Hokkaido seafood market
-• Rokkatei Honten - Birthplace of Marsei Butter Sandwich
+• Local Specialty Ramen - Popular gourmet spot
+• Traditional Restaurant - Long-established local cuisine
+• Fresh Market - Treasure trove of seafood and local ingredients
+• Sweets Shop - Birthplace of local confections
 
 **🚇Access**: 
-• Nanboku Line: Susukino ↔ Odori ↔ Sapporo Station
-• Tozai Line: Via Maruyama Koen & Odori stations
-• Sapporo-Odori-Susukino: Underground walkway connection
+• Well-developed public transportation
+• Convenient access from major stations
+• Smooth travel to tourist spots
 
 **🎯Recommendations**: 
-• Odori Park - Snow Festival & Beer Garden venue
-• Susukino District - Asia's largest neon entertainment area
-• Sapporo Beer Garden - Historic red brick building
+• Central Park - Event and relaxation space
+• Entertainment District - Beautiful nightscape area
+• Historic Building - Beautiful red brick architecture
 
-**💡Search Candidates**: Tanuki-koji Shopping Arcade, Sapporo Clock Tower, Shiroi Koibito Park
+**💡Search Candidates**: Shopping Arcade, Historic Landmark, Theme Park
 
 **Money-saving tip**: Subway 1-day pass (¥830) for efficient sightseeing!"""
     }
@@ -518,7 +518,7 @@ def generate_enhanced_mock_analysis(language='ja', analysis_type='store'):
         'analysis': analysis_text,
         'language': language,
         'timestamp': get_jst_isoformat(),
-        'model': 'sapporo-tourism-ai-enhanced',
+        'model': 'tourism-ai-enhanced',
         'status': 'success'
     }
 
@@ -526,25 +526,25 @@ def generate_enhanced_mock_analysis(language='ja', analysis_type='store'):
 def get_store_tourism_prompts():
     """店舗・観光施設分析用プロンプト"""
     return {
-        'ja': """あなたは札幌生まれの地元の方です。この画像を詳しく分析し、札幌の魅力を最大限に伝える観光ガイドとして回答してください。
+        'ja': """あなたは地元の観光ガイドです。この画像を詳しく分析し、その地域の魅力を最大限に伝える観光ガイドとして回答してください。
 
-🏔️ **札幌観光AI解析** 🏔️
+🏔️ **観光AI解析** 🏔️
 
 **重要な分析指示:**
 1. まず画像に写っている要素（建物、看板、人物、料理、風景など）を具体的に特定してください
 2. 看板や文字が見える場合は、それを読み取ってgoogleで検索して店名・場所・概要を調査してください
 3. 建築様式、装飾、雰囲気から場所のタイプを推測してください
 4. 実在する場所の場合は、正確な情報を提供してください
-5. 画像に写っているものが札幌のものでない場合は、札幌ではないと断りながら解説してください
+5. 画像に写っている場所・内容を正確に特定し、その地域の情報を提供してください
 6. 画像の要素のURLが特定できた場合、URLを載せてください。googleで検索してであるお店の公式サイト、観光案内Webや食べログが良いです
 7. 画像に映る看板は複数ある場合があるので、総合的に判断してください。
 8. 回答の初めから場所・エリアで開始して、はい分かりましたというような文章は入れないでください。
 
 **📍 場所・エリア特定**
 - 画像から読み取れる具体的な店名・施設名を明記
-- 札幌市内の具体的な地区・エリアを特定（すすきの・大通・円山・豊平・白石・北区・手稲など）
-- 最寄り地下鉄駅（南北線・東西線・東豊線）との位置関係
-- JR札幌駅・新千歳空港からのアクセス情報
+- 具体的な地区・エリアを特定
+- 最寄り駅との位置関係
+- 主要駅・空港からのアクセス情報
 - 具体的な住所（判明している場合）
 
 **🗣️ 言語サポート**
@@ -580,25 +580,25 @@ def get_store_tourism_prompts():
 - 外国語対応状況
 """,
 
-        'ko': """당신은 삿포로 태생의 지역 주민입니다. 이 이미지를 자세히 분석하고 샿포로의 매력을 최대한 전달하는 관광 가이드로서 답변해주세요.
+        'ko': """당신은 지역 관광 가이드입니다. 이 이미지를 자세히 분석하고 그 지역의 매력을 최대한 전달하는 관광 가이드로서 답변해주세요.
 
-🏔️ **삿포로 관광 AI 분석** 🏔️
+🏔️ **관광 AI 분석** 🏔️
 
 **중요한 분석 지시사항:**
 1. 먼저 이미지에 보이는 요소(건물, 간판, 사람, 요리, 풍경 등)를 구체적으로 파악해주세요
 2. 간판이나 문자가 보이면 그것을 읽어서 구글로 검색하여 점포명・장소・개요를 조사해주세요
 3. 건축 양식, 장식, 분위기로부터 장소의 타입을 추측해주세요
 4. 실재하는 장소인 경우 정확한 정보를 제공해주세요
-5. 이미지의 대상이 삿포로가 아닌 경우, 삿포로가 아니라고 명시하며 설명해주세요
+5. 이미지에 나타난 장소・내용을 정확히 특정하고, 그 지역의 정보를 제공해주세요
 6. 이미지 요소의 URL을 특정할 수 있다면 URL을 게재해주세요. 구글로 검색하여 찾은 매장의 공식 사이트, 관광안내 웹사이트나 타베로그가 좋습니다
 7. 이미지에 나타나는 간판은 여러 개 있을 수 있으므로 종합적으로 판단해주세요.
 8. 답변은 처음부터 장소・지역으로 시작하고, '네 알겠습니다'와 같은 문장은 넣지 마세요.
 
 **📍 위치・지역 특정**
 - 이미지에서 읽을 수 있는 구체적인 점포명・시설명을 명기
-- 삿포로시 내 구체적인 지구・지역 특정 (스스키노・오도리・마루야마・토요히라・시로이시・키타구・테이네 등)
-- 가장 가까운 지하철역 (남북선・동서선・토호선)과의 위치 관계
-- JR삿포로역・신치토세공항에서의 접근 정보
+- 구체적인 지구・지역 특정
+- 가장 가까운 역과의 위치 관계
+- 주요 역・공항에서의 접근 정보
 - 구체적인 주소 (판명된 경우)
 
 **🗣️ 언어 서포트**
@@ -633,27 +633,27 @@ def get_store_tourism_prompts():
 - 복장 규정 (있는 경우)
 - 외국어 대응 상황
 
-진정한 삿포로를 체험하고 잊을 수 없는 여행 추억을 만들어보세요!""",
+진정한 지역의 매력을 체험하고 잊을 수 없는 여행 추억을 만들어보세요!""",
 
-        'zh': """您是札幌出生的当地人。请详细分析这张图像，作为旅游向导最大程度地传达札幌的魅力。
+        'zh': """您是地元旅游向导。请详细分析这张图像，作为旅游向导最大程度地传达该地区的魅力。
 
-🏔️ **札幌旅游AI分析** 🏔️
+🏔️ **旅游AI分析** 🏔️
 
 **重要分析指示：**
 1. 首先请具体识别图像中显示的元素（建筑、招牌、人物、料理、风景等）
 2. 如果能看到招牌或文字，请读取并通过Google搜索调查店名・地点・概要
 3. 从建筑风格、装饰、氛围推测场所的类型
 4. 如果是实际存在的地点，请提供准确信息
-5. 如果图像中的内容不是札幌的，请说明不是札幌并进行解说
+5. 请准确特定图像中的地点・内容，并提供该地区的信息
 6. 如果能特定图像元素的URL，请载入URL。通过Google搜索找到的店铺官方网站、旅游指南网站或食べログ（Tabelog）最佳
 7. 图像中可能有多个招牌，请综合判断。
 8. 请从场所・区域开始回答，不要加入"好的我明白了"之类的开场白。
 
 **📍 地点・区域特定**
 - 明确记载从图像中可读取的具体店名・设施名
-- 特定札幌市内的具体地区・区域（薄野・大通・圆山・丰平・白石・北区・手稻等）
-- 与最近地铁站（南北线・东西线・东丰线）的位置关系
-- 从JR札幌站・新千岁机场的交通信息
+- 特定具体地区・区域
+- 与最近车站的位置关系
+- 从主要车站・机场的交通信息
 - 具体地址（如果能确定）
 
 **🗣️ 语言支持**
@@ -688,27 +688,27 @@ def get_store_tourism_prompts():
 - 着装规定（如有）
 - 外语应对状况
 
-为您传达札幌的真正魅力，帮助您创造难忘的旅行回忆！""",
+为您传达该地区的真正魅力，帮助您创造难忘的旅行回忆！""",
 
-        'zh-tw': """您是札幌出生的當地人。請詳細分析這張圖像，作為旅遊向導最大程度地傳達札幌的魅力。
+        'zh-tw': """您是地元旅遊向導。請詳細分析這張圖像，作為旅遊向導最大程度地傳達該地區的魅力。
 
-🏔️ **札幌觀光AI分析** 🏔️
+🏔️ **旅遊AI分析** 🏔️
 
 **重要分析指示：**
 1. 首先請具體識別圖像中顯示的元素（建築、招牌、人物、料理、風景等）
 2. 如果能看到招牌或文字，請讀取並透過Google搜尋調查店名・地點・概要
 3. 從建築風格、裝飾、氛圍推測場所的類型
 4. 如果是實際存在的地點，請提供準確資訊
-5. 如果圖像中的內容不是札幌的，請說明不是札幌並進行解說
+5. 請準確特定圖像中的地點・內容，並提供該地區的資訊
 6. 如果能特定圖像元素的URL，請載入URL。透過Google搜尋找到的店鋪官方網站、旅遊指南網站或食べログ（Tabelog）最佳
 7. 圖像中可能有多個招牌，請綜合判斷。
 8. 請從場所・區域開始回答，不要加入「好的我明白了」之類的開場白。
 
 **📍 地點・區域特定**
 - 明確記載從圖像中可讀取的具體店名・設施名
-- 特定札幌市內的具體地區・區域（薄野・大通・圓山・豐平・白石・北區・手稻等）
-- 與最近地鐵站（南北線・東西線・東豐線）的位置關係
-- 從JR札幌站・新千歲機場的交通資訊
+- 特定具體地區・區域
+- 與最近車站的位置關係
+- 從主要車站・機場的交通資訊
 - 具體地址（如果能確定）
 
 **🗣️ 語言支援**
@@ -743,27 +743,27 @@ def get_store_tourism_prompts():
 - 著裝規定（如有）
 - 外語應對狀況
 
-為您傳達札幌的真正魅力，幫助您創造難忘的旅行回憶！""",
+為您傳達該地區的真正魅力，幫助您創造難忘的旅行回憶！""",
 
-        'en': """You are a native-born local resident of Sapporo. Analyze this image in detail and provide comprehensive tourism guidance showcasing Sapporo's attractions.
+        'en': """You are a local tourism expert. Analyze this image in detail and provide comprehensive tourism guidance showcasing local attractions.
 
-🏔️ **SAPPORO TOURISM AI ANALYSIS** 🏔️
+🏔️ **TOURISM AI ANALYSIS** 🏔️
 
 **Important Analysis Instructions:**
 1. First, specifically identify elements shown in the image (buildings, signs, people, food, scenery, etc.)
 2. If signs or text are visible, read them and research store names/locations/details through Google search
 3. Infer the type of location from architectural style, decorations, and atmosphere
 4. For real existing locations, provide accurate information
-5. If the image content is not from Sapporo, clarify it's not Sapporo while explaining
+5. Provide accurate location information based on the image content
 6. If URLs of image elements can be identified, include the URLs. Official websites of stores found through Google search, tourism guide websites or Tabelog are preferred
 7. There may be multiple signs in the image, so please make a comprehensive judgment.
 8. Start your response directly with the location/area, and do not include phrases like "Yes, I understand" at the beginning.
 
 **📍 Location & Area Identification**
 - Clearly state specific store names/facility names readable from the image
-- Identify specific districts/areas in Sapporo (Susukino, Odori, Maruyama, Toyohira, Shiroishi, Kita-ku, Teine, etc.)
+- Identify specific districts/areas in the location
 - Nearest subway stations (Nanboku, Tozai, Toho Lines) and location relationships
-- Access from JR Sapporo Station and New Chitose Airport
+- Access from major transportation hubs
 - Specific address (if determinable)
 
 **🗣️ Language Support**
@@ -798,16 +798,16 @@ def get_store_tourism_prompts():
 - Dress codes (if any)
 - Foreign language support status
 
-Experience authentic Sapporo and create unforgettable travel memories!"""
+Experience authentic local culture and create unforgettable travel memories!"""
     }
 
 
 def get_menu_analysis_prompts():
     """看板・メニュー分析用プロンプト"""
     return {
-        'ja': """あなたは札幌のグルメ・看板翻訳エキスパートです。この画像の看板・メニュー・文字情報を詳しく解析し、海外の方にも分かりやすく説明してください。
+        'ja': """あなたはグルメ・看板翻訳エキスパートです。この画像の看板・メニュー・文字情報を詳しく解析し、海外の方にも分かりやすく説明してください。
 
-🍜 **札幌看板・メニューAI解析** 🍜
+🍜 **看板・メニューAI解析** 🍜
 
 **📋 文字・看板情報の解析**
 - 看板・メニューの日本語文字を正確に読み取り
@@ -817,7 +817,7 @@ def get_menu_analysis_prompts():
 **🍽️ 料理・メニュー詳細説明**
 - 各料理の具材・調理法・特徴を詳しく説明
 - アレルギー情報・辛さレベル・量の目安
-- 札幌・北海道ならではの特色料理の背景説明
+- 地元ならではの特色料理の背景説明
 - おすすめの食べ方・組み合わせ
 
 **💰 料金・価格情報**
@@ -831,7 +831,7 @@ def get_menu_analysis_prompts():
 - 「これください」「おすすめは？」「辛くしないでください」等
 - 指差しで使えるフレーズ集
 
-海外の方が札幌グルメを安心して楽しめるよう、詳しくサポートします！""",
+海外の方が地元グルメを安心して楽しめるよう、詳しくサポートします！""",
 
         'ko': """당신은 삿포로 미식・간판 번역 전문가입니다. 이 이미지의 간판・메뉴・문자 정보를 자세히 분석하고, 해외 방문객이 이해하기 쉽게 설명해주세요.
 
@@ -845,7 +845,7 @@ def get_menu_analysis_prompts():
 **🍽️ 요리・메뉴 상세 설명**
 - 각 요리의 재료・조리법・특징 자세히 설명
 - 알레르기 정보・매운 정도・양의 기준
-- 삿포로・홋카이도 특색 요리의 배경 설명
+- 지역 특색 요리의 배경 설명
 - 추천 먹는 방법・조합
 
 **💰 요금・가격 정보**
@@ -869,13 +869,13 @@ def get_menu_analysis_prompts():
 
         'zh': """**【极其重要：必须用简体中文回答，绝对不要使用英语】**
 
-您是札幌美食・招牌翻译专家。请详细分析这张图像的招牌・菜单・文字信息，并向海外游客通俗易懂地说明。
+您是美食・招牌翻译专家。请详细分析这张图像的招牌・菜单・文字信息，并向海外游客通俗易懂地说明。
 
 **重要**: 请务必用简体中文回答，不要使用英语或其他语言。
 **重要提醒**: 回答必须是简体中文，不可以是英语。
 **MUST USE SIMPLIFIED CHINESE, NOT ENGLISH**
 
-🍜 **札幌招牌・菜单AI分析** 🍜
+🍜 **招牌・菜单AI分析** 🍜
 
 **📋 文字・招牌信息分析**
 - 准确读取招牌・菜单的日语文字
@@ -885,7 +885,7 @@ def get_menu_analysis_prompts():
 **🍽️ 料理・菜单详细说明**
 - 各菜品的食材・烹饪方法・特色详细说明
 - 过敏信息・辣度・份量标准
-- 札幌・北海道特色料理的背景说明
+- 地元特色料理的背景说明
 - 推荐吃法・搭配
 
 **💰 费用・价格信息**
@@ -905,7 +905,7 @@ def get_menu_analysis_prompts():
 - "要这个" "推荐什么?" "请不要辣" 等
 - 用手指着就能用的短语集
 
-帮助海外游客安心享受札幌美食，提供详细支持！
+帮助海外游客安心享受地元美食，提供详细支持！
 
 **【重要提醒：请确保您的回答完全使用简体中文，不要混入英语】**""",
 
@@ -917,7 +917,7 @@ def get_menu_analysis_prompts():
 **重要提醒**: 回答必須是繁體中文，不可以是英語。
 **MUST USE TRADITIONAL CHINESE, NOT ENGLISH**
 
-🍜 **札幌招牌セ菜單AI分析** 🍜
+🍜 **招牌セ菜單AI分析** 🍜
 
 **📋 文字セ招牌資訊分析**
 - 準確讀取招牌・菜單的日語文字
@@ -951,9 +951,9 @@ def get_menu_analysis_prompts():
 
 **【重要提醒：請確保您的回答完全使用繁體中文，不要混入英語】**""",
 
-        'en': """You are a Sapporo gourmet and signboard translation expert. Please analyze the signboard, menu, and text information in this image in detail, explaining it clearly for overseas visitors.
+        'en': """You are a gourmet and signboard translation expert. Please analyze the signboard, menu, and text information in this image in detail, explaining it clearly for overseas visitors.
 
-🍜 **SAPPORO SIGNBOARD & MENU AI ANALYSIS** 🍜
+🍜 **SIGNBOARD & MENU AI ANALYSIS** 🍜
 
 **📋 Text & Signboard Information Analysis**
 - Accurately read Japanese characters on signs and menus
@@ -963,7 +963,7 @@ def get_menu_analysis_prompts():
 **🍽️ Cuisine & Menu Detailed Explanation**
 - Detailed explanation of ingredients, cooking methods, and characteristics of each dish
 - Allergy information, spiciness level, portion size guidelines
-- Background explanation of Sapporo and Hokkaido specialty dishes
+- Background explanation of local and regional specialty dishes
 - Recommended ways to eat and combinations
 
 **💰 Fee & Price Information**
@@ -983,7 +983,7 @@ def get_menu_analysis_prompts():
 - "I'll have this", "What do you recommend?", "Not spicy please", etc.
 - Phrase collection that can be used by pointing
 
-Providing detailed support so overseas visitors can enjoy Sapporo gourmet with confidence!"""
+Providing detailed support so overseas visitors can enjoy local gourmet with confidence!"""
     }
 
 
@@ -994,7 +994,7 @@ def get_store_summary_instructions():
         'ko': "\n\n**중요**: 위 분석 내용을 600자 이내로 요약해주세요.\n\n**출력 형식**:\n1. **📍장소・지역**: 삿포로시내 구체적 장소 특정\n2. **💡검색 후보**: 불명확한 경우 유사 스팟명 3개 제시\n\n특히 장소가 불명확한 경우, 이미지 특징에서 추측 가능한 삿포로시내 후보지를 구체적으로 제시해주세요.",
         'zh': "\n\n**重要**: 请在600字内总结上述分析内容。\n\n**输出格式**:\n1. **📍场所・区域**: 札幌市内具体场所特定\n2. **💡搜索候选**: 不明确时提供3个类似景点名\n\n特别是场所不明确时，请根据图像特征推测札幌市内的具体候选地点。",
         'zh-tw': "\n\n**重要**: 請在600字內總結上述分析內容。\n\n**輸出格式**:\n1. **📍場所・區域**: 札幌市內具體場所特定\n2. **💡搜尋候選**: 不明確時提供3個類似景點名\n\n特別是場所不明確時，請根據圖像特徵推測札幌市內的具體候選地點。",
-        'en': "\n\n**Important**: Summarize the above analysis within 600 characters.\n\n**Output Format**:\n1. **📍Location・Area**: Identify specific places in Sapporo\n2. **💡Search Candidates**: Provide 3 similar spot names if unclear\n\nEspecially when location is unclear, please suggest specific candidate locations in Sapporo based on image features."
+        'en': "\n\n**Important**: Summarize the above analysis within 600 characters.\n\n**Output Format**:\n1. **📍Location・Area**: Identify specific places\n2. **💡Search Candidates**: Provide 3 similar spot names if unclear\n\nEspecially when location is unclear, please suggest specific candidate locations based on image features."
     }
 
 

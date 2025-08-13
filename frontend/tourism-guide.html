@@ -22,7 +22,7 @@
                 </div>
                 <div class="user-section">
                     <div id="userInfo" class="user-info">
-                        <span>👤 <span id="currentUser">sapporo-guide</span></span>
+                        <span>👤 <span id="currentUser">tourist-guide</span></span>
                         <span id="userPlan" class="user-plan">Free (残り5回)</span>
                         <button id="upgradeBtn" onclick="showUpgradeModal()" class="upgrade-btn" style="display: none;">⭐ アップグレード</button>
                         <button onclick="logout()" class="logout-btn" data-i18n="logout">ログアウト</button>
@@ -63,7 +63,7 @@
                         <p>• 無料: 月5回まで解析</p>
                         <p>• プレミアム: 無制限利用</p>
                         <p>• 5言語対応: 🇯🇵/🇰🇷/🇨🇳/🇹🇼/🌍</p>
-                        <p><small>札幌の店舗・観光地・料理画像をAIが詳しく解析</small></p>
+                        <p><small>店舗・観光地・料理画像をAIが詳しく解析</small></p>
                     </div>
                 </div>
             </div>
@@ -72,9 +72,9 @@
             <div id="mainApp" class="main-app">
                 <!-- Welcome Section -->
                 <section class="welcome-section fade-in">
-                    <h1 class="welcome-title" data-i18n="title">札幌観光AI画像解析</h1>
+                    <h1 class="welcome-title" data-i18n="title">観光AI画像解析</h1>
                     <p class="welcome-description">
-                        <span data-i18n="description">札幌の店舗・観光地・料理の画像をAIが詳しく解析し、地元情報やおすすめスポットをご紹介します</span>
+                        <span data-i18n="description">店舗・観光地・料理の画像をAIが詳しく解析し、地元情報やおすすめスポットをご紹介します</span>
                     </p>
                 </section>
 
@@ -127,9 +127,9 @@
                     <div class="upload-icon">📸</div>
                     <div class="upload-text" data-i18n="uploadText">画像をアップロード</div>
                     <div class="upload-subtext">
-                        <span data-i18n="uploadSubtext">札幌の店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ</span><br>
+                        <span data-i18n="uploadSubtext">店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ</span><br>
                         <strong><span data-i18n="fileFormat">対応形式: JPG, PNG, GIF (最大 10MB)</span></strong><br>
-                        <strong><span id="recommendedText" data-i18n="storeRecommended">推奨: ラーメン、ジンギスカン、雪まつり、すすきの等</span></strong>
+                        <strong><span id="recommendedText" data-i18n="storeRecommended">推奨: 名物料理、観光名所、イベント等</span></strong>
                     </div>
                     <input type="file" id="imageInput" class="file-input" accept="image/*">
                 </section>
@@ -140,16 +140,16 @@
                     <img id="previewImage" class="preview-image" alt="プレビュー">
                     <div id="imageDetails" class="image-details"></div>
                     <button onclick="analyzeImage()" id="analyzeBtn" class="analyze-btn">
-                        <span id="analyzeBtnText" data-i18n="analyzeButton">🤖 札幌観光AI解析を開始</span>
+                        <span id="analyzeBtnText" data-i18n="analyzeButton">🤖 観光AI解析を開始</span>
                     </button>
                 </section>
 
                 <!-- Loading Section -->
                 <section id="loadingSection" class="loading-section hidden">
                     <div class="simple-loading-spinner"></div>
-                    <div class="loading-text" data-i18n="loading">札幌観光AIが解析中...</div>
+                    <div class="loading-text" data-i18n="loading">観光AIが解析中...</div>
                     <div class="loading-subtext">
-                        <span data-i18n="loadingSubtext">すすきの・大通・札幌グルメ・観光スポット</span><br>
+                        <span data-i18n="loadingSubtext">名物料理・観光名所・地元情報</span><br>
                         <span data-i18n="loadingDetail">詳細な地元情報を分析しています</span>
                     </div>
                 </section>
@@ -157,7 +157,7 @@
                 <!-- Results Section -->
                 <section id="resultsSection" class="results-section hidden">
                     <div class="results-header">
-                        <h3 class="results-title">🏔️ 札幌観光AI解析結果</h3>
+                        <h3 class="results-title">🏔️ 観光AI解析結果</h3>
                         <button onclick="newAnalysis()" class="new-analysis-btn" data-i18n="newAnalysis">🔄 新しい解析</button>
                     </div>
                     <div id="resultsContent" class="results-content"></div>
@@ -170,7 +170,7 @@
         // Configuration
         const API_BASE_URL = 'https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev';
         const CREDENTIALS = {
-            username: 'sapporo-guide',
+            username: 'tourist-guide',
             password: 'hokkaido2024'
         };
 
@@ -224,20 +224,20 @@
         const translations = {
             ja: {
                 title: "観光アナライザー",
-                description: "札幌の観光・グルメ画像をAI解析し、地元情報をご紹介",
+                description: "観光・グルメ画像をAI解析し、地元情報をご紹介",
                 languageSelect: "解析言語を選択",
                 analysisTypeSelect: "解析タイプを選択",
                 storeAnalysis: "店舗・観光地分析",
                 menuTranslation: "看板・メニュー翻訳",
                 uploadText: "画像をアップロード",
-                uploadSubtext: "札幌の店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ",
+                uploadSubtext: "店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ",
                 fileFormat: "対応形式: JPG, PNG, GIF (最大 10MB)",
-                storeRecommended: "推奨: ラーメン、ジンギスカン、雪まつり、すすきの等",
+                storeRecommended: "推奨: 名物料理、観光名所、イベント等",
                 menuRecommended: "特に有効: 手書きメニュー、価格表、注文表等",
                 previewTitle: "アップロード画像プレビュー",
-                analyzeButton: "札幌観光AI解析を開始",
-                loading: "札幌観光AIが解析中...",
-                loadingSubtext: "すすきの・大通・札幌グルメ・観光スポット",
+                analyzeButton: "観光AI解析を開始",
+                loading: "観光AIが解析中...",
+                loadingSubtext: "名物料理・観光名所・地元情報",
                 loadingDetail: "詳細な地元情報を分析しています",
                 loginTitle: "観光アナライザー",
                 googleLogin: "Googleでログイン",
@@ -259,20 +259,20 @@
             },
             ko: {
                 title: "관광 애널라이저",
-                description: "삿포로 관광・미식 이미지 AI 분석으로 현지 정보 제공",
+                description: "관광・미식 이미지 AI 분석으로 현지 정보 제공",
                 languageSelect: "분석 언어 선택",
                 analysisTypeSelect: "분석 유형 선택", 
                 storeAnalysis: "상점・관광지 분석",
                 menuTranslation: "간판・메뉴 번역",
                 uploadText: "이미지 업로드",
-                uploadSubtext: "삿포로 상점・관광지・요리 사진을 클릭하거나 드래그 & 드롭",
+                uploadSubtext: "상점・관광지・요리 사진을 클릭하거나 드래그 & 드롭",
                 fileFormat: "대응 형식: JPG, PNG, GIF (최대 10MB)",
-                storeRecommended: "추천: 라멘, 징기스칸, 눈축제, 스스키노 등",
+                storeRecommended: "추천: 명물요리, 관광명소, 이벤트 등",
                 menuRecommended: "특히 효과적: 손글씨 메뉴, 가격표, 주문표 등",
                 previewTitle: "업로드 이미지 미리보기",
-                analyzeButton: "삿포로 관광 AI 분석 시작",
-                loading: "삿포로 관광 AI가 분석중...",
-                loadingSubtext: "스스키노・오도리・삿포로 그루메・관광 스팟",
+                analyzeButton: "관광 AI 분석 시작",
+                loading: "관광 AI가 분석중...",
+                loadingSubtext: "명물요리・관광명소・지역 정보",
                 loadingDetail: "상세한 지역 정보를 분석하고 있습니다",
                 loginTitle: "관광 애널라이저",
                 loginUsername: "사용자 ID",
@@ -297,20 +297,20 @@
             },
             zh: {
                 title: "观光分析器",
-                description: "AI分析札幌观光・美食图像，提供当地信息",
+                description: "AI分析观光・美食图像，提供当地信息",
                 languageSelect: "选择分析语言",
                 analysisTypeSelect: "选择分析类型",
                 storeAnalysis: "店铺・观光地分析",
                 menuTranslation: "招牌・菜单翻译",
                 uploadText: "上传图像",
-                uploadSubtext: "点击或拖拽上传札幌店铺・观光地・料理照片",
+                uploadSubtext: "点击或拖拽上传店铺・观光地・料理照片",
                 fileFormat: "支持格式: JPG, PNG, GIF (最大 10MB)",
-                storeRecommended: "推荐: 拉面、成吉思汗烤肉、雪祭、薄野等",
+                storeRecommended: "推荐: 名物料理、观光名胜、活动等",
                 menuRecommended: "特别有效: 手写菜单、价格表、订单等",
                 previewTitle: "上传图像预览",
-                analyzeButton: "开始札幌观光AI分析",
-                loading: "札幌观光AI分析中...",
-                loadingSubtext: "薄野・大通・札幌美食・观光景点",
+                analyzeButton: "开始观光AI分析",
+                loading: "观光AI分析中...",
+                loadingSubtext: "名物料理・观光名胜・地方信息",
                 loadingDetail: "正在分析详细的当地信息",
                 loginTitle: "观光分析器",
                 loginUsername: "用户ID",
@@ -335,20 +335,20 @@
             },
             'zh-tw': {
                 title: "觀光分析器",
-                description: "AI分析札幌觀光・美食圖像，提供當地資訊",
+                description: "AI分析觀光・美食圖像，提供當地資訊",
                 languageSelect: "選擇分析語言",
                 analysisTypeSelect: "選擇分析類型",
                 storeAnalysis: "店鋪・觀光地分析",
                 menuTranslation: "招牌・菜單翻譯",
                 uploadText: "上傳圖像",
-                uploadSubtext: "點擊或拖拽上傳札幌店鋪・觀光地・料理照片",
+                uploadSubtext: "點擊或拖拽上傳店鋪・觀光地・料理照片",
                 fileFormat: "支援格式: JPG, PNG, GIF (最大 10MB)",
-                storeRecommended: "推薦: 拉麵、成吉思汗烤肉、雪祭、薄野等",
+                storeRecommended: "推薦: 名物料理、觀光名勝、活動等",
                 menuRecommended: "特別有效: 手寫菜單、價格表、訂單等",
                 previewTitle: "上傳圖像預覽",
-                analyzeButton: "開始札幌觀光AI分析",
-                loading: "札幌觀光AI分析中...",
-                loadingSubtext: "薄野・大通・札幌美食・觀光景點",
+                analyzeButton: "開始觀光AI分析",
+                loading: "觀光AI分析中...",
+                loadingSubtext: "名物料理・觀光名勝・地方資訊",
                 loadingDetail: "正在分析詳細的當地資訊",
                 loginTitle: "觀光分析器",
                 loginUsername: "使用者ID",
@@ -373,20 +373,20 @@
             },
             en: {
                 title: "Tourism Analyzer",
-                description: "AI analysis of Sapporo tourism and gourmet images with local insights",
+                description: "AI analysis of tourism and gourmet images with local insights",
                 languageSelect: "Select Analysis Language",
                 analysisTypeSelect: "Select Analysis Type",
                 storeAnalysis: "Store・Tourism Analysis",
                 menuTranslation: "Signboard・Menu Translation", 
                 uploadText: "Upload Image",
-                uploadSubtext: "Click or drag & drop photos of Sapporo stores, tourist spots, and cuisine",
+                uploadSubtext: "Click or drag & drop photos of stores, tourist spots, and cuisine",
                 fileFormat: "Supported formats: JPG, PNG, GIF (max 10MB)",
-                storeRecommended: "Recommended: Ramen, Jingisukan, Snow Festival, Susukino, etc.",
+                storeRecommended: "Recommended: Local specialties, tourist attractions, events, etc.",
                 menuRecommended: "Especially effective: Handwritten menus, price lists, order forms, etc.",
                 previewTitle: "Upload Image Preview",
-                analyzeButton: "Start Sapporo Tourism AI Analysis",
-                loading: "Sapporo Tourism AI Analyzing...",
-                loadingSubtext: "Susukino・Odori・Sapporo Gourmet・Tourist Spots",
+                analyzeButton: "Start Tourism AI Analysis",
+                loading: "Tourism AI Analyzing...",
+                loadingSubtext: "Local Cuisine・Tourist Spots・Regional Information",
                 loadingDetail: "Analyzing detailed local information",
                 loginTitle: "Tourism Analyzer",
                 loginUsername: "User ID", 
