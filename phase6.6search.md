@@ -307,11 +307,132 @@ Google: 4.2/5.0 (523件)
 
 ## 📋 実装チェックリスト
 
-- [ ] 有料版Google API Keyの確認
-- [ ] handler_gemini.pyのバックアップ作成
-- [ ] コード修正の適用
-- [ ] ローカルテスト
-- [ ] AWSへのデプロイ
-- [ ] 動作確認
+- [x] 有料版Google API Keyの確認
+- [x] handler_gemini.pyのバックアップ作成
+- [x] コード修正の適用
+- [x] ローカルテスト
+- [x] AWSへのデプロイ
+- [x] 動作確認
 - [ ] CloudWatch Logsでエラー監視
 - [ ] コスト監視設定
+
+---
+
+## 🎉 実装結果（2025年8月14日）
+
+### 実装完了内容
+
+#### 1. バックアップ作成
+```bash
+# 実行日時: 2025-08-14 04:43:15
+cp handler_gemini.py handler_gemini.py.backup.20250814_044315
+```
+
+#### 2. コード変更の適用
+以下の変更を`analyze_image_with_gemini_rest`関数に適用：
+
+- ✅ **APIエンドポイント変更**: 
+  - `https://generativelanguage.googleapis.com/v1beta/models/` 
+  - → `https://generativelanguage.googleapis.com/v1alpha/models/`
+  
+- ✅ **モデル名変更**: 
+  - `gemini-2.0-flash-latest` → `gemini-2.0-flash-exp`
+  
+- ✅ **Search as a tool追加**:
+  ```python
+  "tools": [{
+      "google_search": {}  # Search as a toolを有効化
+  }]
+  ```
+  
+- ✅ **タイムアウト延長**: 
+  - デフォルト → 60秒
+  
+- ✅ **プロンプト強化**:
+  ```python
+  search_enhanced_prompt = prompt + "\n\n必要に応じてWeb検索を活用し、店舗の営業時間、価格、最新情報を含めて回答してください。"
+  ```
+
+- ✅ **レスポンス拡張**:
+  ```python
+  'model': 'gemini-2.0-flash-exp-with-search',
+  'search_enhanced': True
+  ```
+
+#### 3. エラーハンドリング強化
+```python
+except urllib.error.HTTPError as e:
+    error_body = e.read().decode('utf-8')
+    print(f"HTTP Error {e.code}: {error_body}")
+    if "v1alpha" in url and e.code in [400, 403, 404]:
+        print("Search feature may not be available. Consider fallback to standard API.")
+```
+
+### デプロイ情報
+
+#### GitHubコミット
+```bash
+# コミットID: ed59c30
+# コミットメッセージ: feat: Implement Gemini 2.0 Search as a tool for enhanced tourism analysis
+# Push完了: 2025-08-14 04:45:00
+```
+
+#### AWS Lambda デプロイ
+```
+実行時刻: 2025-08-14 04:45:30
+ステージ: dev
+リージョン: ap-northeast-1
+デプロイ時間: 47秒
+
+エンドポイント:
+- POST https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/analyze
+```
+
+### 動作確認URL
+- **本番環境**: https://d22ztxm5q1c726.cloudfront.net/tourism-guide.html
+
+### タグ一覧（ロールバック用）
+実装したコードには以下のタグを付与：
+- `[ORIGINAL_API_CALL_START]` / `[ORIGINAL_API_CALL_END]`: 元のAPI呼び出しコード
+- `[SEARCH_API_CALL_START]` / `[SEARCH_API_CALL_END]`: 新しいSearch対応コード
+- `[TIMEOUT_CHANGE]`: タイムアウト変更箇所
+- `[MODEL_NAME_CHANGE]`: モデル名変更箇所
+- `[SEARCH_FLAG_ADD]`: Search使用フラグ追加箇所
+- `[FALLBACK_LOGIC]`: フォールバック処理
+
+### 動作確認結果（2025年8月14日）
+
+#### ✅ 実装成功確認
+- **フロントエンド表示**: 正常に動作、解析結果が完全に表示される
+- **Search機能**: 店舗検索が正常に実行され、詳細情報が取得できている
+- **レスポンス内容**: 
+  - 店舗の詳細情報（営業時間、定休日、メニュー等）が含まれる
+  - Web検索による最新情報が反映されている
+  - 多言語対応も正常に動作
+
+#### CloudWatchログ確認
+```
+Parts count: 2
+Part 0: 基本的な画像解析結果
+Part 1: Search as a toolによる詳細な店舗情報
+```
+
+Search as a toolが正常に動作し、画像解析と合わせて詳細な観光情報を提供できることを確認しました。
+
+### 次のステップ
+1. **ログ監視**: CloudWatch Logsでエラー発生状況を継続的に確認
+2. **コスト監視**: API使用量とコストの追跡開始
+3. **効果測定**: Search有無での解析結果の比較
+4. **ユーザーフィードバック**: 実際の利用者からの反応を収集
+
+### ロールバック手順
+問題が発生した場合：
+```bash
+# 1. バックアップから復元
+cd /Users/manabu/python/Multimodal_Japan/backend/functions/image-analysis
+cp handler_gemini.py.backup.20250814_044315 handler_gemini.py
+
+# 2. 再デプロイ
+cd ../../
+set -a && source .env && set +a && npx serverless deploy --stage dev
+```

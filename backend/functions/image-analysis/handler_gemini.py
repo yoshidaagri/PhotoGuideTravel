@@ -296,81 +296,87 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
         print(f"Available languages in summary: {list(summary_instruction.keys())}")
         print(f"Selected base prompt starts with: {base_prompt[:100]}...")
         
-        # === SEARCH AS A TOOL 対応開始 ===
-        # 既存のコードをコメントアウト [ORIGINAL_API_CALL_START]
-        """
-        # Gemini REST API リクエスト構築
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
-        
-        # 中国語の場合は特別な設定を追加
-        generation_config = {
-            "temperature": 0.7,
-            "topP": 0.8,
-            "topK": 40,
-            "maxOutputTokens": 2048,
-        }
-        
-        # 中国語（簡体・繁体）を強制するための追加設定
-        if language in ['zh', 'zh-tw']:
-            generation_config["candidateCount"] = 1
-            generation_config["stopSequences"] = []
-        
-        payload = {
-            "contents": [{
-                "parts": [
-                    {"text": prompt},
-                    {
-                        "inline_data": {
-                            "mime_type": "image/jpeg",
-                            "data": image_data
+        # === 分析タイプによるAPI分岐 ===
+        if analysis_type == 'menu':
+            # メニュー翻訳の場合は従来のAPIを使用（Search不要）
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-latest:generateContent?key={api_key}"
+            
+            # 中国語の場合は特別な設定を追加
+            generation_config = {
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 40,
+                "maxOutputTokens": 2048,
+            }
+            
+            # 中国語（簡体・繁体）を強制するための追加設定
+            if language in ['zh', 'zh-tw']:
+                generation_config["candidateCount"] = 1
+                generation_config["stopSequences"] = []
+            
+            payload = {
+                "contents": [{
+                    "parts": [
+                        {"text": prompt},
+                        {
+                            "inline_data": {
+                                "mime_type": "image/jpeg",
+                                "data": image_data
+                            }
                         }
-                    }
-                ]
-            }],
-            "generationConfig": generation_config
-        }
-        """
-        # [ORIGINAL_API_CALL_END]
-        
-        # Search as a tool 対応の新しいAPI呼び出し [SEARCH_API_CALL_START]
-        # v1alpha APIエンドポイントを使用
-        url = f"https://generativelanguage.googleapis.com/v1alpha/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
-        
-        # 中国語の場合は特別な設定を追加
-        generation_config = {
-            "temperature": 0.7,
-            "topP": 0.8,
-            "topK": 40,
-            "maxOutputTokens": 3000,  # 検索結果を含むため増量
-        }
-        
-        # 中国語（簡体・繁体）を強制するための追加設定
-        if language in ['zh', 'zh-tw']:
-            generation_config["candidateCount"] = 1
-            generation_config["stopSequences"] = []
-        
-        # プロンプトにWeb検索を活用する指示を追加
-        search_enhanced_prompt = prompt + "\n\n必要に応じてWeb検索を活用し、店舗の営業時間、価格、最新情報を含めて回答してください。"
-        
-        payload = {
-            "contents": [{
-                "parts": [
-                    {"text": search_enhanced_prompt},
-                    {
-                        "inline_data": {
-                            "mime_type": "image/jpeg",
-                            "data": image_data
+                    ]
+                }],
+                "generationConfig": generation_config
+            }
+            
+            # タイムアウトは標準の30秒
+            timeout_seconds = 30
+            model_name = 'gemini-2.0-flash-latest'
+            search_enhanced = False
+            
+        else:  # analysis_type == 'store' または その他
+            # 店舗・観光地分析の場合はSearch as a toolを使用
+            url = f"https://generativelanguage.googleapis.com/v1alpha/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
+            
+            # 中国語の場合は特別な設定を追加
+            generation_config = {
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 40,
+                "maxOutputTokens": 3000,  # 検索結果を含むため増量
+            }
+            
+            # 中国語（簡体・繁体）を強制するための追加設定
+            if language in ['zh', 'zh-tw']:
+                generation_config["candidateCount"] = 1
+                generation_config["stopSequences"] = []
+            
+            # プロンプトにWeb検索を活用する指示を追加
+            search_enhanced_prompt = prompt + "\n\n必要に応じてWeb検索を活用し、店舗の営業時間、価格、最新情報を含めて回答してください。"
+            
+            payload = {
+                "contents": [{
+                    "parts": [
+                        {"text": search_enhanced_prompt},
+                        {
+                            "inline_data": {
+                                "mime_type": "image/jpeg",
+                                "data": image_data
+                            }
                         }
-                    }
-                ]
-            }],
-            "tools": [{
-                "google_search": {}  # Search as a toolを有効化
-            }],
-            "generationConfig": generation_config
-        }
-        # [SEARCH_API_CALL_END]
-        # === SEARCH AS A TOOL 対応終了 ===
+                    ]
+                }],
+                "tools": [{
+                    "google_search": {}  # Search as a toolを有効化
+                }],
+                "generationConfig": generation_config
+            }
+            
+            # タイムアウトは60秒（検索時間を考慮）
+            timeout_seconds = 60
+            model_name = 'gemini-2.0-flash-exp-with-search'
+            search_enhanced = True
+        # === 分析タイプによるAPI分岐終了 ===
         
         # HTTP リクエスト送信
         req = urllib.request.Request(
@@ -379,22 +385,65 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
             headers={'Content-Type': 'application/json'}
         )
         
-        # タイムアウトを増やす（検索時間を考慮） [TIMEOUT_CHANGE]
-        # with urllib.request.urlopen(req) as response:  # 元: デフォルト
-        with urllib.request.urlopen(req, timeout=60) as response:  # 新: 60秒
+        # タイムアウトを分析タイプに応じて設定
+        with urllib.request.urlopen(req, timeout=timeout_seconds) as response:
             result = json.loads(response.read().decode('utf-8'))
+        
+        # [DEBUG] レスポンス構造の確認
+        print(f"=== GEMINI API RESPONSE DEBUG ===")
+        print(f"Full response keys: {list(result.keys()) if isinstance(result, dict) else 'Not a dict'}")
+        if 'candidates' in result:
+            print(f"Candidates count: {len(result['candidates'])}")
+            if result['candidates']:
+                candidate = result['candidates'][0]
+                print(f"First candidate keys: {list(candidate.keys()) if isinstance(candidate, dict) else 'Not a dict'}")
+                if 'content' in candidate:
+                    print(f"Content keys: {list(candidate['content'].keys()) if isinstance(candidate['content'], dict) else 'No content dict'}")
+                    if 'parts' in candidate['content']:
+                        print(f"Parts count: {len(candidate['content']['parts'])}")
+                        for i, part in enumerate(candidate['content']['parts']):
+                            print(f"Part {i} keys: {list(part.keys()) if isinstance(part, dict) else 'Not a dict'}")
+                            if 'text' in part:
+                                print(f"Part {i} text preview: {part['text'][:100]}...")
+        print(f"=== END DEBUG ===")
         
         # レスポンス解析
         if 'candidates' in result and result['candidates']:
-            analysis_text = result['candidates'][0]['content']['parts'][0]['text']
-            return {
-                'analysis': analysis_text,
-                'language': language,
-                'timestamp': get_jst_isoformat(),
-                'model': 'gemini-2.0-flash-exp-with-search',  # モデル名を更新 [MODEL_NAME_CHANGE]
-                'status': 'success',
-                'search_enhanced': True  # Search使用フラグを追加 [SEARCH_FLAG_ADD]
-            }
+            candidate = result['candidates'][0]
+            analysis_text = ""
+            
+            # レスポンス構造を解析（Search as a toolの場合は複数partsの可能性）
+            if 'content' in candidate and 'parts' in candidate['content']:
+                parts = candidate['content']['parts']
+                
+                # Search as a toolを使用した場合（複数parts）
+                if search_enhanced and len(parts) > 1:
+                    # 複数partsがある場合は全て結合
+                    for i, part in enumerate(parts):
+                        if 'text' in part:
+                            # パート間に改行を追加
+                            if i > 0:
+                                analysis_text += "\n\n"
+                            analysis_text += part['text']
+                else:
+                    # 単一partの場合（通常のレスポンス）
+                    for part in parts:
+                        if 'text' in part:
+                            analysis_text += part['text']
+            
+            # 解析テキストが取得できた場合
+            if analysis_text:
+                return {
+                    'analysis': analysis_text,
+                    'language': language,
+                    'timestamp': get_jst_isoformat(),
+                    'model': model_name,  # 分析タイプに応じたモデル名
+                    'status': 'success',
+                    'search_enhanced': search_enhanced  # 分析タイプに応じたフラグ
+                }
+            else:
+                print("No text found in response parts, falling back to mock")
+                return generate_enhanced_mock_analysis(language, analysis_type)
         else:
             return generate_enhanced_mock_analysis(language, analysis_type)
         
