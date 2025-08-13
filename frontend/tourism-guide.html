@@ -479,8 +479,8 @@
                                 display_name: userInfo.name || userInfo.given_name,
                                 picture: userInfo.picture
                             }));
-                            sessionStorage.setItem('sapporoAuth', 'true');
-                            sessionStorage.setItem('sapporoUser', userInfo.email);
+                            sessionStorage.setItem('tourismAuth', 'true');
+                            sessionStorage.setItem('tourismUser', userInfo.email);
 
                             // Create user in DynamoDB if needed
                             await createUserIfNeeded({
@@ -661,13 +661,13 @@
             
             // Clear all existing sessions and tokens
             isLoggedIn = false;
-            sessionStorage.removeItem('sapporoAuth');
-            sessionStorage.removeItem('sapporoUser');
+            sessionStorage.removeItem('tourismAuth');
+            sessionStorage.removeItem('tourismUser');
             sessionStorage.removeItem('accessToken');
             sessionStorage.removeItem('userInfo');
             sessionStorage.removeItem('emergency-login-token');
-            localStorage.removeItem('sapporoAuth');
-            localStorage.removeItem('sapporoUser');
+            localStorage.removeItem('tourismAuth');
+            localStorage.removeItem('tourismUser');
             localStorage.removeItem('accessToken');
             localStorage.removeItem('userInfo');
             
@@ -788,8 +788,8 @@
             
             // Mock successful login for now
             isLoggedIn = true;
-            sessionStorage.setItem('sapporoAuth', 'true');
-            sessionStorage.setItem('sapporoUser', email);
+            sessionStorage.setItem('tourismAuth', 'true');
+            sessionStorage.setItem('tourismUser', email);
             showMainApp();
         }
         
@@ -906,7 +906,7 @@
                     // ログイン成功
                     sessionStorage.setItem('accessToken', data.tokens.AccessToken);
                     sessionStorage.setItem('userInfo', JSON.stringify(data.user_info));
-                    sessionStorage.setItem('sapporoAuth', 'true');
+                    sessionStorage.setItem('tourismAuth', 'true');
                     sessionStorage.setItem('sapporoUser', data.user_info.email);
                     
                     isLoggedIn = true;
@@ -1060,7 +1060,7 @@
                     // Confirmation successful, auto-login
                     sessionStorage.setItem('accessToken', data.tokens.AccessToken);
                     sessionStorage.setItem('userInfo', JSON.stringify(data.user_info));
-                    sessionStorage.setItem('sapporoAuth', 'true');
+                    sessionStorage.setItem('tourismAuth', 'true');
                     sessionStorage.setItem('sapporoUser', data.user_info.email);
                     
                     isLoggedIn = true;
@@ -1122,7 +1122,7 @@
             setTimeout(() => {
                 if (username === 'sapporo-guide' && password === 'hokkaido2024') {
                     isLoggedIn = true;
-                    sessionStorage.setItem('sapporoAuth', 'true');
+                    sessionStorage.setItem('tourismAuth', 'true');
                     sessionStorage.setItem('sapporoUser', username);
                     // Set a dummy token for emergency login to work with API
                     sessionStorage.setItem('accessToken', 'emergency-login-token');
@@ -1161,7 +1161,7 @@
                         });
                         
                         // Store tokens and user info
-                        sessionStorage.setItem('sapporoAuth', 'true');
+                        sessionStorage.setItem('tourismAuth', 'true');
                         sessionStorage.setItem('accessToken', tokens.access_token);
                         sessionStorage.setItem('sapporoUser', tokens.display_name || tokens.email || 'Google User');
                         sessionStorage.setItem('userInfo', JSON.stringify({
@@ -1311,7 +1311,7 @@
             setTimeout(() => {
                 if (username === CREDENTIALS.username && password === CREDENTIALS.password) {
                     isLoggedIn = true;
-                    sessionStorage.setItem('sapporoAuth', 'true');
+                    sessionStorage.setItem('tourismAuth', 'true');
                     sessionStorage.setItem('sapporoUser', username);
                     showMainApp();
                 } else {
@@ -1347,8 +1347,8 @@
 
         function logout() {
             isLoggedIn = false;
-            sessionStorage.removeItem('sapporoAuth');
-            sessionStorage.removeItem('sapporoUser');
+            sessionStorage.removeItem('tourismAuth');
+            sessionStorage.removeItem('tourismUser');
             sessionStorage.removeItem('accessToken');
             sessionStorage.removeItem('userInfo');
             
