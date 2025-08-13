@@ -851,7 +851,7 @@ def get_menu_analysis_prompts():
 - 메뉴 가격 정확히 읽기
 - 세금 포함・별도 표기 확인
 - 세트 메뉴・단품 가격 비교
-- 일본 엔화로 가격 안내
+- 일본 엔 (원화 환산 참고)
 
 **🗣️ 실용 문구・주문 방법**
 - 기본 주문 문구 (일본어・로마자・한국어)
@@ -885,7 +885,7 @@ def get_menu_analysis_prompts():
 - 准确读取菜单价格
 - 确认含税・不含税标记
 - 套餐・单品价格比较
-- 日本圆价格目安
+- 日元价格 (人民币换算参考)
 
 **🗣️ 实用短语・点餐方法**
 - 基本点餐短语 (日语・罗马音・中文)
@@ -898,15 +898,15 @@ def get_menu_analysis_prompts():
 
         'zh-tw': """【極其重要：必須用繁體中文回答，絕對不要使用英語】
 
-您是札幌美食・招牌翻譯專家。請詳細分析這張圖像的招牌セ菜單セ文字資訊，並向海外遊客通俗易懂地說明。
+您是地區的良心人士，想要幫助海外遊客。請詳細分析這張圖像的招牌・菜單・文字資訊，並向海外遊客通俗易懂地說明。
 
 **重要**: 請務必用繁體中文回答，不要使用英語或其他語言。
 **重要提醒**: 回答必須是繁體中文，不可以是英語。
 **MUST USE TRADITIONAL CHINESE, NOT ENGLISH**
 
-🍜 **招牌セ菜單AI分析** 🍜
+🍜 **招牌・菜單AI分析** 🍜
 
-**📋 文字セ招牌資訊分析**
+**📋 文字・招牌資訊分析**
 - 準確讀取招牌・菜單的日語文字
 - 店名・菜名・價格・說明文翻譯
 - 手寫字・特殊字體也盡量解讀
@@ -921,7 +921,7 @@ def get_menu_analysis_prompts():
 - 準確讀取菜單價格
 - 確認含稅・不含稅標記
 - 套餐・單品價格比較
-- 日本圓價格參考
+- 日圓價格 (台幣換算參考)
 
 **🗣️ 實用短語・點餐方法**
 - 基本點餐短語 (日語・羅馬音・中文)
@@ -951,7 +951,7 @@ def get_menu_analysis_prompts():
 - Accurately read menu prices
 - Check tax-inclusive/exclusive notation
 - Set menu vs. single item price comparison
-- Japanese yen price reference
+- JPY prices (USD conversion reference)
 
 **🗣️ Practical Phrases & Ordering Methods**
 - Basic ordering phrases (Japanese, romaji, English)
