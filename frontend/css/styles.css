@@ -1155,3 +1155,191 @@ body {
         flex-shrink: 0;
     }
 }
+
+/* ===== Markdown表示用スタイル ===== */
+#resultsContent {
+    line-height: 1.7;
+    color: #333;
+    font-size: 15px;
+}
+
+/* ヘッダー */
+#resultsContent h1 {
+    font-size: 1.8em;
+    color: #2196F3;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 8px;
+    margin: 24px 0 16px 0;
+    font-weight: 600;
+}
+
+#resultsContent h2 {
+    font-size: 1.5em;
+    color: #1976D2;
+    margin: 20px 0 12px 0;
+    font-weight: 600;
+}
+
+#resultsContent h3 {
+    font-size: 1.3em;
+    color: #1565C0;
+    margin: 16px 0 10px 0;
+    font-weight: 500;
+}
+
+/* 太字・斜体 */
+#resultsContent strong {
+    font-weight: 600;
+    color: #1976D2;
+}
+
+#resultsContent em {
+    font-style: italic;
+    color: #555;
+}
+
+/* リスト */
+#resultsContent ul, 
+#resultsContent ol {
+    padding-left: 20px;
+    margin: 12px 0;
+}
+
+#resultsContent li {
+    margin: 6px 0;
+    line-height: 1.6;
+}
+
+/* 箇条書きのアイコンカスタマイズ */
+#resultsContent ul li::marker {
+    content: "🔹 ";
+}
+
+/* コード */
+#resultsContent code {
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9em;
+    color: #d73a49;
+}
+
+#resultsContent pre {
+    background: #f8f9fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 16px 0;
+}
+
+#resultsContent pre code {
+    background: none;
+    padding: 0;
+    color: #24292e;
+}
+
+/* 引用 */
+#resultsContent blockquote {
+    border-left: 4px solid #2196F3;
+    background: #f8f9ff;
+    margin: 16px 0;
+    padding: 12px 20px;
+    font-style: italic;
+    color: #555;
+}
+
+/* テーブル */
+.table-container {
+    overflow-x: auto;
+    margin: 16px 0;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.markdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 14px;
+}
+
+.markdown-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    border: none;
+}
+
+.markdown-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: top;
+}
+
+.markdown-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.markdown-table tr:hover {
+    background: #e3f2fd;
+}
+
+/* リンク */
+#resultsContent a {
+    color: #2196F3;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+#resultsContent a:hover {
+    border-bottom-color: #2196F3;
+    background: rgba(33, 150, 243, 0.1);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* 画像 */
+#resultsContent img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin: 12px 0;
+}
+
+/* 区切り線 */
+#resultsContent hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #2196F3, transparent);
+    margin: 24px 0;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    #resultsContent {
+        font-size: 14px;
+    }
+    
+    #resultsContent h1 {
+        font-size: 1.6em;
+    }
+    
+    #resultsContent h2 {
+        font-size: 1.4em;
+    }
+    
+    .markdown-table {
+        font-size: 12px;
+    }
+    
+    .markdown-table th,
+    .markdown-table td {
+        padding: 8px 12px;
+    }
+}

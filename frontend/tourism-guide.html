@@ -11,6 +11,10 @@
     <!-- Google Fonts for enhanced UI -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css?v=20250811002446">
+    
+    <!-- Markdown parsing and security libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 </head>
 <body>
     <div class="app">
@@ -428,11 +432,47 @@
             handleOAuthCallback();
             checkAuthStatus();
             initializeLanguage();
+            initializeMarkdown();
             
             // Update user info display if already logged in
             if (sessionStorage.getItem('authToken')) {
                 updateHeaderUserInfo();
             }
+        }
+        
+        // Initialize Markdown configuration
+        function initializeMarkdown() {
+            // Markedのオプション設定
+            marked.setOptions({
+                breaks: true,        // 改行を<br>に変換
+                gfm: true,          // GitHub Flavored Markdown有効
+                headerIds: false,   // ヘッダーIDを生成しない
+                mangle: false,      // emailアドレスの自動リンクを無効
+                sanitize: false     // HTMLサニタイズはDOMPurifyで行う
+            });
+            
+            // カスタムレンダラー設定
+            const renderer = new marked.Renderer();
+            
+            // カスタムリンクレンダリング（外部リンクは新しいタブで開く）
+            renderer.link = function(href, title, text) {
+                const isExternal = href.startsWith('http');
+                const target = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+                const titleAttr = title ? ` title="${title}"` : '';
+                return `<a href="${href}"${titleAttr}${target}>${text}</a>`;
+            };
+            
+            // カスタムテーブルスタイリング
+            renderer.table = function(header, body) {
+                return `<div class="table-container">
+                    <table class="markdown-table">
+                        <thead>${header}</thead>
+                        <tbody>${body}</tbody>
+                    </table>
+                </div>`;
+            };
+            
+            marked.setOptions({ renderer });
         }
 
         // Handle OAuth callback from Cognito
@@ -1612,22 +1652,37 @@
 
         // テキストをHTMLに変換（改行とURLリンク化）
         function formatAnalysisText(text) {
-            // HTMLエスケープ（XSS対策）
-            const escapeHtml = (unsafe) => {
-                return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            };
-            
-            // テキストをエスケープしてから改行をBRタグに変換
-            let escaped = escapeHtml(text);
-            let withLineBreaks = escaped.replace(/\n/g, '<br>');
-            
-            // URLをリンクに変換
-            return convertUrlsToLinks(withLineBreaks);
+            try {
+                // Markdownをパースして表示
+                const parsedMarkdown = marked.parse(text);
+                
+                // DOMPurifyでセキュリティ対策（XSS対策）
+                const sanitizedHtml = DOMPurify.sanitize(parsedMarkdown, {
+                    ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'a', 'code', 'pre', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'img', 'hr', 'div', 'span'],
+                    ALLOWED_ATTR: ['href', 'target', 'rel', 'title', 'class', 'id', 'src', 'alt']
+                });
+                
+                return sanitizedHtml;
+            } catch (error) {
+                console.error('Markdown parsing error:', error);
+                
+                // フォールバック: HTMLエスケープ（XSS対策）
+                const escapeHtml = (unsafe) => {
+                    return unsafe
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#039;");
+                };
+                
+                // テキストをエスケープしてから改行をBRタグに変換
+                let escaped = escapeHtml(text);
+                let withLineBreaks = escaped.replace(/\n/g, '<br>');
+                
+                // URLをリンクに変換
+                return convertUrlsToLinks(withLineBreaks);
+            }
         }
 
         function showResults(success, responseText, uploadInfo = null) {
