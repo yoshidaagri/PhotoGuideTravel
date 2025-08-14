@@ -10,7 +10,17 @@ provider:
   environment:
     STAGE: ${self:provider.stage}
     GOOGLE_GEMINI_API_KEY: ${env:GOOGLE_GEMINI_API_KEY}
+    # Stripe Configuration
+    STRIPE_PUBLISHABLE_KEY: ${env:STRIPE_PUBLISHABLE_KEY}
     STRIPE_SECRET_KEY: ${env:STRIPE_SECRET_KEY}
+    STRIPE_WEBHOOK_SECRET: ${env:STRIPE_WEBHOOK_SECRET}
+    STRIPE_PRICE_7DAYS: ${env:STRIPE_PRICE_7DAYS}
+    STRIPE_PRICE_20DAYS: ${env:STRIPE_PRICE_20DAYS}
+    FRONTEND_URL: ${env:FRONTEND_URL, 'https://ai-tourism-poc-frontend-dev.s3.amazonaws.com'}
+    # Square Configuration (disabled)
+    # SQUARE_APPLICATION_ID: ${env:SQUARE_APPLICATION_ID}
+    # SQUARE_ACCESS_TOKEN: ${env:SQUARE_ACCESS_TOKEN}
+    # SQUARE_ENVIRONMENT: ${env:SQUARE_ENVIRONMENT}
     PROJECT_NAME: ai-tourism-poc
     COGNITO_USER_POOL_ID: ap-northeast-1_Nk2U9t00f
     COGNITO_CLIENT_ID: 2tctru78c2epl4mbhrt8asd55e
@@ -63,8 +73,12 @@ functions:
     handler: functions/payment/handler.main
     events:
       - http:
-          path: payment/{proxy+}
-          method: ANY
+          path: payment/create-checkout
+          method: post
+          cors: true
+      - http:
+          path: payment/webhook
+          method: post
           cors: true
 
   # userManagement: # Phase 6.5で再有効化予定（現在未使用のためコメントアウト）
@@ -99,6 +113,22 @@ resources:
           - AttributeName: user_id
             KeyType: HASH
     
+    PaymentHistoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-payment-history-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+    
     # Cognito User Pool Client with email verification settings
     CognitoUserPoolClientUpdated:
       Type: AWS::Cognito::UserPoolClient
@@ -115,11 +145,14 @@ resources:
           - COGNITO
 
 
-# plugins:
-#   - serverless-python-requirements
+plugins:
+  - serverless-python-requirements
 
-# custom:
-#   pythonRequirements:
-#     pythonBin: python3
-#     zip: true
-#     slim: true
+custom:
+  pythonRequirements:
+    pythonBin: python3
+    zip: true
+    slim: false
+    noDeploy: []
+    useDownloadCache: false
+    useStaticCache: false

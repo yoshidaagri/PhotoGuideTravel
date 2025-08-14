@@ -20,6 +20,7 @@
     --nature-accent: #8BC34A;
     --forest-green: #388E3C;
     --leaf-green: #9CCC65;
+    --auth-overlay: rgba(0, 0, 0, 0.5);
 }
 
 body {
@@ -64,6 +65,17 @@ body {
     font-size: 1.5rem;
     font-weight: bold;
     color: var(--primary-color);
+}
+
+.version-tag {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: #666;
+    background: rgba(76, 175, 80, 0.1);
+    padding: 2px 6px;
+    border-radius: 8px;
+    margin-left: 8px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .user-section {
@@ -271,6 +283,43 @@ body {
 
 .modal-btn.secondary:hover {
     background: #e0e0e0;
+}
+
+/* Square Payment Form Styles */
+.payment-section {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #e1e5e9;
+}
+
+.card-container {
+    padding: 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    background: white;
+    margin-bottom: 1rem;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-container iframe {
+    width: 100%;
+    border: none;
+    height: 40px;
+}
+
+.payment-security {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 1rem;
 }
 
 /* Main Container */
@@ -1158,32 +1207,32 @@ body {
 
 /* ===== Markdown表示用スタイル ===== */
 #resultsContent {
-    line-height: 1.7;
+    line-height: 1.5;  /* 行間を狭める: 1.7 → 1.5 */
     color: #333;
-    font-size: 15px;
+    font-size: 18px;   /* 文字を大きく: 15px → 18px */
 }
 
 /* ヘッダー */
 #resultsContent h1 {
-    font-size: 1.8em;
+    font-size: 2em;    /* 見出しも拡大: 1.8em → 2em */
     color: #2196F3;
     border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 8px;
-    margin: 24px 0 16px 0;
+    padding-bottom: 6px;
+    margin: 18px 0 12px 0;  /* 余白を調整 */
     font-weight: 600;
 }
 
 #resultsContent h2 {
-    font-size: 1.5em;
+    font-size: 1.6em;  /* 見出しも拡大: 1.5em → 1.6em */
     color: #1976D2;
-    margin: 20px 0 12px 0;
+    margin: 16px 0 10px 0;  /* 余白を調整 */
     font-weight: 600;
 }
 
 #resultsContent h3 {
-    font-size: 1.3em;
+    font-size: 1.4em;  /* 見出しも拡大: 1.3em → 1.4em */
     color: #1565C0;
-    margin: 16px 0 10px 0;
+    margin: 14px 0 8px 0;   /* 余白を調整 */
     font-weight: 500;
 }
 
@@ -1198,16 +1247,22 @@ body {
     color: #555;
 }
 
+/* 段落 */
+#resultsContent p {
+    margin: 8px 0;       /* 段落間の余白を狭める */
+    line-height: 1.5;    /* 行間を統一 */
+}
+
 /* リスト */
 #resultsContent ul, 
 #resultsContent ol {
-    padding-left: 20px;
-    margin: 12px 0;
+    padding-left: 25px;  /* インデントを少し増やす */
+    margin: 8px 0;       /* 余白を調整: 12px → 8px */
 }
 
 #resultsContent li {
-    margin: 6px 0;
-    line-height: 1.6;
+    margin: 4px 0;       /* 項目間の余白を狭める: 6px → 4px */
+    line-height: 1.5;    /* 行間を統一: 1.6 → 1.5 */
 }
 
 /* 箇条書きのアイコンカスタマイズ */
@@ -1244,8 +1299,8 @@ body {
 #resultsContent blockquote {
     border-left: 4px solid #2196F3;
     background: #f8f9ff;
-    margin: 16px 0;
-    padding: 12px 20px;
+    margin: 10px 0;      /* 余白を調整: 16px → 10px */
+    padding: 10px 16px;  /* 内側の余白も調整 */
     font-style: italic;
     color: #555;
 }
@@ -1323,15 +1378,20 @@ body {
 /* モバイル対応 */
 @media (max-width: 768px) {
     #resultsContent {
-        font-size: 14px;
+        font-size: 16px;    /* モバイルでも大きめの文字: 14px → 16px */
+        line-height: 1.5;   /* 行間は統一 */
     }
     
     #resultsContent h1 {
-        font-size: 1.6em;
+        font-size: 1.8em;   /* 見出しも大きく: 1.6em → 1.8em */
     }
     
     #resultsContent h2 {
-        font-size: 1.4em;
+        font-size: 1.5em;   /* 見出しも大きく: 1.4em → 1.5em */
+    }
+    
+    #resultsContent h3 {
+        font-size: 1.3em;   /* h3の設定も追加 */
     }
     
     .markdown-table {
@@ -1342,4 +1402,125 @@ body {
     .markdown-table td {
         padding: 8px 12px;
     }
+}
+
+/* Stripe決済用スピナーアニメーション */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 認証モーダル */
+.auth-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--auth-overlay);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.auth-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.auth-content {
+    background: var(--glass-bg);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--glass-border);
+}
+
+.auth-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-close:hover {
+    color: #333;
+}
+
+.auth-form h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 16px 0;
+    transition: background-color 0.3s ease;
+}
+
+.auth-btn:hover {
+    background: var(--primary-dark);
+}
+
+.auth-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.auth-form p {
+    text-align: center;
+    margin-top: 1rem;
+    color: #666;
+}
+
+.auth-form a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-form a:hover {
+    text-decoration: underline;
 }

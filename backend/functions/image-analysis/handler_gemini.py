@@ -274,26 +274,27 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
         else:
             tourism_prompts = get_store_tourism_prompts()
         
-        # 分析タイプ別の要約指示を追加
+        # 分析タイプ別の要約指示を追加（一時的にOFF）
         base_prompt = tourism_prompts.get(language, tourism_prompts['ja'])
         
-        if analysis_type == 'menu':
-            summary_instruction = get_menu_summary_instructions()
-        else:
-            summary_instruction = get_store_summary_instructions()
+        # 要約指示機能を一時的に無効化
+        # if analysis_type == 'menu':
+        #     summary_instruction = get_menu_summary_instructions()
+        # else:
+        #     summary_instruction = get_store_summary_instructions()
         
-        # 中国語の場合は特別強化
+        # 中国語の場合は特別強化（こちらは有効のまま）
         if language == 'zh':
-            prompt = f"请用简体中文回答。{base_prompt}{summary_instruction.get(language, summary_instruction['ja'])}请确保回答完全使用简体中文。"
+            prompt = f"请用简体中文回答。{base_prompt}请确保回答完全使用简体中文。"
         elif language == 'zh-tw':
-            prompt = f"請用繁體中文回答。{base_prompt}{summary_instruction.get(language, summary_instruction['ja'])}請確保回答完全使用繁體中文。"
+            prompt = f"請用繁體中文回答。{base_prompt}請確保回答完全使用繁體中文。"
         else:
-            prompt = base_prompt + summary_instruction.get(language, summary_instruction['ja'])
+            prompt = base_prompt
         
         # デバッグログ
         print(f"Analysis type: {analysis_type}, Language: {language}")
         print(f"Available languages in prompts: {list(tourism_prompts.keys())}")
-        print(f"Available languages in summary: {list(summary_instruction.keys())}")
+        # print(f"Available languages in summary: {list(summary_instruction.keys())}")  # 要約指示機能OFF
         print(f"Selected base prompt starts with: {base_prompt[:100]}...")
         
         # === 分析タイプによるAPI分岐 ===
@@ -541,7 +542,9 @@ AI分析服务暂时无法使用。
 def get_store_tourism_prompts():
     """店舗・観光施設分析用プロンプト"""
     return {
-        'ja': """あなたは地元の観光ガイドです。この画像を詳しく分析し、その地域の魅力を最大限に伝える観光ガイドとして回答してください。
+        'ja': """あなたは地元の観光ガイドです。この画像を詳しく分析し、その地域の魅力を最大限に伝える観光ガイドとして800文字以内で回答してください。
+
+**重要: 回答は必ずMarkdown形式で出力してください。見出しは##、太字は**、リストは-を使用してください。**
 
 🏔️ **観光AI解析** 🏔️
 
@@ -583,7 +586,6 @@ def get_store_tourism_prompts():
 
 **❄️ 季節別の準備**
 - 現在の気温と適切な服装
-- 防寒具のレンタル・購入場所
 - 路面状況と転倒防止対策
 - 季節特有の注意点
 
@@ -600,7 +602,9 @@ def get_store_tourism_prompts():
 - 外国語対応状況
 """,
 
-        'ko': """당신은 지역 관광 가이드입니다. 이 이미지를 자세히 분석하고 그 지역의 매력을 최대한 전달하는 관광 가이드로서 답변해주세요.
+        'ko': """당신은 지역 관광 가이드입니다. 이 이미지를 자세히 분석하고 그 지역의 매력을 최대한 전달하는 관광 가이드로서 800자 이내로 답변해주세요.
+
+**중요: 반드시 Markdown 형식으로 답변해주세요. 제목은 ##, 굵은 글씨는 **, 목록은 -를 사용해주세요.**
 
 🏔️ **관광 AI 분석** 🏔️
 
@@ -642,7 +646,6 @@ def get_store_tourism_prompts():
 
 **❄️ 계절별 준비사항**
 - 현재 기온과 적절한 복장
-- 방한용품 렌탈・구입 장소
 - 노면 상황과 낙상 방지 대책
 - 계절 특유의 주의점
 
@@ -660,7 +663,9 @@ def get_store_tourism_prompts():
 
 진정한 지역의 매력을 체험하고 잊을 수 없는 여행 추억을 만들어보세요!""",
 
-        'zh': """您是地元旅游向导。请详细分析这张图像，作为旅游向导最大程度地传达该地区的魅力。
+        'zh': """您是地元旅游向导。请详细分析这张图像，作为旅游向导最大程度地传达该地区的魅力，请在800字以内回答。
+
+**重要：请务必使用Markdown格式回答。标题使用##，粗体使用**，列表使用-。**
 
 🏔️ **旅游AI分析** 🏔️
 
@@ -702,7 +707,6 @@ def get_store_tourism_prompts():
 
 **❄️ 季节性准备**
 - 当前气温和适合的服装
-- 防寒用品的租赁・购买地点
 - 路面状况和防滑对策
 - 季节特有的注意事项
 
@@ -720,7 +724,9 @@ def get_store_tourism_prompts():
 
 为您传达该地区的真正魅力，帮助您创造难忘的旅行回忆！""",
 
-        'zh-tw': """您是地元旅遊向導。請詳細分析這張圖像，作為旅遊向導最大程度地傳達該地區的魅力。
+        'zh-tw': """您是地元旅遊向導。請詳細分析這張圖像，作為旅遊向導最大程度地傳達該地區的魅力，請在800字以內回答。
+
+**重要：請務必使用Markdown格式回答。標題使用##，粗體使用**，列表使用-。**
 
 🏔️ **旅遊AI分析** 🏔️
 
@@ -762,7 +768,6 @@ def get_store_tourism_prompts():
 
 **❄️ 季節性準備**
 - 當前氣溫和適合的服裝
-- 防寒用品的租賃・購買地點
 - 路面狀況和防滑對策
 - 季節特有的注意事項
 
@@ -780,7 +785,9 @@ def get_store_tourism_prompts():
 
 為您傳達該地區的真正魅力，幫助您創造難忘的旅行回憶！""",
 
-        'en': """You are a local tourism expert. Analyze this image in detail and provide comprehensive tourism guidance showcasing local attractions.
+        'en': """You are a local tourism expert. Analyze this image in detail and provide comprehensive tourism guidance showcasing local attractions within 800 characters.
+
+**Important: Please answer in Markdown format. Use ## for headings, ** for bold text, and - for lists.**
 
 🏔️ **TOURISM AI ANALYSIS** 🏔️
 
@@ -822,7 +829,6 @@ def get_store_tourism_prompts():
 
 **❄️ Seasonal Preparations**
 - Current temperature and appropriate clothing
-- Cold weather gear rental/purchase locations
 - Road conditions and slip prevention measures
 - Season-specific precautions
 
@@ -846,6 +852,8 @@ def get_menu_analysis_prompts():
     """看板・メニュー分析用プロンプト"""
     return {
         'ja': """あなたは地元の良識ある方で、海外の観光客を助けようとしています。この画像の看板・メニュー・文字情報を詳しく解析し、海外の観光客にも分かりやすく説明してください。
+
+**重要: 回答は必ずMarkdown形式で出力してください。見出しは##、太字は**、リストは-を使用してください。**
 
 🍜 **看板・メニューAI解析** 🍜
 
@@ -873,6 +881,8 @@ def get_menu_analysis_prompts():
 海外の方が地元グルメを安心して楽しめるよう、詳しくサポートします！""",
 
         'ko': """당신은 지역의 양심적인 분으로, 해외 관광객을 돕고자 합니다. 이 이미지의 간판・메뉴・문자 정보를 자세히 분석하고, 해외 관광객이 이해하기 쉽게 설명해주세요.
+
+**중요: 반드시 Markdown 형식으로 답변해주세요. 제목은 ##, 굵은 글씨는 **, 목록은 -를 사용해주세요.**
 
 🍜 **간판・메뉴 AI 분석** 🍜
 
@@ -907,6 +917,8 @@ def get_menu_analysis_prompts():
 **重要**: 请务必用简体中文回答，不要使用英语或其他语言。
 **重要提醒**: 回答必须是简体中文，不可以是英语。
 **MUST USE SIMPLIFIED CHINESE, NOT ENGLISH**
+
+**重要：请务必使用Markdown格式回答。标题使用##，粗体使用**，列表使用-。**
 
 🍜 **招牌・菜单AI分析** 🍜
 
@@ -944,6 +956,8 @@ def get_menu_analysis_prompts():
 **重要提醒**: 回答必須是繁體中文，不可以是英語。
 **MUST USE TRADITIONAL CHINESE, NOT ENGLISH**
 
+**重要：請務必使用Markdown格式回答。標題使用##，粗體使用**，列表使用-。**
+
 🍜 **招牌・菜單AI分析** 🍜
 
 **📋 文字・招牌資訊分析**
@@ -973,6 +987,8 @@ def get_menu_analysis_prompts():
 **【重要提醒：請確保您的回答完全使用繁體中文，不要混入英語】**""",
 
         'en': """You are a conscientious local person who wants to help overseas tourists. Please analyze the signboard, menu, and text information in this image in detail, explaining it clearly for overseas tourists.
+
+**Important: Please answer in Markdown format. Use ## for headings, ** for bold text, and - for lists.**
 
 🍜 **SIGNBOARD & MENU AI ANALYSIS** 🍜
 

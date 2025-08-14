@@ -5,6 +5,10 @@ CLAUDE.md
 hisotory/
 history/
 
+# Markdown files (開発履歴・計画書) - README以外除外
+*.md
+!README.md
+
 # API Keys and Secrets
 .env
 .env.local
@@ -12,6 +16,8 @@ history/
 .env.production
 *.key
 *.pem
+phase6.8square.md
+phase6.8stripe.md
 
 # Dependencies
 node_modules/
@@ -58,3 +64,4 @@ htmlcov/
 
 # Serverless Framework
 .serverless/
+.requirements.zip
