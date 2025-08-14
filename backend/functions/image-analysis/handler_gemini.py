@@ -498,125 +498,33 @@ def generate_enhanced_mock_analysis(language='ja', analysis_type='store'):
     強化されたモック解析（Gemini API使用不可時）
     """
     mock_responses = {
-        'ja': """🏔️ 観光AI解析結果 (実画像解析版)
+        'ja': """🏔️ 観光AI解析結果 (実画像解析版)は現在メンテナンス中です。詳細は問い合わせフォームよりお願いします。""",
 
-**📍場所・エリア**: この画像から観光地の特徴的な要素を検出しました。
+        'ko': """⚠️ 시스템 오류가 발생했습니다
 
-**🍜グルメ・食事**: 
-• 地元の名物ラーメン - 人気のグルメスポット
-• 名物料理店 - 伝統の味が楽しめる老舗
-• 新鮮市場 - 海鮮・地元食材の宝庫
-• スイーツ店 - ご当地スイーツの発祥地
+현재 AI 분석 서비스가 일시적으로 이용할 수 없습니다.
 
-**🚇アクセス**: 
-• 公共交通機関が充実
-• 主要駅からのアクセスが便利
-• 観光スポットへの移動がスムーズ
+**대처 방법:**
+• 잠시 후 다시 시도해 주세요
+• 네트워크 연결 상태를 확인해 주세요
+• 문제가 지속되면 고객 지원팀에 문의해 주세요
 
-**🎯おすすめ**: 
-• 中心部の公園 - イベント・憩いの場
-• 繁華街 - 夜景が美しいエンターテインメントエリア
-• 歴史的建造物 - 赤レンガの美しい建築
+이용에 불편을 드려 죄송합니다.""",
 
-**💡検索候補**: ショッピング街、歴史的名所、テーマパーク
+        'zh': """⚠️ 系统出现错误
 
-**お得情報**: 地下鉄1日乗車券(830円)で効率的に観光できます！""",
+AI分析服务暂时无法使用。
 
-        'ko': """🏔️ 관광 AI 분석 결과 (실제 이미지 분석)
+**解决方法：**
+• 请稍后再试
+• 检查网络连接状态
+• 如问题持续，请联系客服
 
-**📍장소・지역**: 이 이미지에서 관광지의 특징적 요소를 감지했습니다.
+给您带来不便，深表歉意。""",
 
-**🍜그루메・음식**: 
-• 지역 명물 라멘 - 인기 그루메 스팟
-• 명물 요리점 - 전통의 맛을 즐길 수 있는 노포
-• 신선 시장 - 해산물・지역 식재료의 보고
-• 스위츠 가게 - 당지 스위츠의 발상지
+        'zh-tw': """🏔️ 觀光AI分析結果（實際圖像分析）目前正在維護中。詳情請透過諮詢表單聯絡我們。""",
 
-**🚇접근**: 
-• 대중교통이 충실
-• 주요 역에서의 접근이 편리
-• 관광 스팟으로의 이동이 스무즈
-
-**🎯추천**: 
-• 중심부의 공원 - 이벤트・쉼터
-• 번화가 - 야경이 아름다운 엔터테인먼트 에리어
-• 역사적 건물 - 빨간 벽돌의 아름다운 건축
-
-**💡검색 후보**: 쇼핑가, 역사적 명소, 테마 파크
-
-**알찬 정보**: 지하철 1일 승차권(830엔)으로 효율적 관광 가능!""",
-
-        'zh': """🏔️ 旅游AI分析结果（实际图像分析）
-
-**📍场所・区域**: 从这张图像中检测到旅游地的特征性要素。
-
-**🍜美食・餐饮**: 
-• 地元名物拉面 - 人气美食景点
-• 名物料理店 - 传统美味的老店
-• 新鲜市场 - 海鲜・地元食材的宝库
-• 甜点店 - 当地甜点的发源地
-
-**🚇交通**: 
-• 公共交通完善
-• 主要车站访问便利
-• 旅游景点移动顺畅
-
-**🎯推荐**: 
-• 中心区公园 - 活动・休息场所
-• 繁华街 - 夜景美丽的娱乐区
-• 历史建筑 - 红砖美丽建筑
-
-**💡搜索候选**: 购物街，历史名胜，主题公园
-
-**超值信息**: 地铁1日乘车券(830日元)可高效观光！""",
-
-        'zh-tw': """🏔️ 觀光AI分析結果（實際圖像分析）
-
-**📍場所・區域**: 從這張圖像中檢測到旅遊地的特徵性要素。
-
-**🍜美食・餐飲**: 
-• 地元名物拉麵 - 人氣美食景點
-• 名物料理店 - 傳統美味的老店
-• 新鮮市場 - 海鮮・地元食材的寶庫
-• 甜點店 - 當地甜點的發源地
-
-**🚇交通**: 
-• 公共交通完善
-• 主要車站訪問便利
-• 旅遊景點移動順暢
-
-**🎯推薦**: 
-• 中心區公園 - 活動・休息場所
-• 繁華街 - 夜景美麗的娛樂區
-• 歷史建築 - 紅磚美麗建築
-
-**💡搜索候選**: 購物街，歷史名勝，主題公園
-
-**超值資訊**: 地鐵1日乘車券(830日圓)可高效觀光！""",
-
-        'en': """🏔️ Tourism AI Analysis (Real Image Analysis)
-
-**📍Location・Area**: Detected characteristic elements of tourist destination from this image.
-
-**🍜Gourmet・Food**: 
-• Local Specialty Ramen - Popular gourmet spot
-• Traditional Restaurant - Long-established local cuisine
-• Fresh Market - Treasure trove of seafood and local ingredients
-• Sweets Shop - Birthplace of local confections
-
-**🚇Access**: 
-• Well-developed public transportation
-• Convenient access from major stations
-• Smooth travel to tourist spots
-
-**🎯Recommendations**: 
-• Central Park - Event and relaxation space
-• Entertainment District - Beautiful nightscape area
-• Historic Building - Beautiful red brick architecture
-
-**💡Search Candidates**: Shopping Arcade, Historic Landmark, Theme Park
-
-**Money-saving tip**: Subway 1-day pass (¥830) for efficient sightseeing!"""
+        'en': """🏔️ Tourism AI Analysis (Real Image Analysis) is currently under maintenance. Please contact us through the inquiry form for details."""
     }
 
     analysis_text = mock_responses.get(language, mock_responses['ja'])
