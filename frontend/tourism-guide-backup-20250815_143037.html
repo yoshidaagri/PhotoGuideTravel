@@ -1,0 +1,2623 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>観光アナライザー</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+    <!-- Google Fonts for enhanced UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20250814020000">
+    
+    <!-- Markdown parsing and security libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    
+    <!-- Stripe.js SDK -->
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    🏔️ <span data-i18n="title">観光アナライザー</span>
+                    <span class="version-tag">ver1.2</span>
+                </div>
+                <div class="user-section">
+                    <div id="userInfo" class="user-info">
+                        <span>👤 <span id="currentUser">tourist-guide</span></span>
+                        <span id="userPlan" class="user-plan">Free (残り5回)</span>
+                        <button id="upgradeBtn" onclick="showUpgradeModal()" class="upgrade-btn" style="display: none;">⭐ アップグレード</button>
+                        <button onclick="logout()" class="logout-btn" data-i18n="logout">ログアウト</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Login Section -->
+            <div id="loginSection" class="login-section">
+                <div class="login-card fade-in">
+                    <h1 class="login-title">🏔️</h1>
+                    <h2 class="login-subtitle" data-i18n="loginTitle">観光アナライザー</h2>
+                    
+                    <!-- Googleログイン -->
+                    <button id="googleLoginBtn" class="google-login-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        <span data-i18n="googleLogin">Googleでログイン</span>
+                    </button>
+                    
+                    <!-- メールログイン -->
+                    <div class="divider">
+                        <span data-i18n="orDivider">または</span>
+                    </div>
+                    
+                    <button id="emailLoginBtn" class="email-login-btn" data-i18n="emailLogin">
+                        📧 メールでログイン
+                    </button>
+                    
+                    <div class="features-info">
+                        <p><strong>🎆 新機能</strong></p>
+                        <p>• 無料: 月5回まで解析</p>
+                        <p>• プレミアム: 無制限利用</p>
+                        <p>• 5言語対応: 🇯🇵/🇰🇷/🇨🇳/🇹🇼/🌍</p>
+                        <p><small>店舗・観光地・料理画像をAIが詳しく解析</small></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Application -->
+            <div id="mainApp" class="main-app">
+                <!-- Welcome Section -->
+                <section class="welcome-section fade-in">
+                    <h1 class="welcome-title" data-i18n="title">観光AI画像解析</h1>
+                    <p class="welcome-description">
+                        <span data-i18n="description">店舗・観光地・料理の画像をAIが詳しく解析し、地元情報やおすすめスポットをご紹介します</span>
+                    </p>
+                </section>
+
+                <!-- Language Selection -->
+                <section class="language-section">
+                    <h3 class="language-title" data-i18n="languageSelect">🌐 解析言語を選択</h3>
+                    <div class="language-options">
+                        <label class="language-option">
+                            <input type="radio" name="language" value="ja" checked>
+                            <span class="language-name">🇯🇵 日本語</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="ko">
+                            <span class="language-name">🇰🇷 한국어</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="zh">
+                            <span class="language-name">🇨🇳 简体中文</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="zh-tw">
+                            <span class="language-name">🇹🇼 繁體中文</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="en">
+                            <span class="language-name">🌍 English</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Analysis Type Selection -->
+                <section class="analysis-type-section">
+                    <h3 class="analysis-title" data-i18n="analysisTypeSelect">🔍 解析タイプを選択</h3>
+                    <div class="analysis-options">
+                        <label class="analysis-option store-option">
+                            <input type="radio" name="analysisType" value="store" checked>
+                            <span class="analysis-icon">🏪🕌</span>
+                            <span class="analysis-name" data-i18n="storeAnalysis">店舗・観光地分析</span>
+                        </label>
+                        <label class="analysis-option menu-option">
+                            <input type="radio" name="analysisType" value="menu">
+                            <span class="analysis-icon">📋🍜</span>
+                            <span class="analysis-name" data-i18n="menuTranslation">看板・メニュー翻訳</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Upload Section -->
+                <section id="uploadSection" class="upload-section" onclick="document.getElementById('imageInput').click()">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text" data-i18n="uploadText">画像をアップロード</div>
+                    <div class="upload-subtext">
+                        <span data-i18n="uploadSubtext">店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ</span><br>
+                        <strong><span data-i18n="fileFormat">対応形式: JPG, PNG, GIF (最大 10MB)</span></strong><br>
+                        <strong><span id="recommendedText" data-i18n="storeRecommended">推奨: 名物料理、観光名所、イベント等</span></strong>
+                    </div>
+                    <input type="file" id="imageInput" class="file-input" accept="image/*">
+                </section>
+
+                <!-- Preview Section -->
+                <section id="previewSection" class="preview-section hidden">
+                    <h3 class="preview-title" data-i18n="previewTitle">📋 アップロード画像プレビュー</h3>
+                    <img id="previewImage" class="preview-image" alt="プレビュー">
+                    <div id="imageDetails" class="image-details"></div>
+                    <button onclick="analyzeImage()" id="analyzeBtn" class="analyze-btn">
+                        <span id="analyzeBtnText" data-i18n="analyzeButton">🤖 観光AI解析を開始</span>
+                    </button>
+                </section>
+
+                <!-- Loading Section -->
+                <section id="loadingSection" class="loading-section hidden">
+                    <div class="simple-loading-spinner"></div>
+                    <div class="loading-text" data-i18n="loading">観光AIが解析中...</div>
+                    <div class="loading-subtext">
+                        <span data-i18n="loadingSubtext">名物料理・観光名所・地元情報</span><br>
+                        <span data-i18n="loadingDetail">詳細な地元情報を分析しています</span>
+                    </div>
+                </section>
+
+                <!-- Results Section -->
+                <section id="resultsSection" class="results-section hidden">
+                    <div class="results-header">
+                        <h3 class="results-title">🏔️ 観光AI解析結果</h3>
+                        <button onclick="newAnalysis()" class="new-analysis-btn" data-i18n="newAnalysis">🔄 新しい解析</button>
+                    </div>
+                    <div id="resultsContent" class="results-content"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev';
+        const CREDENTIALS = {
+            username: 'tourist-guide',
+            password: 'hokkaido2024'
+        };
+
+        // State
+        let selectedImage = null;
+        let isLoggedIn = false;
+        
+        // Message display function - defined early to be available everywhere
+        function showMessage(message, type = 'info') {
+            console.log(`${type.toUpperCase()}: ${message}`);
+            
+            // Create or update message element
+            let messageEl = document.getElementById('message-display');
+            if (!messageEl) {
+                messageEl = document.createElement('div');
+                messageEl.id = 'message-display';
+                messageEl.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    z-index: 10000;
+                    max-width: 400px;
+                    font-weight: 500;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                `;
+                document.body.appendChild(messageEl);
+            }
+            
+            // Set style based on type
+            const styles = {
+                success: 'background: #d1edda; color: #155724; border-left: 4px solid #28a745;',
+                error: 'background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545;',
+                info: 'background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8;'
+            };
+            
+            messageEl.style.cssText += styles[type] || styles.info;
+            messageEl.textContent = message;
+            messageEl.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                if (messageEl) {
+                    messageEl.style.display = 'none';
+                }
+            }, 5000);
+        }
+
+        // Translation dictionary for UI internationalization
+        const translations = {
+            ja: {
+                title: "観光アナライザー",
+                description: "観光・グルメ画像をAI解析し、地元情報をご紹介",
+                languageSelect: "解析言語を選択",
+                analysisTypeSelect: "解析タイプを選択",
+                storeAnalysis: "店舗・観光地分析",
+                menuTranslation: "看板・メニュー翻訳",
+                uploadText: "画像をアップロード",
+                uploadSubtext: "店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ",
+                fileFormat: "対応形式: JPG, PNG, GIF (最大 10MB)",
+                storeRecommended: "推奨: 名物料理、観光名所、イベント等",
+                menuRecommended: "特に有効: 手書きメニュー、価格表、注文表等",
+                previewTitle: "アップロード画像プレビュー",
+                analyzeButton: "観光AI解析を開始",
+                loading: "観光AIが解析中...",
+                loadingSubtext: "名物料理・観光名所・地元情報",
+                loadingDetail: "詳細な地元情報を分析しています",
+                loginTitle: "観光アナライザー",
+                googleLogin: "Googleでログイン",
+                googleRedirecting: "Googleへリダイレクト中...",
+                emailLogin: "メールでログイン",
+                orDivider: "または",
+                loginProcessing: "認証中...",
+                signupPrompt: "アカウントをお持ちでない方は",
+                signupLink: "新規登録",
+                forgotPassword: "パスワードを忘れた方",
+                confirmPassword: "パスワード確認",
+                signup: "新規登録",
+                backToLogin: "ログインに戻る",
+                googleLoginNotReady: "Googleログインは現在設定中です。メールログインをご利用ください。",
+                currentUser: "ユーザー",
+                logout: "ログアウト",
+                newAnalysis: "新しい解析",
+                startText: "開始",
+                // Premium Modal
+                upgradeTitle: "⭐ プレミアムプランにアップグレード",
+                upgradeDescription: "無制限でAI解析をお楽しみください",
+                plan7days: "7日間プラン",
+                plan20days: "20日間プラン",
+                price980: "¥980",
+                price1980: "¥1,980",
+                duration7days: "1週間無制限",
+                duration20days: "20日間無制限",
+                featureUnlimited: "AI解析無制限",
+                featurePriority: "高優先度処理",
+                featureReport: "詳細分析レポート",
+                proceedPayment: "決済に進む",
+                cancelPayment: "キャンセル",
+                popularPlan: "人気プラン",
+                paymentPreparation: "💳 決済ページに移動中...",
+                stripeRedirect: "安全なStripe決済ページへリダイレクトしています...",
+                paymentSecurity: "🔒 SSL暗号化通信・Stripe社による安全決済"
+            },
+            ko: {
+                title: "관광 애널라이저",
+                description: "관광・미식 이미지 AI 분석으로 현지 정보 제공",
+                languageSelect: "분석 언어 선택",
+                analysisTypeSelect: "분석 유형 선택", 
+                storeAnalysis: "상점・관광지 분석",
+                menuTranslation: "간판・메뉴 번역",
+                uploadText: "이미지 업로드",
+                uploadSubtext: "상점・관광지・요리 사진을 클릭하거나 드래그 & 드롭",
+                fileFormat: "대응 형식: JPG, PNG, GIF (최대 10MB)",
+                storeRecommended: "추천: 명물요리, 관광명소, 이벤트 등",
+                menuRecommended: "특히 효과적: 손글씨 메뉴, 가격표, 주문표 등",
+                previewTitle: "업로드 이미지 미리보기",
+                analyzeButton: "관광 AI 분석 시작",
+                loading: "관광 AI가 분석중...",
+                loadingSubtext: "명물요리・관광명소・지역 정보",
+                loadingDetail: "상세한 지역 정보를 분석하고 있습니다",
+                loginTitle: "관광 애널라이저",
+                loginUsername: "사용자 ID",
+                loginPassword: "비밀번호",
+                loginButton: "로그인",
+                googleLogin: "Google로 로그인",
+                googleRedirecting: "Google로 리디렉트 중...",
+                emailLogin: "이메일로 로그인", 
+                orDivider: "또는",
+                loginProcessing: "인증중...",
+                signupPrompt: "계정이 없으신가요?",
+                signupLink: "회원가입",
+                forgotPassword: "비밀번호 찾기",
+                confirmPassword: "비밀번호 확인",
+                signup: "회원가입",
+                backToLogin: "로그인으로 돌아가기",
+                googleLoginNotReady: "Google 로그인은 현재 설정 중입니다. 이메일 로그인을 이용해 주세요.",
+                currentUser: "ユーザー",
+                logout: "로그아웃",
+                newAnalysis: "새로운 분석",
+                startText: "시작",
+                // Premium Modal
+                upgradeTitle: "⭐ 프리미엄 플랜으로 업그레이드",
+                upgradeDescription: "무제한 AI 분석을 이용하세요",
+                plan7days: "7일간 플랜",
+                plan20days: "20일간 플랜",
+                price980: "¥980",
+                price1980: "¥1,980",
+                duration7days: "1주일 무제한",
+                duration20days: "20일간 무제한",
+                featureUnlimited: "AI분석 무제한",
+                featurePriority: "높은 우선순위 처리",
+                featureReport: "상세 분석 보고서",
+                proceedPayment: "결제 진행",
+                cancelPayment: "취소",
+                popularPlan: "인기 플랜",
+                paymentPreparation: "💳 결제 페이지로 이동 중...",
+                stripeRedirect: "안전한 Stripe 결제 페이지로 리디렉트 중입니다...",
+                paymentSecurity: "🔒 SSL 암호화 통신・Stripe사 안전 결제"
+            },
+            zh: {
+                title: "观光分析器",
+                description: "AI分析观光・美食图像，提供当地信息",
+                languageSelect: "选择分析语言",
+                analysisTypeSelect: "选择分析类型",
+                storeAnalysis: "店铺・观光地分析",
+                menuTranslation: "招牌・菜单翻译",
+                uploadText: "上传图像",
+                uploadSubtext: "点击或拖拽上传店铺・观光地・料理照片",
+                fileFormat: "支持格式: JPG, PNG, GIF (最大 10MB)",
+                storeRecommended: "推荐: 名物料理、观光名胜、活动等",
+                menuRecommended: "特别有效: 手写菜单、价格表、订单等",
+                previewTitle: "上传图像预览",
+                analyzeButton: "开始观光AI分析",
+                loading: "观光AI分析中...",
+                loadingSubtext: "名物料理・观光名胜・地方信息",
+                loadingDetail: "正在分析详细的当地信息",
+                loginTitle: "观光分析器",
+                loginUsername: "用户ID",
+                loginPassword: "密码",
+                loginButton: "登录",
+                googleLogin: "Google登录",
+                googleRedirecting: "正在跳转到Google...",
+                emailLogin: "邮箱登录",
+                orDivider: "或者",
+                loginProcessing: "认证中...",
+                signupPrompt: "还没有账户？",
+                signupLink: "注册账户",
+                forgotPassword: "忘记密码？",
+                confirmPassword: "确认密码",
+                signup: "注册",
+                backToLogin: "返回登录",
+                googleLoginNotReady: "Google登录目前正在设置中。请使用邮箱登录。",
+                currentUser: "ユーザー",
+                logout: "退出登录",
+                newAnalysis: "新的分析",
+                startText: "开始",
+                // Premium Modal
+                upgradeTitle: "⭐ 升级到高级方案",
+                upgradeDescription: "无限制使用AI分析功能",
+                plan7days: "7天方案",
+                plan20days: "20天方案",
+                price980: "¥980",
+                price1980: "¥1,980",
+                duration7days: "1周无限制",
+                duration20days: "20天无限制",
+                featureUnlimited: "AI分析无限制",
+                featurePriority: "高优先级处理",
+                featureReport: "详细分析报告",
+                proceedPayment: "进行支付",
+                cancelPayment: "取消",
+                popularPlan: "热门方案",
+                paymentPreparation: "💳 正在跳转到支付页面...",
+                stripeRedirect: "正在跳转到安全的Stripe支付页面...",
+                paymentSecurity: "🔒 SSL加密通信・Stripe安全支付"
+            },
+            'zh-tw': {
+                title: "觀光分析器",
+                description: "AI分析觀光・美食圖像，提供當地資訊",
+                languageSelect: "選擇分析語言",
+                analysisTypeSelect: "選擇分析類型",
+                storeAnalysis: "店鋪・觀光地分析",
+                menuTranslation: "招牌・菜單翻譯",
+                uploadText: "上傳圖像",
+                uploadSubtext: "點擊或拖拽上傳店鋪・觀光地・料理照片",
+                fileFormat: "支援格式: JPG, PNG, GIF (最大 10MB)",
+                storeRecommended: "推薦: 名物料理、觀光名勝、活動等",
+                menuRecommended: "特別有效: 手寫菜單、價格表、訂單等",
+                previewTitle: "上傳圖像預覽",
+                analyzeButton: "開始觀光AI分析",
+                loading: "觀光AI分析中...",
+                loadingSubtext: "名物料理・觀光名勝・地方資訊",
+                loadingDetail: "正在分析詳細的當地資訊",
+                loginTitle: "觀光分析器",
+                loginUsername: "使用者ID",
+                loginPassword: "密碼",
+                loginButton: "登入",
+                googleLogin: "Google登入",
+                googleRedirecting: "正在轉至Google...",
+                emailLogin: "電子郵件登入",
+                orDivider: "或",
+                loginProcessing: "認證中...",
+                signupPrompt: "還沒有帳號？",
+                signupLink: "註冊帳號",
+                forgotPassword: "忘記密碼？",
+                confirmPassword: "確認密碼",
+                signup: "註冊",
+                backToLogin: "返回登入",
+                googleLoginNotReady: "Google登入目前正在設置中。請使用電子郵件登入。",
+                currentUser: "ユーザー",
+                logout: "登出",
+                newAnalysis: "新的分析",
+                startText: "開始",
+                // Premium Modal
+                upgradeTitle: "⭐ 升級至進階方案",
+                upgradeDescription: "無限制使用AI分析功能",
+                plan7days: "7天方案",
+                plan20days: "20天方案",
+                price980: "¥980",
+                price1980: "¥1,980",
+                duration7days: "1週無限制",
+                duration20days: "20天無限制",
+                featureUnlimited: "AI分析無限制",
+                featurePriority: "高優先級處理",
+                featureReport: "詳細分析報告",
+                proceedPayment: "進行付款",
+                cancelPayment: "取消",
+                popularPlan: "熱門方案",
+                paymentPreparation: "💳 正在跳轉至付款頁面...",
+                stripeRedirect: "正在跳轉至安全的Stripe付款頁面...",
+                paymentSecurity: "🔒 SSL加密通訊・Stripe安全付款"
+            },
+            en: {
+                title: "Tourism Analyzer",
+                description: "AI analysis of tourism and gourmet images with local insights",
+                languageSelect: "Select Analysis Language",
+                analysisTypeSelect: "Select Analysis Type",
+                storeAnalysis: "Store・Tourism Analysis",
+                menuTranslation: "Signboard・Menu Translation", 
+                uploadText: "Upload Image",
+                uploadSubtext: "Click or drag & drop photos of stores, tourist spots, and cuisine",
+                fileFormat: "Supported formats: JPG, PNG, GIF (max 10MB)",
+                storeRecommended: "Recommended: Local specialties, tourist attractions, events, etc.",
+                menuRecommended: "Especially effective: Handwritten menus, price lists, order forms, etc.",
+                previewTitle: "Upload Image Preview",
+                analyzeButton: "Start Tourism AI Analysis",
+                loading: "Tourism AI Analyzing...",
+                loadingSubtext: "Local Cuisine・Tourist Spots・Regional Information",
+                loadingDetail: "Analyzing detailed local information",
+                loginTitle: "Tourism Analyzer",
+                loginUsername: "User ID", 
+                loginPassword: "Password",
+                loginButton: "Login",
+                googleLogin: "Login with Google",
+                googleRedirecting: "Redirecting to Google...",
+                emailLogin: "Login with Email",
+                orDivider: "or",
+                loginProcessing: "Authenticating...",
+                signupPrompt: "Don't have an account?",
+                signupLink: "Sign up",
+                forgotPassword: "Forgot password?",
+                confirmPassword: "Confirm Password",
+                signup: "Sign Up",
+                backToLogin: "Back to Login",
+                googleLoginNotReady: "Google login is currently being configured. Please use email login.",
+                currentUser: "ユーザー",
+                logout: "Logout",
+                newAnalysis: "New Analysis",
+                startText: "Start",
+                // Premium Modal
+                upgradeTitle: "⭐ Upgrade to Premium Plan",
+                upgradeDescription: "Enjoy unlimited AI analysis",
+                plan7days: "7-Day Plan",
+                plan20days: "20-Day Plan",
+                price980: "¥980",
+                price1980: "¥1,980",
+                duration7days: "1 Week Unlimited",
+                duration20days: "20 Days Unlimited",
+                featureUnlimited: "Unlimited AI Analysis",
+                featurePriority: "High Priority Processing",
+                featureReport: "Detailed Analysis Reports",
+                proceedPayment: "Proceed to Payment",
+                cancelPayment: "Cancel",
+                popularPlan: "Popular Plan",
+                paymentPreparation: "💳 Redirecting to payment page...",
+                stripeRedirect: "Redirecting to secure Stripe payment page...",
+                paymentSecurity: "🔒 SSL Encrypted Communication・Secure Stripe Payment"
+            }
+        };
+
+        // DOM Elements
+        const loginSection = document.getElementById('loginSection');
+        const mainApp = document.getElementById('mainApp');
+        const userInfo = document.getElementById('userInfo');
+        const uploadSection = document.getElementById('uploadSection');
+        const previewSection = document.getElementById('previewSection');
+        const loadingSection = document.getElementById('loadingSection');
+        const resultsSection = document.getElementById('resultsSection');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            console.log('🚀 Initializing application...');
+            
+            // 決済完了処理をチェック
+            handlePaymentResult();
+            
+            // ライブラリの利用可能性をチェック
+            const isMarkedAvailable = typeof marked !== 'undefined';
+            const isDOMPurifyAvailable = typeof DOMPurify !== 'undefined';
+            
+            console.log('📚 Library status at init:', {
+                marked: isMarkedAvailable,
+                DOMPurify: isDOMPurifyAvailable
+            });
+            
+            if (!isMarkedAvailable) {
+                console.error('❌ marked.js is not loaded! Markdown parsing will fail.');
+            }
+            
+            if (!isDOMPurifyAvailable) {
+                console.warn('⚠️ DOMPurify is not loaded! XSS vulnerability exists.');
+            }
+            
+            setupEventListeners();
+            handleOAuthCallback();
+            // checkOldAuthStatus(); // 古い認証システム（現在未使用）
+            initializeLanguage();
+            
+            // marked.jsが利用可能な場合のみMarkdown初期化
+            if (isMarkedAvailable) {
+                initializeMarkdown();
+                console.log('✅ Markdown initialized successfully');
+            } else {
+                console.log('⚠️ Markdown initialization skipped - library not available');
+            }
+            
+            // Update user info display if already logged in
+            if (sessionStorage.getItem('authToken')) {
+                updateHeaderUserInfo();
+            }
+            
+            console.log('✅ Application initialization complete');
+        }
+        
+        // Initialize Markdown configuration
+        function initializeMarkdown() {
+            try {
+                console.log('🔧 Configuring marked.js options...');
+                
+                // Markedのオプション設定
+                marked.setOptions({
+                    breaks: true,        // 改行を<br>に変換
+                    gfm: true,          // GitHub Flavored Markdown有効
+                    headerIds: false,   // ヘッダーIDを生成しない
+                    mangle: false,      // emailアドレスの自動リンクを無効
+                    sanitize: false     // HTMLサニタイズはDOMPurifyで行う
+                });
+                
+                console.log('🎨 Setting up custom renderer...');
+                
+                // カスタムレンダラー設定
+                const renderer = new marked.Renderer();
+                
+                // カスタムリンクレンダリング（外部リンクは新しいタブで開く）
+                renderer.link = function(href, title, text) {
+                    const isExternal = href.startsWith('http');
+                    const target = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+                    const titleAttr = title ? ` title="${title}"` : '';
+                    return `<a href="${href}"${titleAttr}${target}>${text}</a>`;
+                };
+                
+                // カスタムテーブルスタイリング
+                renderer.table = function(header, body) {
+                    return `<div class="table-container">
+                        <table class="markdown-table">
+                            <thead>${header}</thead>
+                            <tbody>${body}</tbody>
+                        </table>
+                    </div>`;
+                };
+                
+                marked.setOptions({ renderer });
+                
+                console.log('✅ marked.js configuration completed successfully');
+                
+                // テスト用のMarkdown解析
+                const testMarkdown = '## Test\n**Bold text** and *italic text*\n- List item 1\n- List item 2';
+                const testResult = marked.parse(testMarkdown);
+                console.log('🧪 Markdown test:', { input: testMarkdown, output: testResult });
+                
+            } catch (error) {
+                console.error('❌ Error during Markdown initialization:', error);
+            }
+        }
+
+        // Handle OAuth callback from Cognito
+        async function handleOAuthCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const authCode = urlParams.get('code');
+            
+            if (authCode) {
+                try {
+                    showMessage('Googleログイン処理中...', 'info');
+                    
+                    // Exchange authorization code for tokens
+                    const tokenResponse = await fetch('https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/token', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({
+                            grant_type: 'authorization_code',
+                            client_id: '2tctru78c2epl4mbhrt8asd55e',
+                            code: authCode,
+                            redirect_uri: window.location.origin + window.location.pathname
+                        })
+                    });
+
+                    if (tokenResponse.ok) {
+                        const tokens = await tokenResponse.json();
+                        
+                        // Get user info from token
+                        const userInfoResponse = await fetch('https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/userInfo', {
+                            headers: {
+                                'Authorization': `Bearer ${tokens.access_token}`
+                            }
+                        });
+
+                        if (userInfoResponse.ok) {
+                            const userInfo = await userInfoResponse.json();
+                            
+                            // Store tokens and user info
+                            sessionStorage.setItem('accessToken', tokens.access_token);
+                            sessionStorage.setItem('userInfo', JSON.stringify({
+                                user_id: userInfo.sub,
+                                email: userInfo.email,
+                                display_name: userInfo.name || userInfo.given_name,
+                                picture: userInfo.picture
+                            }));
+                            sessionStorage.setItem('tourismAuth', 'true');
+                            sessionStorage.setItem('tourismUser', userInfo.email);
+
+                            // Create user in DynamoDB if needed
+                            await createUserIfNeeded({
+                                user_id: userInfo.sub,
+                                email: userInfo.email,
+                                display_name: userInfo.name || userInfo.given_name,
+                                auth_provider: 'google'
+                            });
+
+                            isLoggedIn = true;
+                            showMessage('Googleログインに成功しました！', 'success');
+                            
+                            // Hide login screen and show main app
+                            showMainApp();
+                            updateHeaderUserInfo();
+                        }
+                    } else {
+                        throw new Error('Token exchange failed');
+                    }
+                } catch (error) {
+                    console.error('OAuth callback error:', error);
+                    showMessage('Googleログインでエラーが発生しました', 'error');
+                }
+                
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        function setupEventListeners() {
+            // Google login
+            const googleLoginBtn = document.getElementById('googleLoginBtn');
+            if (googleLoginBtn) {
+                googleLoginBtn.addEventListener('click', handleGoogleLogin);
+            }
+            
+            // Email login button
+            const emailLoginBtn = document.getElementById('emailLoginBtn');
+            if (emailLoginBtn) {
+                emailLoginBtn.addEventListener('click', handleEmailLogin);
+            }
+            
+            // Original login form (fallback)
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+
+            // File input
+            const imageInput = document.getElementById('imageInput');
+            if (imageInput) {
+                imageInput.addEventListener('change', handleFileSelect);
+            }
+
+            // Drag and drop
+            if (uploadSection) {
+                uploadSection.addEventListener('dragover', handleDragOver);
+                uploadSection.addEventListener('drop', handleDrop);
+                uploadSection.addEventListener('dragleave', handleDragLeave);
+            }
+
+            // Language change listeners
+            document.querySelectorAll('input[name="language"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    updateUILanguage(e.target.value);
+                });
+            });
+
+            // Analysis type change listeners
+            document.querySelectorAll('input[name="analysisType"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    updateRecommendedText(e.target.value);
+                });
+            });
+        }
+
+        // UI Language Update Functions
+        function updateUILanguage(language) {
+            const t = translations[language];
+            if (!t) return;
+
+            // Update all elements with data-i18n attributes
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (t[key]) {
+                    // Handle different element types
+                    if (element.tagName === 'INPUT' && element.type === 'text') {
+                        element.placeholder = t[key];
+                    } else if (element.tagName === 'INPUT' && element.type === 'password') {
+                        element.placeholder = t[key];
+                    } else {
+                        // Preserve emojis and icons at the beginning of text
+                        const currentText = element.textContent;
+                        const emojiMatch = currentText.match(/^[\u{1F000}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]+\s*/u);
+                        const emoji = emojiMatch ? emojiMatch[0] : '';
+                        element.textContent = emoji + t[key];
+                    }
+                }
+            });
+
+            // Update document language attribute
+            document.documentElement.lang = language;
+
+            // Update font family based on language
+            updateFontFamily(language);
+
+            // Store selected language in sessionStorage
+            sessionStorage.setItem('selectedLanguage', language);
+
+            // Update recommended text based on current analysis type
+            const currentAnalysisType = document.querySelector('input[name="analysisType"]:checked')?.value || 'store';
+            updateRecommendedText(currentAnalysisType);
+        }
+
+        function updateRecommendedText(analysisType) {
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            const recommendedElement = document.getElementById('recommendedText');
+            
+            if (recommendedElement && t) {
+                if (analysisType === 'menu') {
+                    recommendedElement.textContent = t.menuRecommended;
+                    recommendedElement.setAttribute('data-i18n', 'menuRecommended');
+                } else {
+                    recommendedElement.textContent = t.storeRecommended;
+                    recommendedElement.setAttribute('data-i18n', 'storeRecommended');
+                }
+            }
+        }
+
+        function updateFontFamily(language) {
+            const body = document.body;
+            switch (language) {
+                case 'ko':
+                    body.style.fontFamily = "'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif";
+                    break;
+                case 'zh':
+                    body.style.fontFamily = "'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif";
+                    break;
+                case 'en':
+                    body.style.fontFamily = "'Inter', 'Roboto', 'Segoe UI', sans-serif";
+                    break;
+                default: // ja
+                    body.style.fontFamily = "'BIZ UDPGothic', 'BIZ UDGothic', 'Hiragino Sans', 'Yu Gothic UI', sans-serif";
+            }
+        }
+
+        function initializeLanguage() {
+            // Load saved language or default to Japanese
+            const savedLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const languageRadio = document.querySelector(`input[name="language"][value="${savedLanguage}"]`);
+            if (languageRadio) {
+                languageRadio.checked = true;
+                updateUILanguage(savedLanguage);
+            }
+        }
+
+        // Authentication
+        function handleGoogleLogin() {
+            // Add loading state to button
+            const googleBtn = document.getElementById('googleLoginBtn');
+            const originalHTML = googleBtn.innerHTML;
+            
+            // Get current language for loading text
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            // Set loading state with enhanced UI
+            googleBtn.innerHTML = `
+                <div class="loading-spinner"></div>
+                <span>${t.googleRedirecting}</span>
+            `;
+            googleBtn.disabled = true;
+            googleBtn.classList.add('loading');
+            
+            // Auto-logout before Google login to ensure clean session
+            console.log('🚨 Auto-logout before Google login...');
+            
+            // Clear all existing sessions and tokens
+            isLoggedIn = false;
+            sessionStorage.removeItem('tourismAuth');
+            sessionStorage.removeItem('tourismUser');
+            sessionStorage.removeItem('accessToken');
+            sessionStorage.removeItem('userInfo');
+            sessionStorage.removeItem('emergency-login-token');
+            localStorage.removeItem('tourismAuth');
+            localStorage.removeItem('tourismUser');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('userInfo');
+            
+            console.log('✅ Session cleared, proceeding to Google OAuth...');
+            
+            // Add slight delay for better UX
+            setTimeout(() => {
+                // Use Cognito OAuth but with better UX
+                const cognitoOAuthURL = `https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/login` +
+                    `?client_id=2tctru78c2epl4mbhrt8asd55e` +
+                    `&response_type=code` +
+                    `&scope=email+openid+profile` +
+                    `&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}` +
+                    `&identity_provider=Google` +
+                    `&prompt=select_account`; // Force account selection for better UX
+                
+                console.log('🚀 Redirecting to Cognito Google OAuth:', cognitoOAuthURL);
+                window.location.href = cognitoOAuthURL;
+            }, 800);
+        }
+        
+        function handleEmailLogin(e) {
+            if (e) e.preventDefault();
+            showEmailAuthForm();
+        }
+        
+        function showEmailAuthForm() {
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            const loginCard = document.querySelector('.login-card');
+            loginCard.innerHTML = `
+                <h1 class="login-title">🏔️</h1>
+                <h2 class="login-subtitle" data-i18n="loginTitle">${t.loginTitle}</h2>
+                
+                <!-- 言語選択 -->
+                <div class="language-selector" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ja" ${currentLanguage === 'ja' ? 'checked' : ''}> 🇯🇵 日本語</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ko" ${currentLanguage === 'ko' ? 'checked' : ''}> 🇰🇷 한국어</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh" ${currentLanguage === 'zh' ? 'checked' : ''}> 🇨🇳 简体中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh-tw" ${currentLanguage === 'zh-tw' ? 'checked' : ''}> 🇹🇼 繁體中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="en" ${currentLanguage === 'en' ? 'checked' : ''}> 🌍 English</label>
+                </div>
+                
+                <!-- ログイン/サインアップ切り替え -->
+                <div class="auth-mode-switcher" style="display: flex; margin-bottom: 2rem; border-radius: 25px; background: #f5f5f5; overflow: hidden;">
+                    <button id="loginModeBtn" class="mode-btn active" style="flex: 1; padding: 0.8rem; border: none; background: var(--primary-color); color: white; font-weight: 600; cursor: pointer;" data-i18n="login">${t.login}</button>
+                    <button id="signupModeBtn" class="mode-btn" style="flex: 1; padding: 0.8rem; border: none; background: transparent; color: #666; font-weight: 600; cursor: pointer;" data-i18n="signup">${t.signup}</button>
+                </div>
+                
+                <!-- ログインフォーム -->
+                <form id="loginForm" style="display: block;">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <input type="email" id="loginEmail" placeholder="${t.emailPlaceholder || 'メールアドレス'}" required 
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <input type="password" id="loginPassword" placeholder="${t.loginPassword || 'パスワード'}" required
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 1rem; background: var(--primary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;" data-i18n="loginButton">${t.loginButton}</button>
+                </form>
+                
+                <!-- サインアップフォーム -->
+                <form id="signupForm" style="display: none;">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <input type="email" id="signupEmail" placeholder="${t.emailPlaceholder || 'メールアドレス'}" required
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <input type="password" id="signupPassword" placeholder="${t.loginPassword || 'パスワード'}" required minlength="8"
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <input type="password" id="confirmPassword" placeholder="${t.confirmPassword || 'パスワード確認'}" required
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 1rem; background: var(--secondary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;" data-i18n="signup">${t.signup}</button>
+                </form>
+                
+                <!-- 緊急ログインボタン -->
+                <button onclick="showEmergencyLogin()" style="width: 100%; padding: 0.8rem; background: #ff9800; color: white; border: none; border-radius: 12px; font-size: 0.9rem; cursor: pointer; margin-bottom: 0.5rem;">🈭 PoC緊急ログイン (Phase5.5同様)</button>
+                
+                <button onclick="backToMainLogin()" style="width: 100%; padding: 0.8rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 12px; font-size: 1rem; cursor: pointer;" data-i18n="backToLogin">${t.backToLogin}</button>
+            `;
+            
+            setupAuthFormListeners();
+        }
+        
+        async function sendVerificationCode(email) {
+            // This would integrate with Cognito's email verification
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    console.log('Verification code sent to:', email);
+                    resolve();
+                }, 1000);
+            });
+        }
+        
+        function showVerificationCodeInput(email) {
+            document.getElementById('loginSection').innerHTML = `
+                <h3>認証コード入力</h3>
+                <p>${email} に認証コードを送信しました</p>
+                <form onsubmit="handleVerificationCode(event, '${email}')">
+                    <input type="text" id="verificationCode" placeholder="認証コード" required maxlength="6">
+                    <button type="submit" id="verifyBtn">認証</button>
+                    <button type="button" onclick="backToLogin()">戻る</button>
+                </form>
+            `;
+        }
+        
+        function handleVerificationCode(e, email) {
+            e.preventDefault();
+            const code = document.getElementById('verificationCode').value;
+            
+            // Here we would verify with Cognito
+            console.log('Verifying code:', code, 'for email:', email);
+            
+            // Mock successful login for now
+            isLoggedIn = true;
+            sessionStorage.setItem('tourismAuth', 'true');
+            sessionStorage.setItem('tourismUser', email);
+            showMainApp();
+        }
+        
+        function backToMainLogin() {
+            location.reload();
+        }
+        
+        function showEmergencyLogin() {
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            const loginCard = document.querySelector('.login-card');
+            loginCard.innerHTML = `
+                <h1 class="login-title">🈭</h1>
+                <h2 class="login-subtitle">PoC緊急ログイン (Phase5.5)</h2>
+                <p style="color: #666; margin-bottom: 2rem; font-size: 0.9rem;">開発テスト用の簡易ログインです</p>
+                
+                <form id="emergencyLoginForm">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">ユーザーID:</label>
+                        <input type="text" id="emergencyUsername" value="sapporo-guide" 
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">パスワード:</label>
+                        <input type="password" id="emergencyPassword" value="hokkaido2024"
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 1rem; background: #ff9800; color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;">緊急ログイン</button>
+                </form>
+                
+                <button onclick="backToMainLogin()" style="width: 100%; padding: 0.8rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 12px; font-size: 1rem; cursor: pointer;">戻る</button>
+            `;
+            
+            // 緊急ログインフォームのリスナー
+            const emergencyLoginForm = document.getElementById('emergencyLoginForm');
+            if (emergencyLoginForm) {
+                emergencyLoginForm.addEventListener('submit', handleEmergencyLogin);
+            }
+        }
+        
+        function setupAuthFormListeners() {
+            // 言語変更リスナー
+            document.querySelectorAll('input[name="authLang"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    sessionStorage.setItem('selectedLanguage', this.value);
+                    showEmailAuthForm(); // 再描画
+                });
+            });
+            
+            // モード切り替え
+            const loginModeBtn = document.getElementById('loginModeBtn');
+            const signupModeBtn = document.getElementById('signupModeBtn');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            
+            if (loginModeBtn && signupModeBtn && loginForm && signupForm) {
+                loginModeBtn.addEventListener('click', function() {
+                    loginForm.style.display = 'block';
+                    signupForm.style.display = 'none';
+                    this.style.background = 'var(--primary-color)';
+                    this.style.color = 'white';
+                    signupModeBtn.style.background = 'transparent';
+                    signupModeBtn.style.color = '#666';
+                });
+                
+                signupModeBtn.addEventListener('click', function() {
+                    loginForm.style.display = 'none';
+                    signupForm.style.display = 'block';
+                    this.style.background = 'var(--secondary-color)';
+                    this.style.color = 'white';
+                    loginModeBtn.style.background = 'transparent';
+                    loginModeBtn.style.color = '#666';
+                });
+                
+                // フォーム送信リスナー
+                loginForm.addEventListener('submit', handleCognitoLogin);
+                signupForm.addEventListener('submit', handleCognitoSignup);
+            }
+        }
+        
+        async function handleCognitoLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            if (!email || !password) {
+                alert(t.googleLoginNotReady || 'すべてのフィールドを入力してください');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = t.loginProcessing;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // ログイン成功
+                    sessionStorage.setItem('accessToken', data.tokens.AccessToken);
+                    sessionStorage.setItem('userInfo', JSON.stringify(data.user_info));
+                    sessionStorage.setItem('tourismAuth', 'true');
+                    sessionStorage.setItem('sapporoUser', data.user_info.email);
+                    
+                    isLoggedIn = true;
+                    showMainApp();
+                    updateHeaderUserInfo(); // Update user info and plan display
+                    showMessage('ログインに成功しました', 'success');
+                } else {
+                    if (data.error.includes('User not confirmed')) {
+                        showConfirmationCodeInput(email, password);
+                        showMessage('メール認証が必要です。メールをご確認ください', 'info');
+                    } else {
+                        throw new Error(data.error || 'ログインに失敗しました');
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('ログインエラー: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = t.loginButton;
+            }
+        }
+        
+        async function handleCognitoSignup(e) {
+            e.preventDefault();
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            if (!email || !password || !confirmPassword) {
+                showMessage('すべてのフィールドを入力してください', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('パスワードが一致しません', 'error');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showMessage('パスワードは8文字以上で入力してください', 'error');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = t.loginProcessing || '登録中...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        display_name: email.split('@')[0]
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    if (data.confirmation_required) {
+                        showConfirmationCodeInput(email, password);
+                        showMessage('メールに認証コードを送信しました', 'success');
+                    }
+                } else {
+                    if (data.error.includes('User already exists')) {
+                        showMessage('このメールアドレスは既に使用されています', 'error');
+                    } else {
+                        throw new Error(data.error || '新規登録に失敗しました');
+                    }
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showMessage('登録エラー: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = t.signup || '新規登録';
+            }
+        }
+        
+        function showConfirmationCodeInput(email, password) {
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            const loginCard = document.querySelector('.login-card');
+            loginCard.innerHTML = `
+                <h1 class="login-title">📧</h1>
+                <h2 class="login-subtitle">メール認証</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+                    <strong>${email}</strong><br>
+                    に認証コードを送信しました
+                </p>
+                
+                <form id="confirmationForm" onsubmit="handleConfirmationCode(event, '${email}', '${password}')">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <input type="text" id="confirmationCode" placeholder="認証コード (6桁)" required maxlength="6"
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1.2rem; text-align: center; letter-spacing: 0.2rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" id="verifyBtn" style="width: 100%; padding: 1rem; background: var(--primary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;">
+                        認証コード確認
+                    </button>
+                </form>
+                
+                <button onclick="resendConfirmationCode('${email}')" style="width: 100%; padding: 0.8rem; background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 12px; font-size: 1rem; cursor: pointer; margin-bottom: 1rem;">
+                    認証コードを再送信
+                </button>
+                
+                <button onclick="backToMainLogin()" style="width: 100%; padding: 0.8rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 12px; font-size: 1rem; cursor: pointer;">
+                    ログイン画面に戻る
+                </button>
+            `;
+            
+            // Focus on the confirmation code input
+            setTimeout(() => {
+                document.getElementById('confirmationCode').focus();
+            }, 100);
+        }
+
+        async function handleConfirmationCode(e, email, password) {
+            e.preventDefault();
+            
+            const confirmationCode = document.getElementById('confirmationCode').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '認証中...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/confirm-signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        confirmation_code: confirmationCode,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Confirmation successful, auto-login
+                    sessionStorage.setItem('accessToken', data.tokens.AccessToken);
+                    sessionStorage.setItem('userInfo', JSON.stringify(data.user_info));
+                    sessionStorage.setItem('tourismAuth', 'true');
+                    sessionStorage.setItem('sapporoUser', data.user_info.email);
+                    
+                    isLoggedIn = true;
+                    showMainApp();
+                    updateHeaderUserInfo(); // Update user info and plan display
+                    showMessage('メール認証が完了しました！ログインしました', 'success');
+                } else {
+                    if (data.error.includes('Invalid confirmation code')) {
+                        showMessage('認証コードが間違っています', 'error');
+                    } else if (data.error.includes('Confirmation code expired')) {
+                        showMessage('認証コードの期限が切れました。再送信してください', 'error');
+                    } else {
+                        showMessage(data.error, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Confirmation error:', error);
+                showMessage('認証エラーが発生しました', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '認証コード確認';
+            }
+        }
+
+        async function resendConfirmationCode(email) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/resend-code`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('認証コードを再送信しました', 'success');
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Resend error:', error);
+                showMessage('再送信エラーが発生しました', 'error');
+            }
+        }
+
+        function handleEmergencyLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('emergencyUsername').value;
+            const password = document.getElementById('emergencyPassword').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'ログイン中...';
+            
+            setTimeout(() => {
+                if (username === 'sapporo-guide' && password === 'hokkaido2024') {
+                    isLoggedIn = true;
+                    sessionStorage.setItem('tourismAuth', 'true');
+                    sessionStorage.setItem('sapporoUser', username);
+                    // Set a dummy token for emergency login to work with API
+                    sessionStorage.setItem('accessToken', 'emergency-login-token');
+                    showMainApp();
+                } else {
+                    alert('ユーザーIDまたはパスワードが正しくありません');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '緊急ログイン';
+                }
+            }, 1000);
+        }
+        
+        // Handle OAuth callback
+        function handleOAuthCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+            
+            
+            if (error) {
+                console.error('❌ OAuth error:', error);
+                alert('ログインに失敗しました: ' + error);
+                return;
+            }
+            
+            if (code) {
+                console.log('✅ OAuth code received, exchanging for tokens...');
+                // Exchange code for tokens with Cognito
+                exchangeCodeForTokens(code)
+                    .then(tokens => {
+                        console.log('✅ Token exchange successful:', {
+                            has_access_token: !!tokens.access_token,
+                            has_email: !!tokens.email,
+                            has_user_id: !!tokens.user_id
+                        });
+                        
+                        // Store tokens and user info
+                        sessionStorage.setItem('tourismAuth', 'true');
+                        sessionStorage.setItem('accessToken', tokens.access_token);
+                        sessionStorage.setItem('sapporoUser', tokens.display_name || tokens.email || 'Google User');
+                        sessionStorage.setItem('userInfo', JSON.stringify({
+                            user_id: tokens.user_id,
+                            email: tokens.email,
+                            display_name: tokens.display_name
+                        }));
+                        
+                        // Clean URL and show main app
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        isLoggedIn = true;
+                        showMainApp();
+                        updateHeaderUserInfo(); // Update header with correct user info
+                        
+                        // Create user record if new user
+                        console.log('🔧 Proceeding to create user...');
+                        createUserIfNeeded(tokens);
+                    })
+                    .catch(error => {
+                        console.error('❌ Token exchange error:', error);
+                        alert('ログインに失敗しました');
+                    });
+            } else {
+                console.log('ℹ️ No OAuth code found in URL');
+            }
+        }
+        
+        async function exchangeCodeForTokens(code) {
+            const tokenUrl = 'https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/token';
+            const redirectUri = window.location.origin + window.location.pathname;
+            
+            console.log('🔧 Exchanging code for tokens...', { tokenUrl, redirectUri, code: code.substring(0, 20) + '...' });
+            
+            const response = await fetch(tokenUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: '2tctru78c2epl4mbhrt8asd55e',
+                    code: code,
+                    redirect_uri: redirectUri
+                })
+            });
+            
+            console.log('📋 Token response status:', response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Token exchange failed:', errorText);
+                throw new Error('Token exchange failed: ' + errorText);
+            }
+            
+            const tokens = await response.json();
+            console.log('✅ Tokens received:', Object.keys(tokens));
+            
+            // Get user info from Cognito OAuth userinfo endpoint
+            console.log('🔧 Getting user info from Cognito OAuth userinfo endpoint...');
+            const userInfoUrl = 'https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/oauth2/userInfo';
+            const userResponse = await fetch(userInfoUrl, {
+                headers: {
+                    'Authorization': `Bearer ${tokens.access_token}`
+                }
+            });
+            
+            console.log('📋 User info response status:', userResponse.status);
+            
+            if (userResponse.ok) {
+                const userInfo = await userResponse.json();
+                console.log('✅ User info received from Cognito:', {
+                    email: userInfo.email,
+                    name: userInfo.name,
+                    sub: userInfo.sub,
+                    username: userInfo.username
+                });
+                tokens.email = userInfo.email;
+                tokens.display_name = userInfo.name || userInfo.given_name || userInfo.email;
+                tokens.user_id = userInfo.username || userInfo.sub;
+            } else {
+                const errorText = await userResponse.text();
+                console.warn('⚠️ User info fetch failed:', errorText);
+                // Fallback to decoded token info if available
+                try {
+                    const payload = JSON.parse(atob(tokens.access_token.split('.')[1]));
+                    console.log('🔧 Fallback: Using token payload:', payload);
+                    tokens.email = payload.email || 'unknown@example.com';
+                    tokens.display_name = payload.name || payload.given_name || 'Google User';
+                    tokens.user_id = payload.sub || payload.username;
+                } catch (e) {
+                    console.warn('⚠️ Could not decode token payload:', e);
+                }
+            }
+            
+            return tokens;
+        }
+        
+        async function createUserIfNeeded(tokens) {
+            console.log('🔧 Creating user if needed...', {
+                email: tokens.email,
+                display_name: tokens.display_name,
+                has_access_token: !!tokens.access_token,
+                user_id: tokens.user_id
+            });
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/create-user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${tokens.access_token}`
+                    },
+                    body: JSON.stringify({
+                        user_id: tokens.user_id,
+                        email: tokens.email,
+                        display_name: tokens.display_name,
+                        auth_provider: 'google'
+                    })
+                });
+                
+                console.log('✅ Create user API response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.warn('⚠️ Create user API error:', errorText);
+                } else {
+                    const result = await response.json();
+                    console.log('✅ User created successfully:', result);
+                }
+            } catch (error) {
+                console.error('❌ User creation error:', error);
+            }
+        }
+        
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = t.loginProcessing;
+
+            setTimeout(() => {
+                if (username === CREDENTIALS.username && password === CREDENTIALS.password) {
+                    isLoggedIn = true;
+                    sessionStorage.setItem('tourismAuth', 'true');
+                    sessionStorage.setItem('sapporoUser', username);
+                    showMainApp();
+                } else {
+                    const errorMessages = {
+                        ja: '❌ ログインに失敗しました\n\n正しいID・パスワードを入力してください\n\nID: sapporo-guide\nPASS: hokkaido2024',
+                        ko: '❌ 로그인에 실패했습니다\n\n올바른 ID・비밀번호를 입력해주세요\n\nID: sapporo-guide\nPASS: hokkaido2024',
+                        zh: '❌ 登录失败\n\n请输入正确的ID・密码\n\nID: sapporo-guide\nPASS: hokkaido2024',
+                        en: '❌ Login failed\n\nPlease enter correct ID and password\n\nID: sapporo-guide\nPASS: hokkaido2024'
+                    };
+                    alert(errorMessages[currentLanguage]);
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '🔐 ' + t.loginButton;
+                }
+            }, 800);
+        }
+
+        function checkOldAuthStatus() {
+            // 古い認証システム用（現在は非推奨）
+            const authStatus = sessionStorage.getItem('sapporoAuth');
+            const username = sessionStorage.getItem('sapporoUser');
+            
+            if (authStatus === 'true' && username) {
+                isLoggedIn = true;
+                showMainApp();
+                updateHeaderUserInfo(); // Use the proper function that handles user info correctly
+            }
+        }
+
+        function showMainApp() {
+            loginSection.classList.add('hidden');
+            mainApp.classList.add('active');
+            userInfo.classList.add('active');
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            sessionStorage.removeItem('tourismAuth');
+            sessionStorage.removeItem('tourismUser');
+            sessionStorage.removeItem('accessToken');
+            sessionStorage.removeItem('userInfo');
+            
+            resetApp();
+            
+            mainApp.classList.remove('active');
+            userInfo.classList.remove('active');
+            loginSection.classList.remove('hidden');
+            
+            // Reset login form if it exists
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm && typeof loginForm.reset === 'function') {
+                loginForm.reset();
+            }
+            
+            // Reset other forms that might exist
+            const signupForm = document.getElementById('signupForm');
+            if (signupForm && typeof signupForm.reset === 'function') {
+                signupForm.reset();
+            }
+            
+            showMessage('ログアウトしました', 'info');
+        }
+
+        // File Handling
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) processFile(file);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) processFile(files[0]);
+        }
+
+        function processFile(file) {
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                alert('❌ 画像ファイルを選択してください\n\n対応形式: JPG, PNG, GIF');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('❌ ファイルサイズは10MB以下にしてください\n\n現在のサイズ: ' + (file.size / (1024 * 1024)).toFixed(1) + 'MB');
+                return;
+            }
+
+            // Resize image if needed
+            resizeImage(file, 1200).then(resizedFile => {
+                selectedImage = resizedFile;
+                showPreview(resizedFile);
+            }).catch(error => {
+                console.error('Image resize error:', error);
+                selectedImage = file;
+                showPreview(file);
+            });
+        }
+
+        function resizeImage(file, maxSize = 1200) {
+            return new Promise((resolve, reject) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = function() {
+                    // Calculate new dimensions
+                    let { width, height } = img;
+                    
+                    if (width <= maxSize && height <= maxSize) {
+                        // No resize needed
+                        resolve(file);
+                        return;
+                    }
+                    
+                    // Calculate resize ratio
+                    const ratio = Math.min(maxSize / width, maxSize / height);
+                    width *= ratio;
+                    height *= ratio;
+                    
+                    // Set canvas size
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // Draw resized image
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Convert to blob
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            // Create new File object
+                            const resizedFile = new File([blob], file.name, {
+                                type: file.type,
+                                lastModified: Date.now()
+                            });
+                            
+                            console.log(`Image resized: ${img.width}x${img.height} → ${width}x${height}`);
+                            console.log(`File size: ${(file.size/1024).toFixed(1)}KB → ${(resizedFile.size/1024).toFixed(1)}KB`);
+                            
+                            resolve(resizedFile);
+                        } else {
+                            reject(new Error('Failed to resize image'));
+                        }
+                    }, file.type, 0.9);
+                };
+                
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        function showPreview(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImage').src = e.target.result;
+                document.getElementById('imageDetails').innerHTML = `
+                    <div class="image-detail">📁 <strong>ファイル名:</strong> ${file.name}</div>
+                    <div class="image-detail">📏 <strong>サイズ:</strong> ${(file.size / 1024).toFixed(1)} KB</div>
+                    <div class="image-detail">🖼️ <strong>形式:</strong> ${file.type}</div>
+                `;
+                
+                uploadSection.classList.add('hidden');
+                previewSection.classList.remove('hidden');
+                previewSection.classList.add('fade-in');
+                
+                // Scroll to preview
+                previewSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Image Analysis with S3 Upload
+        async function analyzeImage() {
+            if (!selectedImage || !isLoggedIn) return;
+
+            showLoading();
+
+            try {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const base64Data = e.target.result.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+                    
+                    try {
+                        // Get selected language and analysis type
+                        const selectedLanguage = document.querySelector('input[name="language"]:checked').value;
+                        const selectedType = document.querySelector('input[name="analysisType"]:checked').value;
+                        const currentUser = sessionStorage.getItem('sapporoUser') || 'sapporo-guide';
+                        
+                        // Upload image to S3 first
+                        const uploadResponse = await fetch(`${API_BASE_URL}/upload-image`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                image: base64Data,
+                                filename: selectedImage.name || 'image.jpg',
+                                userId: currentUser,
+                                analysisType: selectedType,
+                                language: selectedLanguage
+                            })
+                        });
+
+                        let imageUploadResult = null;
+                        if (uploadResponse.ok) {
+                            imageUploadResult = await uploadResponse.json();
+                            console.log('Image uploaded to S3:', imageUploadResult);
+                        } else {
+                            console.warn('Image upload failed, proceeding with analysis');
+                        }
+                        
+                        // Proceed with analysis regardless of upload success
+                        const authToken = sessionStorage.getItem('accessToken');
+                        const headers = {
+                            'Content-Type': 'application/json'
+                        };
+                        
+                        // Add authorization header if available
+                        if (authToken) {
+                            headers['Authorization'] = `Bearer ${authToken}`;
+                        }
+                        
+                        const response = await fetch(`${API_BASE_URL}/analyze`, {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify({
+                                image: `data:image/jpeg;base64,${base64Data}`,
+                                language: selectedLanguage,
+                                type: selectedType,
+                                imageId: imageUploadResult?.image_id || null,
+                                s3Url: imageUploadResult?.s3_url || null
+                            })
+                        });
+
+                        const responseText = await response.text();
+                        
+                        // Check for usage limit exceeded (403 status)
+                        if (response.status === 403) {
+                            try {
+                                const errorData = JSON.parse(responseText);
+                                if (errorData.upgrade_required) {
+                                    // Show upgrade message and modal
+                                    showMessage(errorData.message || 'Free上限に達しました。アップグレードをお願いします', 'error');
+                                    showUpgradeModal();
+                                    loadingSection.classList.add('hidden');
+                                    return;
+                                }
+                            } catch (e) {
+                                console.error('Error parsing 403 response:', e);
+                            }
+                        }
+                        
+                        showResults(response.ok, responseText, imageUploadResult);
+                        
+                    } catch (error) {
+                        showResults(false, `ネットワークエラーが発生しました: ${error.message}`);
+                    }
+                };
+                
+                reader.readAsDataURL(selectedImage);
+                
+            } catch (error) {
+                showResults(false, `エラーが発生しました: ${error.message}`);
+            }
+        }
+
+        function showLoading() {
+            previewSection.classList.add('hidden');
+            loadingSection.classList.remove('hidden');
+            loadingSection.classList.add('fade-in');
+            
+            // Scroll to loading
+            loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // URL自動リンク変換関数
+        function convertUrlsToLinks(text) {
+            // URL正規表現パターン（http/https対応）
+            const urlPattern = /(https?:\/\/[^\s<>"]{2,})/gi;
+            
+            return text.replace(urlPattern, function(url) {
+                // 末尾の句読点を除去
+                let cleanUrl = url.replace(/[.,;!?）】\]}]+$/, '');
+                let punctuation = url.substring(cleanUrl.length);
+                
+                return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="analysis-link">${cleanUrl}</a>${punctuation}`;
+            });
+        }
+
+        // テキストをHTMLに変換（改行とURLリンク化）
+        function formatAnalysisText(text) {
+            console.log('📝 formatAnalysisText called with text:', text?.substring(0, 100) + '...');
+            
+            // marked.jsとDOMPurifyの利用可能性をチェック
+            const isMarkedAvailable = typeof marked !== 'undefined';
+            const isDOMPurifyAvailable = typeof DOMPurify !== 'undefined';
+            
+            console.log('🔧 Library availability:', { 
+                marked: isMarkedAvailable, 
+                DOMPurify: isDOMPurifyAvailable 
+            });
+            
+            if (!isMarkedAvailable) {
+                console.warn('⚠️ marked.js is not available, using fallback HTML formatting');
+                return formatAsPlainHTML(text);
+            }
+            
+            if (!isDOMPurifyAvailable) {
+                console.warn('⚠️ DOMPurify is not available, security risk exists');
+            }
+            
+            try {
+                console.log('🚀 Attempting to parse Markdown...');
+                // Markdownをパースして表示
+                const parsedMarkdown = marked.parse(text);
+                console.log('✅ Markdown parsed successfully, length:', parsedMarkdown.length);
+                
+                if (isDOMPurifyAvailable) {
+                    // DOMPurifyでセキュリティ対策（XSS対策）
+                    const sanitizedHtml = DOMPurify.sanitize(parsedMarkdown, {
+                        ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'a', 'code', 'pre', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'img', 'hr', 'div', 'span'],
+                        ALLOWED_ATTR: ['href', 'target', 'rel', 'title', 'class', 'id', 'src', 'alt']
+                    });
+                    console.log('🛡️ HTML sanitized successfully');
+                    return sanitizedHtml;
+                } else {
+                    console.log('⚠️ Using unsanitized HTML (DOMPurify not available)');
+                    return parsedMarkdown;
+                }
+                
+            } catch (error) {
+                console.error('❌ Markdown parsing error:', error);
+                console.log('🔄 Falling back to plain HTML formatting');
+                return formatAsPlainHTML(text);
+            }
+        }
+        
+        // フォールバック関数: プレーンHTMLフォーマット
+        function formatAsPlainHTML(text) {
+            // HTMLエスケープ（XSS対策）
+            const escapeHtml = (unsafe) => {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            };
+            
+            // テキストをエスケープしてから改行をBRタグに変換
+            let escaped = escapeHtml(text);
+            let withLineBreaks = escaped.replace(/\n/g, '<br>');
+            
+            // URLをリンクに変換
+            return convertUrlsToLinks(withLineBreaks);
+        }
+
+        function showResults(success, responseText, uploadInfo = null) {
+            loadingSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            resultsSection.classList.add('fade-in');
+            
+            let content;
+            if (success) {
+                try {
+                    const result = JSON.parse(responseText);
+                    content = result.analysis || 'データの解析に失敗しました';
+                    
+                    // Update user plan display with usage info from response
+                    if (result.usage_info) {
+                        console.log('Updating user plan display with usage info:', result.usage_info);
+                        const userPlan = document.querySelector('.user-plan');
+                        if (userPlan && result.usage_info.user_type === 'free') {
+                            const remaining = result.usage_info.remaining || 0;
+                            userPlan.textContent = `Free (残り${remaining}回)`;
+                            
+                            // Show upgrade button if remaining <= 2
+                            const upgradeBtn = document.querySelector('.upgrade-btn');
+                            if (upgradeBtn) {
+                                upgradeBtn.style.display = remaining <= 2 ? 'inline-block' : 'none';
+                            }
+                        }
+                    } else {
+                        // Fallback: Update user plan display after successful analysis
+                        updateUserPlanDisplay();
+                    }
+                } catch (e) {
+                    content = responseText;
+                }
+                
+                // Image is saved silently in background
+            } else {
+                content = `❌ ${responseText}`;
+            }
+            
+            // テキストを整形してHTMLとして挿入（URLを自動リンク化）
+            document.getElementById('resultsContent').innerHTML = formatAnalysisText(content);
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function newAnalysis() {
+            resetApp();
+            // Scroll to upload
+            uploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function resetApp() {
+            selectedImage = null;
+            uploadSection.classList.remove('hidden');
+            previewSection.classList.add('hidden');
+            loadingSection.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+            document.getElementById('imageInput').value = '';
+        }
+
+        // Analysis type change handler
+        const analysisTypeRadios = document.querySelectorAll('input[name="analysisType"]');
+        if (analysisTypeRadios.length > 0) {
+            analysisTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateAnalysisUI(this.value);
+                });
+            });
+        }
+
+        function updateAnalysisUI(type) {
+            const btnText = document.getElementById('analyzeBtnText');
+            const recommendedText = document.getElementById('recommendedText');
+            
+            // 現在の言語を取得
+            const currentLang = document.getElementById('languageSelect').value;
+            const t = translations[currentLang];
+            
+            if (type === 'menu') {
+                btnText.textContent = '📋🍜 ' + t.menuTranslation + t.startText;
+                // メニュー用の推奨テキストに切り替え
+                recommendedText.setAttribute('data-i18n', 'menuRecommended');
+                recommendedText.textContent = t.menuRecommended;
+            } else {
+                btnText.textContent = '🤖 ' + t.analyzeButton;
+                // 店舗用の推奨テキストに切り替え
+                recommendedText.setAttribute('data-i18n', 'storeRecommended');
+                recommendedText.textContent = t.storeRecommended;
+            }
+            
+            // data-i18n属性を使用してUIを更新
+            updateUILanguage(currentLang);
+        }
+
+
+        // Auto-fill demo credentials on focus (only if elements exist)
+        const usernameField = document.getElementById('username');
+        const passwordField = document.getElementById('password');
+        
+        if (usernameField) {
+            usernameField.addEventListener('focus', function() {
+                if (!this.value) this.value = 'sapporo-guide';
+            });
+        }
+        
+        if (passwordField) {
+            passwordField.addEventListener('focus', function() {
+                if (!this.value) this.value = 'hokkaido2024';
+            });
+        }
+    </script>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-content">
+            <button class="auth-close" onclick="closeAuthModal()">&times;</button>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form">
+                <h2>ログイン</h2>
+                <form onsubmit="handleLogin(event)">
+                    <input type="email" id="loginEmail" placeholder="メールアドレス" required>
+                    <input type="password" id="loginPassword" placeholder="パスワード" required>
+                    <button type="submit" class="auth-btn">ログイン</button>
+                </form>
+                <p>アカウントをお持ちでない方は <a href="#" onclick="showSignupForm()">新規登録</a></p>
+            </div>
+            
+            <!-- Signup Form -->
+            <div id="signupForm" class="auth-form" style="display: none;">
+                <h2>新規登録</h2>
+                <form onsubmit="handleSignup(event)">
+                    <input type="text" id="signupName" placeholder="お名前" required>
+                    <input type="email" id="signupEmail" placeholder="メールアドレス" required>
+                    <input type="password" id="signupPassword" placeholder="パスワード（8文字以上）" required minlength="8">
+                    <button type="submit" class="auth-btn">アカウント作成</button>
+                </form>
+                <p>すでにアカウントをお持ちの方は <a href="#" onclick="showLoginForm()">ログイン</a></p>
+            </div>
+            
+            <!-- Email Confirmation Form -->
+            <div id="confirmationForm" class="auth-form" style="display: none;">
+                <h2>メール認証</h2>
+                <p>メールアドレスに送信された認証コードを入力してください</p>
+                <form onsubmit="handleConfirmation(event)">
+                    <input type="text" id="confirmationCode" placeholder="認証コード" required>
+                    <button type="submit" class="auth-btn">認証する</button>
+                </form>
+                <p><a href="#" onclick="resendConfirmationCode()">認証コードを再送信</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Upgrade Modal -->
+    <div id="upgradeModal" class="upgrade-modal">
+        <div class="upgrade-content">
+            <h2 class="upgrade-title">⭐ プレミアムプランにアップグレード</h2>
+            <p style="color: #666; margin-bottom: 2rem;">無制限でAI解析をお楽しみください</p>
+            
+            <div class="plan-options">
+                <div class="plan-card" onclick="selectPlan('7days')" id="plan7days">
+                    <div class="plan-name">7日間プラン</div>
+                    <div class="plan-price">¥980</div>
+                    <div class="plan-duration">1週間無制限</div>
+                    <ul class="plan-features">
+                        <li>AI解析無制限</li>
+                        <li>高優先度処理</li>
+                        <li>詳細分析レポート</li>
+                    </ul>
+                </div>
+                
+                <div class="plan-card selected" onclick="selectPlan('20days')" id="plan20days">
+                    <div class="plan-name">20日間プラン</div>
+                    <div class="plan-price">¥1,980</div>
+                    <div class="plan-duration">20日間無制限</div>
+                    <ul class="plan-features">
+                        <li>AI解析無制限</li>
+                        <li>高優先度処理</li>
+                        <li>詳細分析レポート</li>
+                        <li>お得！約50%オフ</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Stripe Checkout 準備中表示 (初期は非表示) -->
+            <div id="paymentSection" class="payment-section" style="display: none;">
+                <h3 style="color: #333; margin-bottom: 1rem;">💳 決済ページに移動中...</h3>
+                <div style="text-align: center; padding: 2rem;">
+                    <div class="spinner" style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #ff9800; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 1rem; color: #666;">安全なStripe決済ページへリダイレクトしています...</p>
+                </div>
+                <div class="payment-security" style="text-align: center; margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                    🔒 SSL暗号化通信・Stripe社による安全決済
+                </div>
+            </div>
+            
+            <div id="planSelectionButtons" class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeUpgradeModal()">キャンセル</button>
+                <button class="modal-btn primary" onclick="proceedToPayment()">決済に進む</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPlan = '20days'; // デフォルトは20日間プラン
+        
+        // 認証システム管理
+        let currentUser = null;
+        let pendingSignupData = null; // サインアップ時の一時データ保存
+
+        // 認証状態変数
+        function getCurrentUserId() {
+            if (currentUser) {
+                return currentUser.user_id;
+            }
+            
+            // 未認証の場合は認証モーダルを表示
+            console.log('未認証ユーザー: ログインモーダルを表示');
+            showAuthModal();
+            return null;
+        }
+
+        function isUserAuthenticated() {
+            return currentUser !== null;
+        }
+
+        function getAuthToken() {
+            return localStorage.getItem('accessToken');
+        }
+
+        // 認証関連関数
+        function showAuthModal() {
+            document.getElementById('authModal').classList.add('show');
+            showLoginForm();
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('show');
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('confirmationForm').style.display = 'none';
+        }
+
+        function showSignupForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+            document.getElementById('confirmationForm').style.display = 'none';
+        }
+
+        function showConfirmationForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('confirmationForm').style.display = 'block';
+        }
+
+        // ログイン処理
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // 認証成功
+                    localStorage.setItem('accessToken', result.tokens.AccessToken);
+                    localStorage.setItem('refreshToken', result.tokens.RefreshToken);
+                    currentUser = result.user_info;
+                    
+                    closeAuthModal();
+                    showMessage('ログインしました', 'success');
+                    
+                    // ログイン後に決済に戻る場合
+                    if (selectedPlan) {
+                        showUpgradeModal(); // プレミアムモーダルを再表示
+                        setTimeout(() => {
+                            proceedToPayment();
+                        }, 1500);
+                    }
+                } else {
+                    showMessage(`ログインエラー: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('ログインに失敗しました', 'error');
+            }
+        }
+
+        // サインアップ処理
+        async function handleSignup(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            pendingSignupData = { name, email, password };
+
+            try {
+                const response = await fetch('https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email, 
+                        password, 
+                        display_name: name 
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('認証コードをメールに送信しました', 'success');
+                    showConfirmationForm();
+                } else {
+                    showMessage(`登録エラー: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showMessage('登録に失敗しました', 'error');
+            }
+        }
+
+        // 認証コード確認処理
+        async function handleConfirmation(event) {
+            event.preventDefault();
+            const confirmationCode = document.getElementById('confirmationCode').value;
+
+            if (!pendingSignupData) {
+                showMessage('登録情報が不正です', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/auth/confirm-signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: pendingSignupData.email,
+                        password: pendingSignupData.password,
+                        confirmation_code: confirmationCode
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // 認証成功、自動ログイン
+                    localStorage.setItem('accessToken', result.tokens.AccessToken);
+                    localStorage.setItem('refreshToken', result.tokens.RefreshToken);
+                    currentUser = result.user_info;
+                    
+                    closeAuthModal();
+                    showMessage('アカウントが作成されました', 'success');
+                    pendingSignupData = null;
+                    
+                    // 登録後に決済に戻る場合
+                    if (selectedPlan) {
+                        showUpgradeModal(); // プレミアムモーダルを再表示
+                        setTimeout(() => {
+                            proceedToPayment();
+                        }, 1000);
+                    }
+                } else {
+                    showMessage(`認証エラー: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Confirmation error:', error);
+                showMessage('認証に失敗しました', 'error');
+            }
+        }
+
+        // 認証コード再送信
+        async function resendConfirmationCode() {
+            if (!pendingSignupData) {
+                showMessage('登録情報が不正です', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/auth/resend-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: pendingSignupData.email })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('認証コードを再送信しました', 'success');
+                } else {
+                    showMessage(`再送信エラー: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Resend error:', error);
+                showMessage('再送信に失敗しました', 'error');
+            }
+        }
+
+        // ページ読み込み時の認証状態確認
+        async function checkAuthStatus() {
+            const token = getAuthToken();
+            if (token && !currentUser) { // currentUserがnullの場合のみ実行
+                try {
+                    const response = await fetch('https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/auth/user-info', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const userInfo = await response.json();
+                        currentUser = userInfo;
+                        console.log('✅ 認証状態復元:', currentUser.email);
+                    } else {
+                        console.log('⚠️ Token invalid, clearing auth state');
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('refreshToken');
+                        currentUser = null;
+                    }
+                } catch (error) {
+                    console.error('Auth check error:', error);
+                    // エラー時でも既存のcurrentUserは保持
+                    if (!currentUser) {
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('refreshToken');
+                    }
+                }
+            } else if (currentUser) {
+                console.log('✅ Authentication already verified:', currentUser.email);
+            }
+        }
+
+        // ページ読み込み時に認証状態確認
+        window.addEventListener('load', checkAuthStatus);
+        
+        // Stripe設定
+        const stripe = Stripe('pk_test_51RvuaERVpc2gZJezUtU3m18rgEASCWugNUe9KJBxqCSmDHPzfYet6Z1yTpvF5VccUscOVm4AX4l5AwncEAELAYfX002TJVRaa6');
+
+        function showUpgradeModal() {
+            
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = translations[currentLanguage];
+            
+            // 動的にモーダルコンテンツを生成
+            const upgradeModal = document.getElementById('upgradeModal');
+            const upgradeContent = upgradeModal.querySelector('.upgrade-content');
+            
+            upgradeContent.innerHTML = `
+                <h2 class="upgrade-title">${t.upgradeTitle}</h2>
+                <p style="color: #666; margin-bottom: 2rem;">${t.upgradeDescription}</p>
+                
+                <div class="plan-options">
+                    <div class="plan-card" onclick="selectPlan('7days')" id="plan7days">
+                        <div class="plan-name">${t.plan7days}</div>
+                        <div class="plan-price">${t.price980}</div>
+                        <div class="plan-duration">${t.duration7days}</div>
+                        <ul class="plan-features">
+                            <li>${t.featureUnlimited}</li>
+                            <li>${t.featurePriority}</li>
+                            <li>${t.featureReport}</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="plan-card selected" onclick="selectPlan('20days')" id="plan20days">
+                        <div class="plan-name">${t.plan20days}</div>
+                        <div class="plan-price">${t.price1980}</div>
+                        <div class="plan-duration">${t.duration20days}</div>
+                        <div class="plan-popular">${t.popularPlan}</div>
+                        <ul class="plan-features">
+                            <li>${t.featureUnlimited}</li>
+                            <li>${t.featurePriority}</li>
+                            <li>${t.featureReport}</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Stripe Checkout 準備中表示 (初期は非表示) -->
+                <div id="paymentSection" class="payment-section" style="display: none;">
+                    <h3 style="color: #333; margin-bottom: 1rem;">${t.paymentPreparation}</h3>
+                    <div style="text-align: center; padding: 2rem;">
+                        <div class="spinner" style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #ff9800; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <p style="margin-top: 1rem; color: #666;">${t.stripeRedirect}</p>
+                    </div>
+                    <div class="payment-security" style="text-align: center; margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                        ${t.paymentSecurity}
+                    </div>
+                </div>
+                
+                <div id="planSelectionButtons" class="modal-buttons">
+                    <button class="modal-btn secondary" onclick="closeUpgradeModal()">${t.cancelPayment}</button>
+                    <button class="modal-btn primary" onclick="proceedToPayment()">${t.proceedPayment}</button>
+                </div>
+            `;
+            
+            upgradeModal.classList.add('show');
+        }
+
+        function closeUpgradeModal() {
+            document.getElementById('upgradeModal').classList.remove('show');
+            resetPaymentForm();
+        }
+
+        function selectPlan(planType) {
+            selectedPlan = planType;
+            
+            // Remove selection from all plans
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked plan
+            document.getElementById('plan' + planType).classList.add('selected');
+        }
+
+        async function proceedToPayment() {
+            try {
+                console.log('💳 Starting Stripe payment process for plan:', selectedPlan);
+                
+                // 認証チェック
+                if (!isUserAuthenticated()) {
+                    console.log('未認証ユーザー: 認証が必要です');
+                    showMessage('決済にはログインが必要です', 'info');
+                    
+                    // プレミアムモーダルを閉じて認証モーダルを表示
+                    closeUpgradeModal();
+                    showAuthModal();
+                    return;
+                }
+                
+                const userId = getCurrentUserId();
+                
+                if (!userId) {
+                    console.error('❌ User ID is null despite authentication');
+                    showMessage('ユーザー情報の取得に失敗しました', 'error');
+                    return;
+                }
+                
+                console.log('✅ Authentication verified, proceeding with payment...');
+                
+                // プラン選択画面を非表示にして決済準備画面を表示
+                document.getElementById('planSelectionButtons').style.display = 'none';
+                document.getElementById('paymentSection').style.display = 'block';
+                
+                showMessage('決済ページを準備中...', 'info');
+                
+                // バックエンドにCheckout Session作成リクエスト
+                const response = await fetch('https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/payment/create-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        planType: selectedPlan,
+                        userId: userId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.checkout_url) {
+                    console.log('✅ Checkout session created:', result.session_id);
+                    console.log('🚀 Redirecting to Stripe checkout:', result.checkout_url);
+                    
+                    // Stripe Checkoutページにリダイレクト
+                    showMessage('決済ページに移動しています...', 'info');
+                    
+                    // デバッグ：リダイレクト前に2秒待機
+                    setTimeout(() => {
+                        console.log('🔗 Executing redirect...');
+                        window.location.href = result.checkout_url;
+                    }, 2000);
+                } else {
+                    console.error('❌ Payment API error:', {
+                        status: response.status,
+                        result: result
+                    });
+                    throw new Error(result.error || '決済セッションの作成に失敗しました');
+                }
+                
+            } catch (error) {
+                console.error('Stripe checkout error:', error);
+                showMessage('決済処理でエラーが発生しました: ' + error.message, 'error');
+                resetPaymentForm();
+            }
+        }
+        
+        function resetPaymentForm() {
+            // 決済フォームをリセット
+            document.getElementById('paymentSection').style.display = 'none';
+            document.getElementById('planSelectionButtons').style.display = 'block';
+        }
+
+        // 決済完了処理（Stripe Checkoutから戻ってきた時）
+        function handlePaymentResult() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('payment');
+            const sessionId = urlParams.get('session_id');
+            
+            if (paymentStatus === 'success' && sessionId) {
+                console.log('✅ Payment completed:', sessionId);
+                showMessage('🎉 決済が完了しました！プレミアム機能をお楽しみください', 'success');
+                
+                // URLパラメータをクリア
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // ユーザープラン表示を更新
+                setTimeout(() => {
+                    updateUserPlanDisplay();
+                }, 1000);
+                
+            } else if (paymentStatus === 'cancel') {
+                console.log('❌ Payment cancelled');
+                showMessage('決済がキャンセルされました', 'info');
+                
+                // URLパラメータをクリア
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        // Update user plan display based on user info
+        async function updateUserPlanDisplay() {
+            console.log('🔄 updateUserPlanDisplay called');
+            
+            // Debug session storage contents
+            console.log('💾 SessionStorage contents:');
+            console.log('  - userInfo:', sessionStorage.getItem('userInfo'));
+            console.log('  - accessToken:', sessionStorage.getItem('accessToken'));
+            console.log('  - sapporoAuth:', sessionStorage.getItem('sapporoAuth'));
+            console.log('  - sapporoUser:', sessionStorage.getItem('sapporoUser'));
+            
+            const userInfo = sessionStorage.getItem('userInfo');
+            if (!userInfo) {
+                console.log('❌ No userInfo in sessionStorage');
+                return;
+            }
+            
+            const user = JSON.parse(userInfo);
+            console.log('👤 Current user from sessionStorage:', user);
+            const userPlanElement = document.getElementById('userPlan');
+            const upgradeBtn = document.getElementById('upgradeBtn');
+            
+            try {
+                // Get current usage info from backend
+                const authToken = sessionStorage.getItem('accessToken');
+                console.log('🔑 Auth token details:');
+                console.log('  - Present:', authToken ? 'Yes' : 'No');
+                console.log('  - Type:', typeof authToken);
+                console.log('  - Length:', authToken ? authToken.length : 0);
+                console.log('  - First 50 chars:', authToken ? authToken.substring(0, 50) + '...' : 'N/A');
+                
+                const response = await fetch(`${API_BASE_URL}/auth/user-info`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                console.log('📡 API response:', response.status, response.statusText);
+                
+                if (response.ok) {
+                    const userDetails = await response.json();
+                    console.log('📊 Fresh user data from API:', userDetails);
+                    
+                    const userType = userDetails.user_type || 'free';
+                    const monthlyCount = userDetails.monthly_analysis_count || 0;
+                    
+                    console.log('📈 User type:', userType, 'Monthly count:', monthlyCount);
+                    
+                    if (userType === 'free') {
+                        const remaining = 5 - monthlyCount;
+                        console.log('🆓 Free plan - Remaining:', remaining);
+                        userPlanElement.textContent = `Free (残り${remaining}回)`;
+                        userPlanElement.className = 'user-plan';
+                        upgradeBtn.style.display = remaining <= 2 ? 'block' : 'none'; // 残り2回以下で表示
+                    } else {
+                        console.log('💎 Premium plan detected');
+                        userPlanElement.textContent = `Premium (無制限)`;
+                        userPlanElement.className = 'user-plan premium';
+                        upgradeBtn.style.display = 'none';
+                    }
+                    
+                    // Update sessionStorage with fresh data
+                    sessionStorage.setItem('userInfo', JSON.stringify(userDetails));
+                    console.log('💾 Updated sessionStorage with fresh user data');
+                } else {
+                    console.log('❌ API Error Details:');
+                    console.log('  - Status:', response.status);
+                    console.log('  - Status Text:', response.statusText);
+                    
+                    if (response.status === 401) {
+                        console.log('⚠️ Authentication failed, using default free plan display');
+                        // Display default free plan info when auth fails
+                        userPlanElement.textContent = 'Free (残り5回)';
+                        userPlanElement.className = 'user-plan';
+                        upgradeBtn.style.display = 'none';
+                        
+                        // Don't show error to user for 401, just use defaults
+                        return;
+                    } else if (response.status === 500) {
+                        console.log('⚠️ Server error, using fallback display');
+                        // Server error: use sessionStorage data if available
+                        const userType = user.user_type || 'free';
+                        const monthlyCount = user.monthly_analysis_count || 0;
+                        
+                        if (userType === 'free') {
+                            const remaining = Math.max(0, 5 - monthlyCount);
+                            userPlanElement.textContent = `Free (残り${remaining}回)`;
+                            userPlanElement.className = 'user-plan';
+                            upgradeBtn.style.display = remaining <= 2 ? 'block' : 'none';
+                        } else {
+                            userPlanElement.textContent = `Premium (無制限)`;
+                            userPlanElement.className = 'user-plan premium';
+                            upgradeBtn.style.display = 'none';
+                        }
+                        return;
+                    }
+                    
+                    const errorText = await response.text();
+                    console.log('  - Response Body:', errorText);
+                }
+            } catch (error) {
+                console.error('❌ Network error:', error);
+            }
+        }
+
+        // Call updateUserPlanDisplay when user logs in
+        function updateHeaderUserInfo() {
+            const userInfo = sessionStorage.getItem('userInfo');
+            const currentUserElement = document.getElementById('currentUser');
+            const userInfoElement = document.getElementById('userInfo');
+            
+            if (userInfo) {
+                const user = JSON.parse(userInfo);
+                currentUserElement.textContent = user.display_name || user.email || 'User';
+                userInfoElement.classList.add('active');
+                
+                // Update plan display
+                updateUserPlanDisplay();
+            } else {
+                userInfoElement.classList.remove('active');
+            }
+        }
+
+        // Close modal when clicking outside
+        const upgradeModal = document.getElementById('upgradeModal');
+        if (upgradeModal) {
+            upgradeModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeUpgradeModal();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
