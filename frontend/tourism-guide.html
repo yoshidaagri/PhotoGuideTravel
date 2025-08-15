@@ -509,6 +509,70 @@
             }
         };
 
+        // メール認証画面専用の翻訳データ（Phase 6.9.5）
+        const emailAuthTranslations = {
+            ja: {
+                emailLogin: "📧 メールでログイン",
+                loginTitle: "観光アナライザーにログイン", 
+                emailPlaceholder: "メールアドレス",
+                passwordPlaceholder: "パスワード",
+                confirmPassword: "パスワード確認",
+                loginButton: "ログイン",
+                signupButton: "新規登録",
+                signupLink: "新規登録",
+                forgotPassword: "パスワードを忘れた方",
+                languageSelect: "言語を選択"
+            },
+            ko: {
+                emailLogin: "📧 이메일로 로그인",
+                loginTitle: "관광 분석기에 로그인",
+                emailPlaceholder: "이메일 주소", 
+                passwordPlaceholder: "비밀번호",
+                confirmPassword: "비밀번호 확인",
+                loginButton: "로그인",
+                signupButton: "회원가입",
+                signupLink: "회원가입",
+                forgotPassword: "비밀번호 찾기",
+                languageSelect: "언어 선택"
+            },
+            zh: {
+                emailLogin: "📧 使用邮箱登录",
+                loginTitle: "登录旅游分析器",
+                emailPlaceholder: "邮箱地址",
+                passwordPlaceholder: "密码",
+                confirmPassword: "确认密码", 
+                loginButton: "登录",
+                signupButton: "注册账户",
+                signupLink: "注册账户",
+                forgotPassword: "忘记密码？",
+                languageSelect: "选择语言"
+            },
+            tw: {
+                emailLogin: "📧 使用電子郵件登入",
+                loginTitle: "登入觀光分析器",
+                emailPlaceholder: "電子郵件地址",
+                passwordPlaceholder: "密碼",
+                confirmPassword: "確認密碼",
+                loginButton: "登入",
+                signupButton: "註冊帳號", 
+                signupLink: "註冊帳號",
+                forgotPassword: "忘記密碼？",
+                languageSelect: "選擇語言"
+            },
+            en: {
+                emailLogin: "📧 Sign in with Email",
+                loginTitle: "Sign in to Tourism Analyzer",
+                emailPlaceholder: "Email address",
+                passwordPlaceholder: "Password",
+                confirmPassword: "Confirm Password",
+                loginButton: "Sign in",
+                signupButton: "Sign up",
+                signupLink: "Sign up", 
+                forgotPassword: "Forgot password?",
+                languageSelect: "Select language"
+            }
+        };
+
         // DOM Elements
         const loginSection = document.getElementById('loginSection');
         const mainApp = document.getElementById('mainApp');
@@ -877,7 +941,7 @@
         
         function showEmailAuthForm() {
             const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
-            const t = translations[currentLanguage];
+            const t = emailAuthTranslations[currentLanguage] || emailAuthTranslations['ja'];
             
             const loginCard = document.querySelector('.login-card');
             loginCard.innerHTML = `
@@ -889,24 +953,24 @@
                     <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ja" ${currentLanguage === 'ja' ? 'checked' : ''}> 🇯🇵 日本語</label>
                     <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ko" ${currentLanguage === 'ko' ? 'checked' : ''}> 🇰🇷 한국어</label>
                     <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh" ${currentLanguage === 'zh' ? 'checked' : ''}> 🇨🇳 简体中文</label>
-                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh-tw" ${currentLanguage === 'zh-tw' ? 'checked' : ''}> 🇹🇼 繁體中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="tw" ${currentLanguage === 'tw' ? 'checked' : ''}> 🇹🇼 繁體中文</label>
                     <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="en" ${currentLanguage === 'en' ? 'checked' : ''}> 🌍 English</label>
                 </div>
                 
                 <!-- ログイン/サインアップ切り替え -->
                 <div class="auth-mode-switcher" style="display: flex; margin-bottom: 2rem; border-radius: 25px; background: #f5f5f5; overflow: hidden;">
-                    <button id="loginModeBtn" class="mode-btn active" style="flex: 1; padding: 0.8rem; border: none; background: var(--primary-color); color: white; font-weight: 600; cursor: pointer;" data-i18n="login">${t.login}</button>
-                    <button id="signupModeBtn" class="mode-btn" style="flex: 1; padding: 0.8rem; border: none; background: transparent; color: #666; font-weight: 600; cursor: pointer;" data-i18n="signup">${t.signup}</button>
+                    <button id="loginModeBtn" class="mode-btn active" style="flex: 1; padding: 0.8rem; border: none; background: var(--primary-color); color: white; font-weight: 600; cursor: pointer;" data-i18n="loginButton">${t.loginButton}</button>
+                    <button id="signupModeBtn" class="mode-btn" style="flex: 1; padding: 0.8rem; border: none; background: transparent; color: #666; font-weight: 600; cursor: pointer;" data-i18n="signupButton">${t.signupButton}</button>
                 </div>
                 
                 <!-- ログインフォーム -->
                 <form id="loginForm" style="display: block;">
                     <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
-                        <input type="email" id="loginEmail" placeholder="${t.emailPlaceholder || 'メールアドレス'}" required 
+                        <input type="email" id="loginEmail" placeholder="${t.emailPlaceholder}" required 
                                style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
                     </div>
                     <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
-                        <input type="password" id="loginPassword" placeholder="${t.loginPassword || 'パスワード'}" required
+                        <input type="password" id="loginPassword" placeholder="${t.passwordPlaceholder}" required
                                style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
                     </div>
                     <button type="submit" style="width: 100%; padding: 1rem; background: var(--primary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;" data-i18n="loginButton">${t.loginButton}</button>
@@ -915,18 +979,18 @@
                 <!-- サインアップフォーム -->
                 <form id="signupForm" style="display: none;">
                     <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
-                        <input type="email" id="signupEmail" placeholder="${t.emailPlaceholder || 'メールアドレス'}" required
+                        <input type="email" id="signupEmail" placeholder="${t.emailPlaceholder}" required
                                style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
                     </div>
                     <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
-                        <input type="password" id="signupPassword" placeholder="${t.loginPassword || 'パスワード'}" required minlength="8"
+                        <input type="password" id="signupPassword" placeholder="${t.passwordPlaceholder}" required minlength="8"
                                style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
                     </div>
                     <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
-                        <input type="password" id="confirmPassword" placeholder="${t.confirmPassword || 'パスワード確認'}" required
+                        <input type="password" id="confirmPassword" placeholder="${t.confirmPassword}" required
                                style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
                     </div>
-                    <button type="submit" style="width: 100%; padding: 1rem; background: var(--secondary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;" data-i18n="signup">${t.signup}</button>
+                    <button type="submit" style="width: 100%; padding: 1rem; background: var(--secondary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;" data-i18n="signupButton">${t.signupButton}</button>
                 </form>
                 
                 <!-- 緊急ログインボタン -->
