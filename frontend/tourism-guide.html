@@ -66,12 +66,24 @@
                         📧 メールでログイン
                     </button>
                     
-                    <div class="features-info">
-                        <p><strong>🎆 新機能</strong></p>
-                        <p>• 無料: 月5回まで解析</p>
-                        <p>• プレミアム: 無制限利用</p>
-                        <p>• 5言語対応: 🇯🇵/🇰🇷/🇨🇳/🇹🇼/🌍</p>
-                        <p><small>店舗・観光地・料理画像をAIが詳しく解析</small></p>
+                    <div class="features-info" id="featuresInfo">
+                        <p><strong data-i18n="newFeatures">🎆 新機能</strong></p>
+                        <p data-i18n="freeFeature">• 無料: 月5回まで解析</p>
+                        <p data-i18n="premiumFeature">• プレミアム: 無制限利用</p>
+                        
+                        <!-- 言語選択セクション -->
+                        <div class="language-selection-section">
+                            <p><strong data-i18n="languageSupport">🌐 言語を選択:</strong></p>
+                            <div class="main-language-options" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin: 0.8rem 0; font-size: 0.9rem;">
+                                <label style="display: flex; align-items: center; gap: 0.3rem; cursor: pointer;"><input type="radio" name="mainLang" value="ja" checked> 🇯🇵 日本語</label>
+                                <label style="display: flex; align-items: center; gap: 0.3rem; cursor: pointer;"><input type="radio" name="mainLang" value="ko"> 🇰🇷 한국어</label>
+                                <label style="display: flex; align-items: center; gap: 0.3rem; cursor: pointer;"><input type="radio" name="mainLang" value="zh"> 🇨🇳 简体中文</label>
+                                <label style="display: flex; align-items: center; gap: 0.3rem; cursor: pointer;"><input type="radio" name="mainLang" value="tw"> 🇹🇼 繁體中文</label>
+                                <label style="display: flex; align-items: center; gap: 0.3rem; cursor: pointer;"><input type="radio" name="mainLang" value="en"> 🌍 English</label>
+                            </div>
+                        </div>
+                        
+                        <p><small data-i18n="analysisDescription">店舗・観光地・料理画像をAIが詳しく解析</small></p>
                     </div>
                 </div>
             </div>
@@ -509,6 +521,45 @@
             }
         };
 
+        // 最初の画面（features-info）用翻訳データ（Phase 6.9.6）
+        const mainScreenTranslations = {
+            ja: {
+                newFeatures: "🎆 新機能",
+                freeFeature: "• 無料: 月5回まで解析",
+                premiumFeature: "• プレミアム: 無制限利用", 
+                languageSupport: "🌐 言語を選択:",
+                analysisDescription: "店舗・観光地・料理画像をAIが詳しく解析"
+            },
+            ko: {
+                newFeatures: "🎆 새로운 기능",
+                freeFeature: "• 무료: 월 5회까지 분석",
+                premiumFeature: "• 프리미엄: 무제한 이용",
+                languageSupport: "🌐 언어 선택:",
+                analysisDescription: "매장・관광지・요리 이미지를 AI가 자세히 분석"
+            },
+            zh: {
+                newFeatures: "🎆 新功能",
+                freeFeature: "• 免费: 每月最多5次分析",
+                premiumFeature: "• 高级: 无限制使用",
+                languageSupport: "🌐 选择语言:",
+                analysisDescription: "AI详细分析店铺・观光地・料理图像"
+            },
+            tw: {
+                newFeatures: "🎆 新功能", 
+                freeFeature: "• 免費: 每月最多5次分析",
+                premiumFeature: "• 高級: 無限制使用",
+                languageSupport: "🌐 選擇語言:",
+                analysisDescription: "AI詳細分析店鋪・觀光地・料理圖像"
+            },
+            en: {
+                newFeatures: "🎆 New Features",
+                freeFeature: "• Free: Up to 5 analyses per month", 
+                premiumFeature: "• Premium: Unlimited usage",
+                languageSupport: "🌐 Select Language:",
+                analysisDescription: "AI analyzes shop・tourism・food images in detail"
+            }
+        };
+
         // メール認証画面専用の翻訳データ（Phase 6.9.5）
         const emailAuthTranslations = {
             ja: {
@@ -581,6 +632,30 @@
         const previewSection = document.getElementById('previewSection');
         const loadingSection = document.getElementById('loadingSection');
         const resultsSection = document.getElementById('resultsSection');
+
+        // Phase 6.9.6: メイン画面言語更新関数
+        function updateMainScreenLanguage(language) {
+            const mainT = mainScreenTranslations[language] || mainScreenTranslations['ja'];
+            const commonT = translations[language] || translations['ja'];
+            
+            // features-infoセクションの更新
+            document.querySelector('[data-i18n="newFeatures"]').textContent = mainT.newFeatures;
+            document.querySelector('[data-i18n="freeFeature"]').textContent = mainT.freeFeature;
+            document.querySelector('[data-i18n="premiumFeature"]').textContent = mainT.premiumFeature;
+            document.querySelector('[data-i18n="languageSupport"]').textContent = mainT.languageSupport;
+            document.querySelector('[data-i18n="analysisDescription"]').textContent = mainT.analysisDescription;
+            
+            // 認証ボタンの更新
+            document.querySelector('[data-i18n="googleLogin"]').textContent = commonT.googleLogin;
+            document.querySelector('[data-i18n="emailLogin"]').textContent = commonT.emailLogin;
+            document.querySelector('[data-i18n="orDivider"]').textContent = commonT.orDivider;
+            document.querySelector('[data-i18n="loginTitle"]').textContent = commonT.loginTitle;
+            
+            // sessionStorageに保存（メール認証画面との同期用）
+            sessionStorage.setItem('selectedLanguage', language);
+            
+            console.log(`🌐 メイン画面言語更新: ${language}`);
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', init);
@@ -756,6 +831,15 @@
         }
 
         function setupEventListeners() {
+            // Phase 6.9.6: メイン画面言語選択イベントリスナー
+            document.querySelectorAll('input[name="mainLang"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        updateMainScreenLanguage(this.value);
+                    }
+                });
+            });
+
             // Google login
             const googleLoginBtn = document.getElementById('googleLoginBtn');
             if (googleLoginBtn) {
@@ -876,6 +960,15 @@
         function initializeLanguage() {
             // Load saved language or default to Japanese
             const savedLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            
+            // Phase 6.9.6: メイン画面の言語初期化
+            const mainLanguageRadio = document.querySelector(`input[name="mainLang"][value="${savedLanguage}"]`);
+            if (mainLanguageRadio) {
+                mainLanguageRadio.checked = true;
+                updateMainScreenLanguage(savedLanguage);
+            }
+            
+            // 解析画面の言語初期化（既存）
             const languageRadio = document.querySelector(`input[name="language"][value="${savedLanguage}"]`);
             if (languageRadio) {
                 languageRadio.checked = true;
