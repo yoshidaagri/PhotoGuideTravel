@@ -5,21 +5,28 @@
 }
 
 :root {
-    --primary-color: #2E7D32;
-    --primary-dark: #1B5E20;
-    --primary-light: #4CAF50;
-    --secondary-color: #66BB6A;
-    --secondary-dark: #43A047;
-    --accent-color: #81C784;
+    /* Phase 6.9.5: 観光アナライザー札幌テーマ */
+    --primary-color: #2B5797; /* 札幌ブルー */
+    --primary-dark: #1A3B5C;
+    --primary-light: #4A90E2;
+    --secondary-color: #E8F4FD; /* 雪・水色 */
+    --secondary-dark: #B3D9F7;
+    --accent-color: #87CEEB; /* スカイブルー */
     --success-color: #4CAF50;
-    --bg-gradient: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 30%, #81C784 70%, #66BB6A 100%);
+    
+    /* 札幌観光グラデーション */
+    --bg-gradient: linear-gradient(135deg, #E8F4FD 0%, #B3D9F7 50%, #2B5797 100%);
     --glass-bg: rgba(255, 255, 255, 0.95);
-    --glass-border: rgba(76, 175, 80, 0.2);
-    --shadow: 0 20px 40px rgba(46, 125, 50, 0.15);
-    --shadow-hover: 0 25px 50px rgba(46, 125, 50, 0.25);
-    --nature-accent: #8BC34A;
-    --forest-green: #388E3C;
-    --leaf-green: #9CCC65;
+    --glass-border: rgba(43, 87, 151, 0.2);
+    --shadow: 0 20px 40px rgba(43, 87, 151, 0.15);
+    --shadow-hover: 0 25px 50px rgba(43, 87, 151, 0.25);
+    
+    /* 札幌観光カラーパレット */
+    --sapporo-blue: #2B5797;
+    --sapporo-snow: #E8F4FD;
+    --sapporo-sky: #4A90E2;
+    --mountain-gradient: linear-gradient(45deg, #2B5797 0%, #4A90E2 100%);
+    
     --auth-overlay: rgba(0, 0, 0, 0.5);
 }
 
@@ -349,6 +356,226 @@ body {
     max-width: 400px;
     text-align: center;
     border: 1px solid var(--glass-border);
+}
+
+/* Phase 6.9.5: 独自認証モーダル（観光アナライザーブランド） */
+.custom-auth-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    position: relative;
+}
+
+.auth-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-gradient);
+    opacity: 0.9;
+    z-index: 1;
+}
+
+.auth-content {
+    position: relative;
+    z-index: 2;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 20px 60px rgba(43, 87, 151, 0.25);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    border: 1px solid var(--glass-border);
+    animation: authModalFadeIn 0.6s ease-out;
+}
+
+@keyframes authModalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.auth-header {
+    margin-bottom: 2rem;
+}
+
+.auth-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--sapporo-blue);
+    margin-bottom: 0.8rem;
+    line-height: 1.2;
+}
+
+.auth-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 0;
+    font-weight: 400;
+}
+
+.language-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    margin-bottom: 2.5rem;
+    padding: 1rem;
+    background: rgba(232, 244, 253, 0.3);
+    border-radius: 16px;
+    border: 1px solid var(--secondary-dark);
+}
+
+.lang-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 2px solid transparent;
+}
+
+.lang-option:hover {
+    background: rgba(43, 87, 151, 0.1);
+    border-color: var(--sapporo-blue);
+}
+
+.lang-option.active {
+    background: var(--mountain-gradient);
+    color: white;
+    border-color: var(--sapporo-blue);
+}
+
+.lang-option input[type="radio"] {
+    display: none;
+}
+
+.auth-buttons {
+    margin-bottom: 2rem;
+}
+
+.auth-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.auth-btn:hover:before {
+    left: 100%;
+}
+
+.google-btn {
+    background: var(--mountain-gradient);
+    color: white;
+    box-shadow: 0 8px 25px rgba(43, 87, 151, 0.3);
+}
+
+.google-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(43, 87, 151, 0.4);
+}
+
+.email-btn {
+    background: linear-gradient(45deg, #4A90E2 0%, #87CEEB 100%);
+    color: white;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+}
+
+.email-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(74, 144, 226, 0.4);
+}
+
+.auth-divider {
+    position: relative;
+    margin: 1.5rem 0;
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.auth-divider:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ddd, transparent);
+}
+
+.auth-divider span {
+    background: var(--glass-bg);
+    padding: 0 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.auth-security {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 1.5rem;
+    padding: 0.8rem;
+    background: rgba(43, 87, 151, 0.05);
+    border-radius: 12px;
+    border-left: 4px solid var(--sapporo-blue);
+}
+
+/* モバイル対応 */
+@media (max-width: 480px) {
+    .auth-content {
+        margin: 1rem;
+        padding: 2rem 1.5rem;
+    }
+    
+    .language-selector {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
+    
+    .auth-title {
+        font-size: 1.8rem;
+    }
+    
+    .auth-subtitle {
+        font-size: 1rem;
+    }
 }
 
 .login-title {

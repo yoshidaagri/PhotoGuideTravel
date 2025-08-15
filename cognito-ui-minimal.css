@@ -1,0 +1,99 @@
+/* 観光アナライザー - Cognito Hosted UI（最小版） */
+
+/* 全体背景 - 札幌観光イメージ */
+.background-customizable {
+    background: linear-gradient(135deg, #E8F4FD 0%, #B3D9F7 50%, #2B5797 100%) !important;
+}
+
+/* ロゴ設定 */
+.logo-customizable {
+    max-width: 180px !important;
+    margin: 20px auto !important;
+}
+
+/* バナー（ヘッダー）背景 */
+.banner-customizable {
+    background: linear-gradient(45deg, #2B5797 0%, #4A90E2 100%) !important;
+    padding: 30px 20px !important;
+    text-align: center !important;
+    color: white !important;
+}
+
+/* 入力フィールド */
+.inputField-customizable {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 2px solid #E8F4FD !important;
+    border-radius: 8px !important;
+    padding: 12px 15px !important;
+    font-size: 16px !important;
+    width: 100% !important;
+}
+
+/* ラベル */
+.label-customizable {
+    color: #2B5797 !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}
+
+/* メインボタン（ログイン等） */
+.submitButton-customizable {
+    background: linear-gradient(45deg, #2B5797 0%, #4A90E2 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 15px 30px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    width: 100% !important;
+    margin: 10px 0 !important;
+}
+
+/* Googleサインインボタン */
+.socialButton-customizable {
+    background: linear-gradient(45deg, #4285F4 0%, #34A853 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 15px 30px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    width: 100% !important;
+    margin: 10px 0 !important;
+}
+
+/* リンク */
+.redirect-customizable {
+    color: #2B5797 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+}
+
+/* ヘッダータイトル */
+.heading-customizable {
+    color: #2B5797 !important;
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    margin-bottom: 20px !important;
+}
+
+/* 説明文 */
+.textDescription-customizable {
+    color: #666 !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+}
+
+/* フォームボックス */
+.box-customizable {
+    background: rgba(255, 255, 255, 0.95) !important;
+    padding: 30px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(43, 87, 151, 0.1) !important;
+}
+
+/* アイコンボタン */
+.idpButton-customizable {
+    border-radius: 8px !important;
+}

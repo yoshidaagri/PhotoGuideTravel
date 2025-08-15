@@ -1,0 +1,48 @@
+/* 観光アナライザー - Cognito UI コア */
+
+.background-customizable {
+    background: linear-gradient(135deg, #E8F4FD 0%, #B3D9F7 50%, #2B5797 100%) !important;
+}
+
+.logo-customizable {
+    max-width: 180px !important;
+}
+
+.banner-customizable {
+    background: linear-gradient(45deg, #2B5797 0%, #4A90E2 100%) !important;
+    color: white !important;
+}
+
+.inputField-customizable {
+    border: 2px solid #E8F4FD !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+}
+
+.label-customizable {
+    color: #2B5797 !important;
+    font-weight: 600 !important;
+}
+
+.submitButton-customizable {
+    background: linear-gradient(45deg, #2B5797 0%, #4A90E2 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    font-weight: 600 !important;
+}
+
+.socialButton-customizable {
+    background: linear-gradient(45deg, #4285F4 0%, #34A853 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    font-weight: 600 !important;
+}
+
+.redirect-customizable {
+    color: #2B5797 !important;
+    font-weight: 500 !important;
+}
