@@ -260,21 +260,6 @@
                 signup: "新規登録",
                 backToLogin: "ログインに戻る",
                 googleLoginNotReady: "Googleログインは現在設定中です。メールログインをご利用ください。",
-                
-                // Phase 6.9.5: 独自認証UI専用翻訳
-                customAuthTitle: "🏔️ 観光アナライザーにログイン",
-                customAuthSubtitle: "札幌観光をもっと楽しく、もっと便利に",
-                customGoogleLogin: "🌍 Googleでログイン",
-                customEmailLogin: "📧 メールでログイン",
-                customAuthLoading: "🏔️ 認証中...",
-                customAuthError: "❌ ログインに失敗しました",
-                customAuthSuccess: "✅ ログインしました！観光解析をお楽しみください",
-                customAuthWelcome: "ようこそ、観光アナライザーへ",
-                customLanguagePrompt: "ご利用言語を選択してください",
-                customRetryLogin: "再度ログインする",
-                customAuthSecure: "🔒 安全なSSL暗号化認証",
-                customTouristGuide: "あなたの札幌観光ガイド",
-                
                 currentUser: "ユーザー",
                 logout: "ログアウト",
                 newAnalysis: "新しい解析",
@@ -331,21 +316,6 @@
                 signup: "회원가입",
                 backToLogin: "로그인으로 돌아가기",
                 googleLoginNotReady: "Google 로그인은 현재 설정 중입니다. 이메일 로그인을 이용해 주세요.",
-                
-                // Phase 6.9.5: 독자적 인증 UI 전용 번역
-                customAuthTitle: "🏔️ 관광 분석기에 로그인",
-                customAuthSubtitle: "삿포로 관광을 더욱 즐겁고 편리하게",
-                customGoogleLogin: "🌍 Google로 로그인",
-                customEmailLogin: "📧 이메일로 로그인",
-                customAuthLoading: "🏔️ 인증 중...",
-                customAuthError: "❌ 로그인에 실패했습니다",
-                customAuthSuccess: "✅ 로그인했습니다! 관광 분석을 즐겨보세요",
-                customAuthWelcome: "관광 분석기에 오신 것을 환영합니다",
-                customLanguagePrompt: "이용하실 언어를 선택해 주세요",
-                customRetryLogin: "다시 로그인하기",
-                customAuthSecure: "🔒 안전한 SSL 암호화 인증",
-                customTouristGuide: "당신의 삿포로 관광 가이드",
-                
                 currentUser: "ユーザー",
                 logout: "로그아웃",
                 newAnalysis: "새로운 분석",
@@ -402,21 +372,6 @@
                 signup: "注册",
                 backToLogin: "返回登录",
                 googleLoginNotReady: "Google登录目前正在设置中。请使用邮箱登录。",
-                
-                // Phase 6.9.5: 独立认证UI专用翻译
-                customAuthTitle: "🏔️ 登录旅游分析器",
-                customAuthSubtitle: "让札幌旅游更加愉快便利",
-                customGoogleLogin: "🌍 使用Google登录",
-                customEmailLogin: "📧 使用邮箱登录",
-                customAuthLoading: "🏔️ 认证中...",
-                customAuthError: "❌ 登录失败",
-                customAuthSuccess: "✅ 登录成功！请享受旅游分析功能",
-                customAuthWelcome: "欢迎使用旅游分析器",
-                customLanguagePrompt: "请选择您的使用语言",
-                customRetryLogin: "重新登录",
-                customAuthSecure: "🔒 安全的SSL加密认证",
-                customTouristGuide: "您的札幌旅游向导",
-                
                 currentUser: "ユーザー",
                 logout: "退出登录",
                 newAnalysis: "新的分析",
@@ -529,21 +484,6 @@
                 signup: "Sign Up",
                 backToLogin: "Back to Login",
                 googleLoginNotReady: "Google login is currently being configured. Please use email login.",
-                
-                // Phase 6.9.5: Custom Authentication UI Translations
-                customAuthTitle: "🏔️ Sign in to Tourism Analyzer",
-                customAuthSubtitle: "Make Sapporo tourism more enjoyable",
-                customGoogleLogin: "🌍 Sign in with Google",
-                customEmailLogin: "📧 Sign in with Email",
-                customAuthLoading: "🏔️ Authenticating...",
-                customAuthError: "❌ Sign in failed",
-                customAuthSuccess: "✅ Signed in! Enjoy tourism analysis",
-                customAuthWelcome: "Welcome to Tourism Analyzer",
-                customLanguagePrompt: "Please select your language",
-                customRetryLogin: "Try signing in again",
-                customAuthSecure: "🔒 Secure SSL encrypted authentication",
-                customTouristGuide: "Your Sapporo Tourism Guide",
-                
                 currentUser: "ユーザー",
                 logout: "Logout",
                 newAnalysis: "New Analysis",
@@ -608,11 +548,6 @@
             handleOAuthCallback();
             // checkOldAuthStatus(); // 古い認証システム（現在未使用）
             initializeLanguage();
-            
-            // Phase 6.9.5: 独自認証モーダル初期化
-            if (!isLoggedIn) {
-                showCustomAuthModal();
-            }
             
             // marked.jsが利用可能な場合のみMarkdown初期化
             if (isMarkedAvailable) {
@@ -1604,9 +1539,6 @@
             userInfo.classList.remove('active');
             loginSection.classList.remove('hidden');
             
-            // Phase 6.9.5: 独自認証モーダル表示
-            showCustomAuthModal();
-            
             // Reset login form if it exists
             const loginForm = document.getElementById('loginForm');
             if (loginForm && typeof loginForm.reset === 'function') {
@@ -2157,113 +2089,6 @@
             return localStorage.getItem('accessToken');
         }
 
-        // Phase 6.9.5: 独自認証UI実装
-        function showCustomAuthModal() {
-            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
-            const t = translations[currentLanguage];
-            
-            const loginSection = document.getElementById('loginSection');
-            loginSection.innerHTML = `
-                <div class="custom-auth-modal">
-                    <div class="auth-background"></div>
-                    <div class="auth-content">
-                        <!-- ヘッダー部分 -->
-                        <div class="auth-header">
-                            <h1 class="auth-title">${t.customAuthTitle || t.loginTitle}</h1>
-                            <p class="auth-subtitle">${t.customAuthSubtitle || t.description}</p>
-                        </div>
-                        
-                        <!-- 言語選択 -->
-                        <div class="language-selector">
-                            <label class="lang-option ${currentLanguage === 'ja' ? 'active' : ''}">
-                                <input type="radio" name="authLang" value="ja" ${currentLanguage === 'ja' ? 'checked' : ''}>
-                                <span>🇯🇵 日本語</span>
-                            </label>
-                            <label class="lang-option ${currentLanguage === 'ko' ? 'active' : ''}">
-                                <input type="radio" name="authLang" value="ko" ${currentLanguage === 'ko' ? 'checked' : ''}>
-                                <span>🇰🇷 한국어</span>
-                            </label>
-                            <label class="lang-option ${currentLanguage === 'zh' ? 'active' : ''}">
-                                <input type="radio" name="authLang" value="zh" ${currentLanguage === 'zh' ? 'checked' : ''}>
-                                <span>🇨🇳 简体中文</span>
-                            </label>
-                            <label class="lang-option ${currentLanguage === 'en' ? 'active' : ''}">
-                                <input type="radio" name="authLang" value="en" ${currentLanguage === 'en' ? 'checked' : ''}>
-                                <span>🌍 English</span>
-                            </label>
-                        </div>
-                        
-                        <!-- 認証ボタン群 -->
-                        <div class="auth-buttons">
-                            <button id="customGoogleLoginBtn" class="auth-btn google-btn">
-                                <svg width="20" height="20" viewBox="0 0 24 24">
-                                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                                </svg>
-                                <span>${t.customGoogleLogin || t.googleLogin}</span>
-                            </button>
-                            
-                            <div class="auth-divider">
-                                <span>${t.orDivider}</span>
-                            </div>
-                            
-                            <button id="customEmailLoginBtn" class="auth-btn email-btn">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C19.5304 19 20.0391 18.7893 20.4142 18.4142C20.7893 18.0391 21 17.5304 21 17V7C21 6.46957 20.7893 5.96086 20.4142 5.58579C20.0391 5.21071 19.5304 5 19 5H5C4.46957 5 3.96086 5.21071 3.58579 5.58579C3.21071 5.96086 3 6.46957 3 7V17C3 17.5304 3.21071 18.0391 3.58579 18.4142C3.96086 18.7893 4.46957 19 5 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <span>${t.customEmailLogin || t.emailLogin}</span>
-                            </button>
-                        </div>
-                        
-                        <!-- セキュリティ表示 -->
-                        <div class="auth-security">
-                            <span>${t.customAuthSecure}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // イベントリスナー設定
-            setupCustomAuthListeners();
-        }
-        
-        function setupCustomAuthListeners() {
-            // 言語変更リスナー
-            document.querySelectorAll('input[name="authLang"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    sessionStorage.setItem('selectedLanguage', this.value);
-                    showCustomAuthModal(); // 再描画
-                });
-            });
-            
-            // Google認証ボタン
-            document.getElementById('customGoogleLoginBtn').addEventListener('click', triggerCustomGoogleAuth);
-            
-            // メール認証ボタン  
-            document.getElementById('customEmailLoginBtn').addEventListener('click', showEmailAuthForm);
-        }
-        
-        function triggerCustomGoogleAuth() {
-            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
-            const t = translations[currentLanguage];
-            
-            // ローディング表示
-            showMessage(t.customAuthLoading || t.loginProcessing, 'info');
-            
-            // 既存のCognito OAuth URL生成ロジックを活用
-            const cognitoOAuthURL = `https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/login` +
-                `?client_id=2tctru78c2epl4mbhrt8asd55e` +
-                `&response_type=code` +
-                `&scope=email+openid+profile` +
-                `&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}` +
-                `&identity_provider=Google`;
-            
-            console.log('🌍 Google OAuth URL:', cognitoOAuthURL);
-            window.location.href = cognitoOAuthURL; // 既存ロジック維持
-        }
-
         // 認証関連関数
         function showAuthModal() {
             document.getElementById('authModal').classList.add('show');
@@ -2644,8 +2469,26 @@
                 console.log('✅ Payment completed:', sessionId);
                 showMessage('🎉 決済が完了しました！プレミアム機能をお楽しみください', 'success');
                 
-                // URLパラメータをクリア
-                window.history.replaceState({}, document.title, window.location.pathname);
+                // 戻るボタン対策: 履歴をCloudFrontルートに設定
+                if (window.location.hostname === 'd22ztxm5q1c726.cloudfront.net') {
+                    // 1. 現在のURLをクリーンアップ
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    // 2. 戻り先としてCloudFrontルートを履歴スタックに設定
+                    window.history.pushState(
+                        { from: 'payment_success' }, 
+                        'Tourism Analyzer - Home', 
+                        'https://d22ztxm5q1c726.cloudfront.net/'
+                    );
+                    
+                    // 3. メイン画面に戻る（戻るボタンでCloudFrontルートに移動可能）
+                    window.history.back();
+                    
+                    console.log('📍 決済完了: 戻るボタンでCloudFrontルートに移動します');
+                } else {
+                    // ローカル開発環境等の場合
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
                 
                 // ユーザープラン表示を更新
                 setTimeout(() => {
@@ -2656,8 +2499,26 @@
                 console.log('❌ Payment cancelled');
                 showMessage('決済がキャンセルされました', 'info');
                 
-                // URLパラメータをクリア
-                window.history.replaceState({}, document.title, window.location.pathname);
+                // 戻るボタン対策: 履歴をCloudFrontルートに設定
+                if (window.location.hostname === 'd22ztxm5q1c726.cloudfront.net') {
+                    // 1. 現在のURLをクリーンアップ
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    // 2. 戻り先としてCloudFrontルートを履歴スタックに設定
+                    window.history.pushState(
+                        { from: 'payment_cancel' }, 
+                        'Tourism Analyzer - Home', 
+                        'https://d22ztxm5q1c726.cloudfront.net/'
+                    );
+                    
+                    // 3. メイン画面に戻る（戻るボタンでCloudFrontルートに移動可能）
+                    window.history.back();
+                    
+                    console.log('📍 決済キャンセル: 戻るボタンでCloudFrontルートに移動します');
+                } else {
+                    // ローカル開発環境等の場合
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
             }
         }
 
