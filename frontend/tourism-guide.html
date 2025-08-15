@@ -942,6 +942,7 @@
         function showEmailAuthForm() {
             const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
             const t = emailAuthTranslations[currentLanguage] || emailAuthTranslations['ja'];
+            const mainT = translations[currentLanguage] || translations['ja']; // 戻るボタン用
             
             const loginCard = document.querySelector('.login-card');
             loginCard.innerHTML = `
@@ -996,7 +997,7 @@
                 <!-- 緊急ログインボタン -->
                 <button onclick="showEmergencyLogin()" style="width: 100%; padding: 0.8rem; background: #ff9800; color: white; border: none; border-radius: 12px; font-size: 0.9rem; cursor: pointer; margin-bottom: 0.5rem;">🈭 PoC緊急ログイン (Phase5.5同様)</button>
                 
-                <button onclick="backToMainLogin()" style="width: 100%; padding: 0.8rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 12px; font-size: 1rem; cursor: pointer;" data-i18n="backToLogin">${t.backToLogin}</button>
+                <button onclick="backToMainLogin()" style="width: 100%; padding: 0.8rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 12px; font-size: 1rem; cursor: pointer;" data-i18n="backToLogin">${mainT.backToLogin}</button>
             `;
             
             setupAuthFormListeners();
@@ -2035,46 +2036,6 @@
         }
     </script>
 
-    <!-- Authentication Modal -->
-    <div id="authModal" class="auth-modal">
-        <div class="auth-content">
-            <button class="auth-close" onclick="closeAuthModal()">&times;</button>
-            
-            <!-- Login Form -->
-            <div id="loginForm" class="auth-form">
-                <h2>ログイン</h2>
-                <form onsubmit="handleLogin(event)">
-                    <input type="email" id="loginEmail" placeholder="メールアドレス" required>
-                    <input type="password" id="loginPassword" placeholder="パスワード" required>
-                    <button type="submit" class="auth-btn">ログイン</button>
-                </form>
-                <p>アカウントをお持ちでない方は <a href="#" onclick="showSignupForm()">新規登録</a></p>
-            </div>
-            
-            <!-- Signup Form -->
-            <div id="signupForm" class="auth-form" style="display: none;">
-                <h2>新規登録</h2>
-                <form onsubmit="handleSignup(event)">
-                    <input type="text" id="signupName" placeholder="お名前" required>
-                    <input type="email" id="signupEmail" placeholder="メールアドレス" required>
-                    <input type="password" id="signupPassword" placeholder="パスワード（8文字以上）" required minlength="8">
-                    <button type="submit" class="auth-btn">アカウント作成</button>
-                </form>
-                <p>すでにアカウントをお持ちの方は <a href="#" onclick="showLoginForm()">ログイン</a></p>
-            </div>
-            
-            <!-- Email Confirmation Form -->
-            <div id="confirmationForm" class="auth-form" style="display: none;">
-                <h2>メール認証</h2>
-                <p>メールアドレスに送信された認証コードを入力してください</p>
-                <form onsubmit="handleConfirmation(event)">
-                    <input type="text" id="confirmationCode" placeholder="認証コード" required>
-                    <button type="submit" class="auth-btn">認証する</button>
-                </form>
-                <p><a href="#" onclick="resendConfirmationCode()">認証コードを再送信</a></p>
-            </div>
-        </div>
-    </div>
 
     <!-- Premium Upgrade Modal -->
     <div id="upgradeModal" class="upgrade-modal">
@@ -2153,32 +2114,38 @@
             return localStorage.getItem('accessToken');
         }
 
-        // 認証関連関数
+        // 認証関連関数（Phase 6.9.5対応）
         function showAuthModal() {
-            document.getElementById('authModal').classList.add('show');
-            showLoginForm();
+            // 古いauth-modalの代わりに新しいメール認証画面を表示
+            console.log('認証が必要です - メール認証画面を表示');
+            showEmailAuthForm();
         }
 
         function closeAuthModal() {
-            document.getElementById('authModal').classList.remove('show');
+            // 新しい実装では戻るボタンで元の画面に戻る
+            backToMainLogin();
         }
 
         function showLoginForm() {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('signupForm').style.display = 'none';
-            document.getElementById('confirmationForm').style.display = 'none';
+            // Phase 6.9.5のメール認証画面を表示
+            showEmailAuthForm();
         }
 
         function showSignupForm() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('signupForm').style.display = 'block';
-            document.getElementById('confirmationForm').style.display = 'none';
+            // Phase 6.9.5のメール認証画面を表示（サインアップモード）
+            showEmailAuthForm();
+            // サインアップモードに切り替え
+            setTimeout(() => {
+                const signupModeBtn = document.getElementById('signupModeBtn');
+                if (signupModeBtn) {
+                    signupModeBtn.click();
+                }
+            }, 100);
         }
 
         function showConfirmationForm() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('signupForm').style.display = 'none';
-            document.getElementById('confirmationForm').style.display = 'block';
+            // 確認フォームは現在の実装では不要（Cognitoが処理）
+            console.log('確認フォームは新しい実装では自動処理されます');
         }
 
         // ログイン処理
