@@ -1,0 +1,21 @@
+{
+  "name": "tourism-analyzer-e2e-tests",
+  "version": "1.0.0", 
+  "description": "Playwright E2E tests for Tourism Analyzer frontend",
+  "scripts": {
+    "test": "playwright test",
+    "test:headless": "playwright test --headed=false",
+    "test:auth": "playwright test auth.spec.ts",
+    "test:debug": "playwright test --debug",
+    "report": "playwright show-report",
+    "install-browsers": "playwright install"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

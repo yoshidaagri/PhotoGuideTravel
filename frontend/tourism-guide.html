@@ -1013,17 +1013,9 @@
             
             // Add slight delay for better UX
             setTimeout(() => {
-                // Use Cognito OAuth but with better UX
-                const cognitoOAuthURL = `https://ai-tourism-auth.auth.ap-northeast-1.amazoncognito.com/login` +
-                    `?client_id=2tctru78c2epl4mbhrt8asd55e` +
-                    `&response_type=code` +
-                    `&scope=email+openid+profile` +
-                    `&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}` +
-                    `&identity_provider=Google` +
-                    `&prompt=select_account`; // Force account selection for better UX
-                
-                console.log('🚀 Redirecting to Cognito Google OAuth:', cognitoOAuthURL);
-                window.location.href = cognitoOAuthURL;
+                // Redirect to login.html instead of direct Cognito OAuth
+                console.log('🚀 Redirecting to login.html for Google OAuth...');
+                window.location.href = './login.html';
             }, 800);
         }
         

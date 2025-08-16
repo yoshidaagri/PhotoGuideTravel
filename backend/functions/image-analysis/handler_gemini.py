@@ -1,6 +1,7 @@
 import json
 import os
 import base64
+import time
 from datetime import datetime, timedelta
 import urllib.request
 import urllib.parse
@@ -109,14 +110,17 @@ def main(event, context):
     """
     実際のGemini APIを使用した画像解析関数（使用制限チェック付き）
     """
+    start_time = time.time()  # Phase 6.9.6: 処理時間計測開始
+    
+    # Phase 6.9.6: ヘッダー確保（ログ保存でアクセスする場合もある）
+    headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+    }
+    
     try:
-        # CORS headers
-        headers = {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-            'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
-        }
         
         if event['httpMethod'] == 'OPTIONS':
             return {
@@ -205,19 +209,42 @@ def main(event, context):
             'message': updated_usage_check.get('message', '')
         }
         
-        return {
+        # メインレスポンス作成
+        response = {
             'statusCode': 200,
             'headers': headers,
             'body': json.dumps(analysis_result)
         }
         
+        # Phase 6.9.6: 軽量同期ログ保存（50ms以内、フロントエンド影響最小）
+        try:
+            save_analysis_log(event, context, analysis_result, start_time, None, user_info)
+        except Exception as log_error:
+            print(f"Log save failed (ignored): {str(log_error)[:200]}")
+        
+        return response
+        
     except Exception as e:
         print(f"Error in image analysis: {str(e)}")
-        return {
+        
+        # メインエラーレスポンス作成
+        error_response = {
             'statusCode': 500,
             'headers': headers,
             'body': json.dumps({'error': str(e)})
         }
+        
+        # Phase 6.9.6: エラー時も軽量同期ログ保存
+        try:
+            if 'user_info' not in locals():
+                user_info = {'user_id': 'unknown', 'email': 'unknown@unknown.com'}
+            if 'start_time' not in locals():
+                start_time = time.time()
+            save_analysis_log(event, context, None, start_time, e, user_info)
+        except Exception as log_error:
+            print(f"Error log save failed (ignored): {str(log_error)[:200]}")
+        
+        return error_response
 
 
 def get_user_from_token(event):
@@ -1038,3 +1065,211 @@ def get_menu_summary_instructions():
         'zh-tw': "\n\n**重要**: 請在600字內總結上述分析內容。**必須用繁體中文回答。**\n\n**輸出格式**:\n1. **📋文字資訊**: 招牌・菜單讀取的日語文字和翻譯\n2. **🍽️料理詳情**: 各菜品的食材・烹飪法・特色・推薦\n3. **💰價格資訊**: 菜單價格・含稅/不含稅・套餐費用・優惠資訊\n4. **🗣️實用短語**: 基本點餐短語・手指對話・有用表達\n\n特別要讓海外遊客能夠安心點餐，請以具體實用的資訊為中心進行整理。**請務必使用繁體中文回答，不要使用英語。**",
         'en': "\n\n**Important**: Summarize the above analysis within 600 characters.\n\n**Output Format**:\n1. **📋Text Information**: Japanese text read from signs/menus and translation\n2. **🍽️Cuisine Details**: Ingredients, cooking methods, characteristics, recommendations for each dish\n3. **💰Price Information**: Menu prices, tax inclusive/exclusive, set meal costs, discount info\n4. **🗣️Practical Phrases**: Basic ordering phrases, pointing conversation, useful expressions\n\nFocus on specific and practical information to help overseas visitors order with confidence."
     }
+
+
+# ========== Phase 6.9.6: 解析ログ機能 ==========
+
+
+def save_analysis_log(event, context, result, start_time, error, user_info):
+    """
+    解析ログをDynamoDBに軽量同期保存（50ms以内目標）
+    """
+    try:
+        # Lambda環境のため、signalタイムアウトは使用しない（バックグラウンドスレッドで動作しないため）
+        
+        # 処理時間計算（safe）
+        try:
+            processing_time_ms = int((time.time() - start_time) * 1000)
+        except:
+            processing_time_ms = 0
+        
+        # ログID生成（safe）
+        try:
+            log_id = generate_sequential_id()
+        except:
+            log_id = f"ERR_{int(time.time() * 1000)}"
+        
+        # 基本情報収集（safe）
+        try:
+            request_context = event.get('requestContext', {})
+            identity = request_context.get('identity', {})
+            headers = event.get('headers', {})
+            body = json.loads(event.get('body', '{}'))
+        except:
+            request_context = {}
+            identity = {}
+            headers = {}
+            body = {}
+        
+        # 分析タイプのマッピング（safe）
+        try:
+            analysis_type_mapping = {
+                'store': 1,  # 店舗・観光地分析
+                'menu': 2    # 看板・メニュー翻訳
+            }
+            raw_analysis_type = body.get('type', 'store')
+            bunseki_type = analysis_type_mapping.get(raw_analysis_type, 1)
+        except:
+            bunseki_type = 1
+        
+        # 結果サマリー（safe）
+        try:
+            kekka_summary = ""
+            if result and 'analysis' in result:
+                kekka_summary = str(result['analysis'])[:200]
+        except:
+            kekka_summary = ""
+        
+        # 画像情報（safe）
+        try:
+            image_data = body.get('image', '')
+            gazo_size_kb = len(str(image_data).encode('utf-8')) // 1024 if image_data else 0
+            gazo_format = detect_image_format(image_data)
+        except:
+            gazo_size_kb = 0
+            gazo_format = 'unknown'
+        
+        # JST時刻（safe）
+        try:
+            jst_now = get_jst_now()
+            ttl_timestamp = int((datetime.utcnow() + timedelta(days=365)).timestamp())
+        except:
+            jst_now = datetime.utcnow() + timedelta(hours=9)
+            ttl_timestamp = int((datetime.utcnow() + timedelta(days=365)).timestamp())
+        
+        # ログエントリ作成（safe）
+        log_entry = {
+            'log_id': log_id,
+            'timestamp': jst_now.isoformat() + '+09:00',
+            'bunseki_type': bunseki_type,
+            'kekka_summary': kekka_summary,
+            'gazo_url': str(body.get('s3Url', ''))[:500],  # URL長制限
+            'user_email': str(user_info.get('email', 'unknown@unknown.com'))[:100],
+            
+            # 監査情報（safe）
+            'user_id': str(user_info.get('user_id', 'unknown'))[:100],
+            'session_id': str(headers.get('x-session-id', 'unknown'))[:100],
+            'request_id': str(request_context.get('requestId', 'unknown'))[:100],
+            'ip_address': str(identity.get('sourceIp', 'unknown'))[:100],
+            'user_agent': str(headers.get('User-Agent', ''))[:100],
+            
+            # 技術情報（safe）
+            'lambda_function': str(getattr(context, 'function_name', 'unknown'))[:100],
+            'ai_model': str(result.get('model', 'gemini-2.0-flash') if result else 'unknown')[:100],
+            'processing_time_ms': processing_time_ms,
+            'gazo_size_kb': gazo_size_kb,
+            'gazo_format': gazo_format,
+            
+            # プラン情報（safe）
+            'user_plan': 'free',
+            'monthly_usage_count': 0,
+            'is_over_limit': False,
+            
+            # 言語・地域情報（safe）
+            'selected_language': str(body.get('language', 'ja'))[:10],
+            'client_timezone': str(headers.get('x-timezone', 'Asia/Tokyo'))[:50],
+            
+            # エラー情報（safe）
+            'error_occurred': error is not None,
+            'error_message': str(error)[:500] if error else '',
+            
+            # システム情報（safe）
+            'api_version': 'v1',
+            'client_app_version': str(headers.get('x-app-version', '1.2'))[:20],
+            'created_at_jst': jst_now.isoformat() + '+09:00',
+            'ttl_timestamp': ttl_timestamp
+        }
+        
+        # DynamoDB保存（safe）
+        try:
+            dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
+            table_name = f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-analyze-logs-{os.environ.get('STAGE', 'dev')}"
+            table = dynamodb.Table(table_name)
+            table.put_item(Item=log_entry)
+            print(f"Analysis log saved: {log_id}")
+        except Exception as db_error:
+            print(f"DynamoDB save failed (ignored): {str(db_error)[:200]}")
+        
+    except Exception as save_error:
+        print(f"Log save error (ignored): {str(save_error)[:200]}")
+
+
+def generate_sequential_id():
+    """
+    軽量シーケンシャルID生成（20ms以内目標）
+    """
+    try:
+        # 軽量DynamoDB接続
+        dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
+        table_name = f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-sequence-counter-{os.environ.get('STAGE', 'dev')}"
+        counter_table = dynamodb.Table(table_name)
+        
+        # 高速カウンター更新
+        response = counter_table.update_item(
+            Key={'counter_name': 'analyze_log'},
+            UpdateExpression='ADD current_value :inc',
+            ExpressionAttributeValues={':inc': 1},
+            ReturnValues='UPDATED_NEW'
+        )
+        
+        sequence = int(response['Attributes']['current_value'])
+        timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3]  # ミリ秒まで
+        
+        return f"{sequence:03d}_{timestamp}"
+        
+    except Exception as e:
+        print(f"Sequential ID generation error (using fallback): {str(e)[:100]}")
+        # フォールバック: ランダムタイムスタンプベースID
+        try:
+            import random
+            random_suffix = random.randint(100, 999)
+            timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3]
+            return f"FB{random_suffix}_{timestamp}"
+        except:
+            # 最終フォールバック
+            import time
+            return f"ERR_{int(time.time() * 1000)}"
+
+
+def detect_image_format(image_data):
+    """
+    画像形式検出（完全保護付き）
+    """
+    try:
+        if not image_data or len(str(image_data)) < 10:
+            return 'unknown'
+        
+        # base64デコードしてヘッダー確認（安全に）
+        import base64
+        
+        # data URL形式の場合は分割
+        if str(image_data).startswith('data:image'):
+            try:
+                image_data = str(image_data).split(',')[1]
+            except:
+                return 'unknown'
+        
+        # base64デコード（先頭100文字のみ・安全に）
+        try:
+            decoded = base64.b64decode(str(image_data)[:200])  # 先頭200文字のみ
+        except:
+            return 'unknown'
+        
+        # ヘッダー確認
+        if len(decoded) < 4:
+            return 'unknown'
+            
+        if decoded[:3] == b'\xff\xd8\xff':
+            return 'JPEG'
+        elif decoded[:4] == b'\x89PNG':
+            return 'PNG'
+        elif decoded[:3] == b'GIF':
+            return 'GIF'
+        elif decoded[:4] in [b'RIFF', b'WEBP']:
+            return 'WEBP'
+        else:
+            return 'unknown'
+            
+    except Exception as detect_error:
+        print(f"Image format detection error (ignored): {str(detect_error)[:100]}")
+        return 'unknown'

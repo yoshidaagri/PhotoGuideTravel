@@ -1,0 +1,347 @@
+{
+  "config": {
+    "configFile": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/playwright.config.ts",
+    "rootDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ],
+      [
+        "line",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.54.2",
+    "workers": 4,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "auth.spec.ts",
+      "file": "auth.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Google認証フロー",
+          "file": "auth.spec.ts",
+          "line": 16,
+          "column": 6,
+          "specs": [
+            {
+              "title": "実際のバックエンドAPI呼び出し確認",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10518,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: {access_token: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M…gMTc1NTMxMDc1MCwgImlzcyI6ICJhaS10b3VyaXNtLXBvYyJ9, user_info: Object}'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: {user_id: google_3fe63ea7c953262b, email: yoshidaagri@gmail.com, name: Manabu Yoshida, auth_provider: google}'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: {tourismAuth: true, accessToken: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M..., userInfo: Object}'\u001b[39m,\n  \u001b[32m'log: 🚀 Initializing application...'\u001b[39m,\n  \u001b[32m'log: 📚 Library status at init: {marked: true, DOMPurify: true}'\u001b[39m,\n  \u001b[32m'log: ℹ️ No OAuth code found in URL'\u001b[39m,\n  \u001b[32m'log: 🌐 メイン画面言語更新: ja'\u001b[39m,\n  \u001b[32m'log: 🔧 Configuring marked.js options...'\u001b[39m,\n  \u001b[32m'log: 🎨 Setting up custom renderer...'\u001b[39m,\n  \u001b[32m'log: ✅ marked.js configuration completed successfully'\u001b[39m,\n  \u001b[32m'log: 🧪 Markdown test: {input: ## Test\\n'\u001b[39m +\n    \u001b[32m'**Bold text** and *italic text*\\n'\u001b[39m +\n    \u001b[32m'- List item 1\\n'\u001b[39m +\n    \u001b[32m'- List item 2, output: <h2>Test</h2>\\n'\u001b[39m +\n    \u001b[32m'<p><strong>Bold text</strong> and <e…\\n'\u001b[39m +\n    \u001b[32m'<li>List item 1</li>\\n'\u001b[39m +\n    \u001b[32m'<li>List item 2</li>\\n'\u001b[39m +\n    \u001b[32m'</ul>\\n'\u001b[39m +\n    \u001b[32m'}'\u001b[39m,\n  \u001b[32m'log: ✅ Markdown initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Application initialization complete'\u001b[39m,\n  \u001b[32m'log: ✅ 認証状態復元: yoshidaagri@gmail.com'\u001b[39m\n]\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T02:19:03.320Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-53102bfcaf01692fd0a5",
+              "file": "auth.spec.ts",
+              "line": 230,
+              "column": 7
+            },
+            {
+              "title": "実際のバックエンドAPI呼び出し確認",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 10581,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: JSHandle@object'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: JSHandle@object'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: JSHandle@object'\u001b[39m,\n  \u001b[32m'log: 🚀 Initializing application...'\u001b[39m,\n  \u001b[32m'log: 📚 Library status at init: JSHandle@object'\u001b[39m,\n  \u001b[32m'log: ℹ️ No OAuth code found in URL'\u001b[39m,\n  \u001b[32m'log: 🌐 メイン画面言語更新: ja'\u001b[39m,\n  \u001b[32m'log: 🔧 Configuring marked.js options...'\u001b[39m,\n  \u001b[32m'log: 🎨 Setting up custom renderer...'\u001b[39m,\n  \u001b[32m'log: ✅ marked.js configuration completed successfully'\u001b[39m,\n  \u001b[32m'log: 🧪 Markdown test: JSHandle@object'\u001b[39m,\n  \u001b[32m'log: ✅ Markdown initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Application initialization complete'\u001b[39m,\n  \u001b[32m'log: ✅ 認証状態復元: yoshidaagri@gmail.com'\u001b[39m\n]\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T02:19:03.323Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-d27a59713dabfffde360",
+              "file": "auth.spec.ts",
+              "line": 230,
+              "column": 7
+            },
+            {
+              "title": "実際のバックエンドAPI呼び出し確認",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 10567,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: {access_token: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M…gMTc1NTMxMDc1MCwgImlzcyI6ICJhaS10b3VyaXNtLXBvYyJ9, user_info: Object}'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: {user_id: google_3fe63ea7c953262b, email: yoshidaagri@gmail.com, name: Manabu Yoshida, auth_provider: google}'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: {tourismAuth: true, accessToken: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M..., userInfo: Object}'\u001b[39m,\n  \u001b[32m'log: 🚀 Initializing application...'\u001b[39m,\n  \u001b[32m'log: 📚 Library status at init: {marked: true, DOMPurify: true}'\u001b[39m,\n  \u001b[32m'log: ℹ️ No OAuth code found in URL'\u001b[39m,\n  \u001b[32m'log: 🌐 メイン画面言語更新: ja'\u001b[39m,\n  \u001b[32m'log: 🔧 Configuring marked.js options...'\u001b[39m,\n  \u001b[32m'log: 🎨 Setting up custom renderer...'\u001b[39m,\n  \u001b[32m'log: ✅ marked.js configuration completed successfully'\u001b[39m,\n  \u001b[32m'log: 🧪 Markdown test: {input: ## Test\\n'\u001b[39m +\n    \u001b[32m'**Bold text** and *italic text*\\n'\u001b[39m +\n    \u001b[32m'- List item 1\\n'\u001b[39m +\n    \u001b[32m'- List item 2, output: <h2>Test</h2>\\n'\u001b[39m +\n    \u001b[32m'<p><strong>Bold text</strong> and <e…\\n'\u001b[39m +\n    \u001b[32m'<li>List item 1</li>\\n'\u001b[39m +\n    \u001b[32m'<li>List item 2</li>\\n'\u001b[39m +\n    \u001b[32m'</ul>\\n'\u001b[39m +\n    \u001b[32m'}'\u001b[39m,\n  \u001b[32m'log: ✅ Markdown initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Application initialization complete'\u001b[39m,\n  \u001b[32m'log: ✅ 認証状態復元: yoshidaagri@gmail.com'\u001b[39m\n]\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T02:19:03.317Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-298c521ee1e7d214f121",
+              "file": "auth.spec.ts",
+              "line": 230,
+              "column": 7
+            },
+            {
+              "title": "実際のバックエンドAPI呼び出し確認",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 10547,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: {access_token: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M…gMTc1NTMxMDc1MCwgImlzcyI6ICJhaS10b3VyaXNtLXBvYyJ9, user_info: Object}'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: {user_id: google_3fe63ea7c953262b, email: yoshidaagri@gmail.com, name: Manabu Yoshida, auth_provider: google}'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: {tourismAuth: true, accessToken: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M..., userInfo: Object}'\u001b[39m,\n  \u001b[32m'log: 🚀 Initializing application...'\u001b[39m,\n  \u001b[32m'log: 📚 Library status at init: {marked: true, DOMPurify: true}'\u001b[39m,\n  \u001b[32m'log: ℹ️ No OAuth code found in URL'\u001b[39m,\n  \u001b[32m'log: 🌐 メイン画面言語更新: ja'\u001b[39m,\n  \u001b[32m'log: 🔧 Configuring marked.js options...'\u001b[39m,\n  \u001b[32m'log: 🎨 Setting up custom renderer...'\u001b[39m,\n  \u001b[32m'log: ✅ marked.js configuration completed successfully'\u001b[39m,\n  \u001b[32m'log: 🧪 Markdown test: {input: ## Test\\n'\u001b[39m +\n    \u001b[32m'**Bold text** and *italic text*\\n'\u001b[39m +\n    \u001b[32m'- List item 1\\n'\u001b[39m +\n    \u001b[32m'- List item 2, output: <h2>Test</h2>\\n'\u001b[39m +\n    \u001b[32m'<p><strong>Bold text</strong> and <e…\\n'\u001b[39m +\n    \u001b[32m'<li>List item 1</li>\\n'\u001b[39m +\n    \u001b[32m'<li>List item 2</li>\\n'\u001b[39m +\n    \u001b[32m'</ul>\\n'\u001b[39m +\n    \u001b[32m'}'\u001b[39m,\n  \u001b[32m'log: ✅ Markdown initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Application initialization complete'\u001b[39m,\n  \u001b[32m'log: ✅ 認証状態復元: yoshidaagri@gmail.com'\u001b[39m\n]\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T02:19:03.321Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-791489c8fff2e1eb94d8",
+              "file": "auth.spec.ts",
+              "line": 230,
+              "column": 7
+            },
+            {
+              "title": "実際のバックエンドAPI呼び出し確認",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9967,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: {access_token: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M…gMTc1NTMxMDc2MCwgImlzcyI6ICJhaS10b3VyaXNtLXBvYyJ9, user_info: Object}'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: {user_id: google_3fe63ea7c953262b, email: yoshidaagri@gmail.com, name: Manabu Yoshida, auth_provider: google}'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: {tourismAuth: true, accessToken: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M..., userInfo: Object}'\u001b[39m,\n  \u001b[32m'log: 🚀 Initializing application...'\u001b[39m,\n  \u001b[32m'log: 📚 Library status at init: {marked: true, DOMPurify: true}'\u001b[39m,\n  \u001b[32m'log: ℹ️ No OAuth code found in URL'\u001b[39m,\n  \u001b[32m'log: 🌐 メイン画面言語更新: ja'\u001b[39m,\n  \u001b[32m'log: 🔧 Configuring marked.js options...'\u001b[39m,\n  \u001b[32m'log: 🎨 Setting up custom renderer...'\u001b[39m,\n  \u001b[32m'log: ✅ marked.js configuration completed successfully'\u001b[39m,\n  \u001b[32m'log: 🧪 Markdown test: {input: ## Test\\n'\u001b[39m +\n    \u001b[32m'**Bold text** and *italic text*\\n'\u001b[39m +\n    \u001b[32m'- List item 1\\n'\u001b[39m +\n    \u001b[32m'- List item 2, output: <h2>Test</h2>\\n'\u001b[39m +\n    \u001b[32m'<p><strong>Bold text</strong> and <e…\\n'\u001b[39m +\n    \u001b[32m'<li>List item 1</li>\\n'\u001b[39m +\n    \u001b[32m'<li>List item 2</li>\\n'\u001b[39m +\n    \u001b[32m'</ul>\\n'\u001b[39m +\n    \u001b[32m'}'\u001b[39m,\n  \u001b[32m'log: ✅ Markdown initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Application initialization complete'\u001b[39m,\n  \u001b[32m'log: ✅ 認証状態復元: yoshidaagri@gmail.com'\u001b[39m\n]\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T02:19:14.763Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-734668f183823c594784",
+              "file": "auth.spec.ts",
+              "line": 230,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-16T02:19:02.723Z",
+    "duration": 22312.649999999998,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

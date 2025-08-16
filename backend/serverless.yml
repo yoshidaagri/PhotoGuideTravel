@@ -10,6 +10,8 @@ provider:
   environment:
     STAGE: ${self:provider.stage}
     GOOGLE_GEMINI_API_KEY: ${env:GOOGLE_GEMINI_API_KEY}
+    # Google OAuth Configuration
+    GOOGLE_CLIENT_ID: ${env:GOOGLE_CLIENT_ID}
     # Stripe Configuration
     STRIPE_PUBLISHABLE_KEY: ${env:STRIPE_PUBLISHABLE_KEY}
     STRIPE_SECRET_KEY: ${env:STRIPE_SECRET_KEY}
@@ -129,6 +131,54 @@ resources:
           - AttributeName: createdAt
             KeyType: RANGE
     
+    # Phase 6.9.6: Analysis Logs Table
+    AnalyzeLogsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-analyze-logs-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: log_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: S  
+          - AttributeName: user_email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: log_id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: timestamp-index
+            KeySchema:
+              - AttributeName: timestamp
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: user-email-timestamp-index
+            KeySchema:
+              - AttributeName: user_email
+                KeyType: HASH
+              - AttributeName: timestamp
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        TimeToLiveSpecification:
+          AttributeName: ttl_timestamp
+          Enabled: true
+    
+    # Phase 6.9.6: Sequence Counter Table for Sequential IDs
+    SequenceCounterTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-sequence-counter-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: counter_name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: counter_name
+            KeyType: HASH
+    
     # Cognito User Pool Client with email verification settings
     CognitoUserPoolClientUpdated:
       Type: AWS::Cognito::UserPoolClient
@@ -152,7 +202,9 @@ custom:
   pythonRequirements:
     pythonBin: python3
     zip: true
-    slim: false
+    slim: true
+    strip: false
     noDeploy: []
-    useDownloadCache: false
-    useStaticCache: false
+    useDownloadCache: true
+    useStaticCache: true
+    dockerizePip: false
