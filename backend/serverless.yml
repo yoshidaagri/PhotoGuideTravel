@@ -18,7 +18,7 @@ provider:
     STRIPE_WEBHOOK_SECRET: ${env:STRIPE_WEBHOOK_SECRET}
     STRIPE_PRICE_7DAYS: ${env:STRIPE_PRICE_7DAYS}
     STRIPE_PRICE_20DAYS: ${env:STRIPE_PRICE_20DAYS}
-    FRONTEND_URL: ${env:FRONTEND_URL, 'https://ai-tourism-poc-frontend-dev.s3.amazonaws.com'}
+    FRONTEND_URL: ${env:FRONTEND_URL, 'https://d22ztxm5q1c726.cloudfront.net'}
     # Square Configuration (disabled)
     # SQUARE_APPLICATION_ID: ${env:SQUARE_APPLICATION_ID}
     # SQUARE_ACCESS_TOKEN: ${env:SQUARE_ACCESS_TOKEN}

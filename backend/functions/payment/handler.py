@@ -114,8 +114,8 @@ def create_checkout_session(event, headers):
                 'quantity': 1,
             }],
             mode='payment',
-            success_url=f'{frontend_url}/tourism-guide.html?payment=success&session_id={{CHECKOUT_SESSION_ID}}',
-            cancel_url=f'{frontend_url}/tourism-guide.html?payment=cancel',
+            success_url=f'{frontend_url}/index.html?payment=success&session_id={{CHECKOUT_SESSION_ID}}',
+            cancel_url=f'{frontend_url}/index.html?payment=cancel',
             metadata={
                 'user_id': user_id,
                 'plan_type': plan_type
