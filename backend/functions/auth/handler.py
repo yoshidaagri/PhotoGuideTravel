@@ -77,20 +77,32 @@ def increment_usage_count(user_id):
         return False
 
 def create_new_user(user_id, email='', display_name='', auth_provider='cognito'):
-    """新規ユーザー作成"""
+    """新規ユーザー作成（Cognito情報同期対応）"""
     try:
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
         
         timestamp = get_jst_isoformat()
+        
+        # Cognitoからの情報を確実に保存
         item = {
-            'user_id': user_id, 'email': email, 'auth_provider': auth_provider, 'display_name': display_name,
-            'profile_picture': '', 'preferred_language': 'ja', 'user_type': 'free', 'premium_expiry': None,
-            'monthly_analysis_count': 0, 'total_analysis_count': 0, 'last_login_at': timestamp,
-            'created_at': timestamp, 'updated_at': timestamp
+            'user_id': user_id,
+            'email': email if email else '',  # 空文字でも保存
+            'auth_provider': auth_provider,
+            'display_name': display_name if display_name else '',  # 空文字でも保存
+            'profile_picture': '',
+            'preferred_language': 'ja',
+            'user_type': 'free',
+            'premium_expiry': None,
+            'monthly_analysis_count': 0,
+            'total_analysis_count': 0,
+            'last_login_at': timestamp,
+            'created_at': timestamp,
+            'updated_at': timestamp
         }
+        
         table.put_item(Item=item)
-        print(f"New user created: {user_id}")
+        print(f"New user created with Cognito sync: {user_id}, email: {email}, display_name: {display_name}")
         return item
     except Exception as e:
         print(f"Error creating new user: {e}")
@@ -317,6 +329,50 @@ def handle_get_user_info(event, headers):
             if 'Item' in response:
                 user_data = response['Item']
                 print(f"User data from DynamoDB: {user_data}")
+                
+                # CognitoとDynamoDBの情報を同期する
+                needs_update = False
+                update_expression_parts = []
+                expression_attribute_values = {}
+                
+                # emailの同期チェック
+                cognito_email = user_info.get('email', '')
+                dynamo_email = user_data.get('email', '')
+                if cognito_email and cognito_email != dynamo_email:
+                    print(f"Email mismatch - Cognito: {cognito_email}, DynamoDB: {dynamo_email}")
+                    update_expression_parts.append("email = :email")
+                    expression_attribute_values[':email'] = cognito_email
+                    user_data['email'] = cognito_email
+                    needs_update = True
+                
+                # display_nameの同期チェック
+                cognito_display_name = user_info.get('display_name', '')
+                dynamo_display_name = user_data.get('display_name', '')
+                if cognito_display_name and cognito_display_name != dynamo_display_name:
+                    print(f"Display name mismatch - Cognito: {cognito_display_name}, DynamoDB: {dynamo_display_name}")
+                    update_expression_parts.append("display_name = :display_name")
+                    expression_attribute_values[':display_name'] = cognito_display_name
+                    user_data['display_name'] = cognito_display_name
+                    needs_update = True
+                
+                # DynamoDB更新実行
+                if needs_update:
+                    try:
+                        update_expression_parts.append("updated_at = :updated_at")
+                        expression_attribute_values[':updated_at'] = get_jst_isoformat()
+                        
+                        update_expression = "SET " + ", ".join(update_expression_parts)
+                        
+                        table.update_item(
+                            Key={'user_id': user_id},
+                            UpdateExpression=update_expression,
+                            ExpressionAttributeValues=expression_attribute_values
+                        )
+                        print(f"Successfully synced Cognito data to DynamoDB for user: {user_id}")
+                    except Exception as sync_error:
+                        print(f"Failed to sync user data: {str(sync_error)}")
+                        # 同期エラーでも処理は継続
+                
                 # 機密情報を除外
                 safe_user_data = {
                     'user_id': user_data.get('user_id'),
@@ -431,12 +487,12 @@ def get_user_from_token(event):
         access_token = auth_header.split(' ')[1]
         print(f"Processing token: {access_token[:50]}...")
         
-        # 緊急ログイン用トークンのチェック
-        if access_token == 'emergency-login-token':
-            print("Emergency login token detected")
+        # 緊急ログイン用トークンのチェック（複数パターン対応）
+        if access_token in ['emergency-login-token', 'emergency-login-token-dev']:
+            print(f"Emergency login token detected: {access_token}")
             return {
                 'user_id': 'emergency-user',
-                'email': 'emergency@test.com',
+                'email': 'emergency@example.com',
                 'display_name': 'Emergency User',
                 'auth_provider': 'emergency'
             }

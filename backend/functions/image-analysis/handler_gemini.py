@@ -132,13 +132,14 @@ def main(event, context):
         # Cognito認証とユーザー情報取得
         user_info = get_user_from_token(event)
         if not user_info:
-            # 緊急ログイントークンをチェック
+            # 緊急ログイントークンをチェック（複数パターン対応）
             auth_header = event.get('headers', {}).get('Authorization', '')
-            if auth_header == 'Bearer emergency-login-token':
+            if auth_header in ['Bearer emergency-login-token', 'Bearer emergency-login-token-dev']:
+                print(f"Emergency login token detected in image-analysis: {auth_header}")
                 # 緊急ログイン用のダミーユーザー情報
                 user_info = {
                     'user_id': 'emergency-user',
-                    'email': 'emergency@test.com',
+                    'email': 'emergency@example.com',
                     'display_name': 'Emergency User'
                 }
             else:
@@ -249,18 +250,36 @@ def main(event, context):
 
 def get_user_from_token(event):
     """
-    Cognitoトークンからユーザー情報を取得
+    認証トークンからユーザー情報を取得（Cognito + Google認証対応）
     """
     try:
         # Authorization ヘッダーから JWT トークン取得
         auth_header = event.get('headers', {}).get('Authorization', '')
         if not auth_header.startswith('Bearer '):
+            print("No Bearer token found in Authorization header")
             return None
         
         access_token = auth_header.split(' ')[1]
+        print(f"Processing token: {access_token[:50]}...")
         
-        # CognitoでJWTトークンを検証してユーザー情報取得
+        # 緊急ログイン用トークンのチェック（複数パターン対応）
+        if access_token in ['emergency-login-token', 'emergency-login-token-dev']:
+            print(f"Emergency login token detected: {access_token}")
+            return {
+                'user_id': 'emergency-user',
+                'email': 'emergency@example.com',
+                'display_name': 'Emergency User',
+                'auth_provider': 'emergency'
+            }
+        
+        # Google認証のsimple_jwt形式トークンの処理
+        if access_token.startswith('simple_jwt_'):
+            print("Simple JWT token detected for Google authentication")
+            return handle_simple_jwt_token(access_token)
+        
+        # CognitoでJWTトークンを検証してユーザー情報取得（既存のメール認証用）
         response = cognito_client.get_user(AccessToken=access_token)
+        print(f"Cognito user response: {response['Username']}")
         
         # ユーザー属性から情報抽出
         user_attributes = {attr['Name']: attr['Value'] for attr in response['UserAttributes']}
@@ -272,13 +291,82 @@ def get_user_from_token(event):
             'auth_provider': 'cognito'
         }
         
+        print(f"Extracted user info: {user_info}")
         return user_info
         
-    except cognito_client.exceptions.NotAuthorizedException:
-        print("Token is invalid or expired")
+    except cognito_client.exceptions.NotAuthorizedException as e:
+        print(f"Token is invalid or expired: {str(e)}")
         return None
     except Exception as e:
         print(f"Error getting user from token: {str(e)}")
+        return None
+
+
+def handle_simple_jwt_token(access_token):
+    """
+    Google認証で生成されたsimple_jwt形式のトークンを処理
+    """
+    try:
+        # "simple_jwt_" プレフィックスを除去
+        token_payload = access_token[11:]  # "simple_jwt_" を除去
+        
+        # Base64デコード
+        import base64
+        decoded_bytes = base64.b64decode(token_payload)
+        payload_data = json.loads(decoded_bytes.decode('utf-8'))
+        
+        print(f"Decoded simple JWT payload: {payload_data}")
+        
+        # トークンの有効期限チェック
+        import time
+        current_time = int(time.time())
+        if payload_data.get('exp', 0) < current_time:
+            print("Simple JWT token expired")
+            return None
+        
+        # ペイロードからユーザー情報を抽出
+        user_id = payload_data.get('user_id')
+        email = payload_data.get('email')
+        
+        if not user_id or not email:
+            print("Invalid simple JWT payload: missing user_id or email")
+            return None
+        
+        # DynamoDBからユーザー詳細情報を取得
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
+        
+        try:
+            response = table.get_item(Key={'user_id': user_id})
+            if 'Item' in response:
+                user_data = response['Item']
+                return {
+                    'user_id': user_data.get('user_id'),
+                    'email': user_data.get('email'),
+                    'display_name': user_data.get('display_name', ''),
+                    'auth_provider': user_data.get('auth_provider', 'google')
+                }
+            else:
+                # ユーザーが見つからない場合はペイロードから基本情報を返す
+                print(f"User {user_id} not found in DynamoDB, using JWT payload")
+                return {
+                    'user_id': user_id,
+                    'email': email,
+                    'display_name': email.split('@')[0],  # フォールバック
+                    'auth_provider': 'google'
+                }
+        except Exception as db_error:
+            print(f"DynamoDB error: {db_error}")
+            # DB エラーの場合もペイロードから情報を返す
+            return {
+                'user_id': user_id,
+                'email': email,
+                'display_name': email.split('@')[0],
+                'auth_provider': 'google'
+            }
+            
+    except Exception as e:
+        print(f"Error handling simple JWT token: {str(e)}")
         return None
 
 

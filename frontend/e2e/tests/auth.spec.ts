@@ -16,8 +16,9 @@ import { test, expect } from '@playwright/test';
 test.describe('Google認証フロー', () => {
   
   test.beforeEach(async ({ page }) => {
-    // 各テスト前にlocalStorageをクリア
-    await page.goto('/');
+    // 各テスト前にlocalStorageをクリア (新アーキテクチャ対応)
+    await page.goto('/login.html');
+    await page.waitForLoadState('networkidle');
     await page.evaluate(() => {
       localStorage.clear();
       sessionStorage.clear();
@@ -29,10 +30,10 @@ test.describe('Google認証フロー', () => {
     await page.goto('/login.html');
     
     // ページタイトル確認
-    await expect(page).toHaveTitle(/Googleでログイン - 観光アナライザー/);
+    await expect(page).toHaveTitle(/ログイン - 観光アナライザー/);
     
     // メインタイトル表示確認
-    await expect(page.locator('h1')).toContainText('🌸 観光アナライザー');
+    await expect(page.locator('h1')).toContainText('🏔️ 観光アナライザー');
     
     // サブタイトル表示確認
     await expect(page.locator('p').first()).toContainText('札幌観光・グルメ画像のAI解析サービス');
@@ -108,8 +109,8 @@ test.describe('Google認証フロー', () => {
     // 成功メッセージが2秒間表示されることを確認
     await expect(page.locator('p:has-text("認証成功！メイン画面に移動します")')).toBeVisible({ timeout: 5000 });
     
-    // 2秒待機後にtourism-guide.htmlへリダイレクトされることを確認
-    await expect(page).toHaveURL(/.*tourism-guide\.html/, { timeout: 10000 });
+    // 2秒待機後にindex.htmlへリダイレクトされることを確認
+    await expect(page).toHaveURL(/.*index\.html/, { timeout: 10000 });
     
     // localStorage認証情報確認
     const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
@@ -128,7 +129,7 @@ test.describe('Google認証フロー', () => {
 
   test('認証後のUI状態確認', async ({ page }) => {
     // 事前にlocalStorageに認証情報を設定
-    await page.goto('/tourism-guide.html');
+    await page.goto('/index.html');
     await page.evaluate(() => {
       localStorage.setItem('tourismAuth', 'true');
       localStorage.setItem('accessToken', 'simple_jwt_test_token_12345');
@@ -154,7 +155,7 @@ test.describe('Google認証フロー', () => {
 
   test('ログアウト機能確認', async ({ page }) => {
     // 認証状態設定
-    await page.goto('/tourism-guide.html');
+    await page.goto('/index.html');
     await page.evaluate(() => {
       localStorage.setItem('tourismAuth', 'true');
       localStorage.setItem('accessToken', 'simple_jwt_test_token_12345');
@@ -269,5 +270,85 @@ test.describe('Google認証フロー', () => {
     const container = page.locator('.google-login-container');
     const boundingBox = await container.boundingBox();
     expect(boundingBox?.width).toBeLessThanOrEqual(375);
+  });
+
+  test('tourism-guide.htmlリダイレクト確認（後方互換性）', async ({ page }) => {
+    // 旧URLアクセス時の自動リダイレクト確認
+    await page.goto('/tourism-guide.html');
+    
+    // リダイレクトチェーン: tourism-guide.html → index.html → login.html (未認証時)
+    await page.waitForURL(/.*login\.html/, { timeout: 10000 });
+    
+    // 最終的にlogin.htmlに到達することを確認
+    await expect(page).toHaveURL(/.*login\.html/);
+    await expect(page.locator('h1')).toContainText('🏔️ 観光アナライザー');
+    console.log('✅ tourism-guide.html → index.html → login.html リダイレクト成功');
+  });
+
+  test('統合login.html - メール認証ボタン表示確認', async ({ page }) => {
+    // login.htmlにアクセス
+    await page.goto('/login.html');
+    
+    // メール認証ボタンが表示されていることを確認
+    await expect(page.locator('#emailLoginBtn')).toContainText('📧 メールでログイン');
+    
+    // 「または」区切り線が表示されることを確認
+    await expect(page.locator('.auth-divider span')).toContainText('または');
+    
+    console.log('✅ 統合login.html - メール認証UI表示確認成功');
+  });
+
+  test('統合login.html - メール認証フォーム表示確認', async ({ page }) => {
+    // login.htmlにアクセス
+    await page.goto('/login.html');
+    
+    // メール認証ボタンをクリック
+    await page.click('#emailLoginBtn');
+    
+    // メール認証フォームが表示されることを確認
+    await expect(page.locator('#emailAuthForm')).toBeVisible();
+    await expect(page.locator('.email-login-title')).toContainText('観光アナライザーにログイン');
+    
+    // ログイン/サインアップ切り替えボタンが表示されることを確認
+    await expect(page.locator('#loginModeBtn')).toContainText('ログイン');
+    await expect(page.locator('#signupModeBtn')).toContainText('新規登録');
+    
+    // ログインフォームの要素が表示されることを確認
+    await expect(page.locator('#loginEmail')).toBeVisible();
+    await expect(page.locator('#loginPassword')).toBeVisible();
+    
+    console.log('✅ 統合login.html - メール認証フォーム表示確認成功');
+  });
+
+  test('新しいindex.html認証フロー確認', async ({ page }) => {
+    // login.htmlに行って認証情報を事前設定
+    await page.goto('/login.html');
+    await page.waitForLoadState('networkidle');
+    
+    await page.evaluate(() => {
+      localStorage.setItem('tourismAuth', 'true');
+      localStorage.setItem('accessToken', 'simple_jwt_test_token_12345');
+      localStorage.setItem('userInfo', JSON.stringify({
+        user_id: 'google_test_user_12345',
+        email: 'test.user@example.com',
+        name: 'Test User',
+        auth_provider: 'google'
+      }));
+    });
+    
+    // 認証済み状態でindex.htmlにアクセス
+    await page.goto('/index.html');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(3000);
+    
+    // 認証チェック完了後にメインアプリが表示されることを確認
+    await expect(page.locator('#mainApp')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('#authLoading')).toBeHidden();
+    
+    // ヘッダーのユーザー情報表示確認
+    await expect(page.locator('#currentUser')).toBeVisible();
+    await expect(page.locator('.logout-btn')).toBeVisible();
+    
+    console.log('✅ 新しいindex.html認証フロー動作確認');
   });
 });

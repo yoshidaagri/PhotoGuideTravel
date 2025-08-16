@@ -5,3 +5,7 @@ requests==2.31.0
 
 # For image analysis function (separate from payment)
 google-generativeai==0.8.3
+
+# For Google OAuth authentication
+google-auth==2.23.0
+google-auth-httplib2==0.1.1

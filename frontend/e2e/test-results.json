@@ -141,7 +141,7 @@
           "column": 6,
           "specs": [
             {
-              "title": "実際のバックエンドAPI呼び出し確認",
+              "title": "login.htmlの基本表示確認",
               "ok": true,
               "tags": [],
               "tests": [
@@ -156,16 +156,389 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 10518,
+                      "duration": 2940,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T04:35:12.467Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-6a80e02757673a65ca19",
+              "file": "auth.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "Google Identity Services初期化確認",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 6199,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T04:35:12.455Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-5022c6ff5131e36538a2",
+              "file": "auth.spec.ts",
+              "line": 45,
+              "column": 7
+            },
+            {
+              "title": "Google認証ボタン表示確認",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 5990,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T04:35:12.465Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-63e3869ed1eccf23dbf4",
+              "file": "auth.spec.ts",
+              "line": 68,
+              "column": 7
+            },
+            {
+              "title": "Google認証成功フロー（2秒待機確認）",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 16166,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/.*index\\.html/\u001b[39m\nReceived string:  \u001b[31m\"https://d22ztxm5q1c726.cloudfront.net/login.html\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://d22ztxm5q1c726.cloudfront.net/login.html\"\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/.*index\\.html/\u001b[39m\nReceived string:  \u001b[31m\"https://d22ztxm5q1c726.cloudfront.net/login.html\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://d22ztxm5q1c726.cloudfront.net/login.html\"\u001b[22m\n\n    at /Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts:113:24",
+                        "location": {
+                          "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                          "column": 24,
+                          "line": 113
+                        },
+                        "snippet": "  111 |     \n  112 |     // 2秒待機後にindex.htmlへリダイレクトされることを確認\n> 113 |     await expect(page).toHaveURL(/.*index\\.html/, { timeout: 10000 });\n      |                        ^\n  114 |     \n  115 |     // localStorage認証情報確認\n  116 |     const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                            "column": 24,
+                            "line": 113
+                          },
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/.*index\\.html/\u001b[39m\nReceived string:  \u001b[31m\"https://d22ztxm5q1c726.cloudfront.net/login.html\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://d22ztxm5q1c726.cloudfront.net/login.html\"\u001b[22m\n\n\n  111 |     \n  112 |     // 2秒待機後にindex.htmlへリダイレクトされることを確認\n> 113 |     await expect(page).toHaveURL(/.*index\\.html/, { timeout: 10000 });\n      |                        ^\n  114 |     \n  115 |     // localStorage認証情報確認\n  116 |     const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));\n    at /Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts:113:24"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T04:35:12.464Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-Google認証成功フロー（2秒待機確認）-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-Google認証成功フロー（2秒待機確認）-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-Google認証成功フロー（2秒待機確認）-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-Google認証成功フロー（2秒待機確認）-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                        "column": 24,
+                        "line": 113
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-717810a6cf4263bef2d2",
+              "file": "auth.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "認証後のUI状態確認",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 3263,
+                      "error": {
+                        "message": "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation",
+                        "stack": "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation\n    at /Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts:133:16",
+                        "location": {
+                          "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                          "column": 16,
+                          "line": 133
+                        },
+                        "snippet": "  131 |     // 事前にlocalStorageに認証情報を設定\n  132 |     await page.goto('/index.html');\n> 133 |     await page.evaluate(() => {\n      |                ^\n  134 |       localStorage.setItem('tourismAuth', 'true');\n  135 |       localStorage.setItem('accessToken', 'simple_jwt_test_token_12345');\n  136 |       localStorage.setItem('userInfo', JSON.stringify({"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                            "column": 16,
+                            "line": 133
+                          },
+                          "message": "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation\n\n  131 |     // 事前にlocalStorageに認証情報を設定\n  132 |     await page.goto('/index.html');\n> 133 |     await page.evaluate(() => {\n      |                ^\n  134 |       localStorage.setItem('tourismAuth', 'true');\n  135 |       localStorage.setItem('accessToken', 'simple_jwt_test_token_12345');\n  136 |       localStorage.setItem('userInfo', JSON.stringify({\n    at /Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts:133:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T04:35:15.640Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-認証後のUI状態確認-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-認証後のUI状態確認-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-認証後のUI状態確認-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-認証後のUI状態確認-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                        "column": 16,
+                        "line": 133
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-bf31bc78eebfde97939c",
+              "file": "auth.spec.ts",
+              "line": 130,
+              "column": 7
+            },
+            {
+              "title": "ログアウト機能確認",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 3216,
+                      "error": {
+                        "message": "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation",
+                        "stack": "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation\n    at /Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts:159:16",
+                        "location": {
+                          "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                          "column": 16,
+                          "line": 159
+                        },
+                        "snippet": "  157 |     // 認証状態設定\n  158 |     await page.goto('/index.html');\n> 159 |     await page.evaluate(() => {\n      |                ^\n  160 |       localStorage.setItem('tourismAuth', 'true');\n  161 |       localStorage.setItem('accessToken', 'simple_jwt_test_token_12345');\n  162 |       localStorage.setItem('userInfo', JSON.stringify({"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                            "column": 16,
+                            "line": 159
+                          },
+                          "message": "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation\n\n  157 |     // 認証状態設定\n  158 |     await page.goto('/index.html');\n> 159 |     await page.evaluate(() => {\n      |                ^\n  160 |       localStorage.setItem('tourismAuth', 'true');\n  161 |       localStorage.setItem('accessToken', 'simple_jwt_test_token_12345');\n  162 |       localStorage.setItem('userInfo', JSON.stringify({\n    at /Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts:159:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T04:35:18.657Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-ログアウト機能確認-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-ログアウト機能確認-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-ログアウト機能確認-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-ログアウト機能確認-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                        "column": 16,
+                        "line": 159
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-42d7160f72eed6745a09",
+              "file": "auth.spec.ts",
+              "line": 156,
+              "column": 7
+            },
+            {
+              "title": "認証エラーハンドリング（3秒表示確認）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 8779,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T04:35:18.843Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-0299be8b9100e8895537",
+              "file": "auth.spec.ts",
+              "line": 191,
+              "column": 7
+            },
+            {
+              "title": "実際のバックエンドAPI呼び出し確認",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10702,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: {access_token: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M…gMTc1NTMxMDc1MCwgImlzcyI6ICJhaS10b3VyaXNtLXBvYyJ9, user_info: Object}'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: {user_id: google_3fe63ea7c953262b, email: yoshidaagri@gmail.com, name: Manabu Yoshida, auth_provider: google}'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: {tourismAuth: true, accessToken: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M..., userInfo: Object}'\u001b[39m,\n  \u001b[32m'log: 🚀 Initializing application...'\u001b[39m,\n  \u001b[32m'log: 📚 Library status at init: {marked: true, DOMPurify: true}'\u001b[39m,\n  \u001b[32m'log: ℹ️ No OAuth code found in URL'\u001b[39m,\n  \u001b[32m'log: 🌐 メイン画面言語更新: ja'\u001b[39m,\n  \u001b[32m'log: 🔧 Configuring marked.js options...'\u001b[39m,\n  \u001b[32m'log: 🎨 Setting up custom renderer...'\u001b[39m,\n  \u001b[32m'log: ✅ marked.js configuration completed successfully'\u001b[39m,\n  \u001b[32m'log: 🧪 Markdown test: {input: ## Test\\n'\u001b[39m +\n    \u001b[32m'**Bold text** and *italic text*\\n'\u001b[39m +\n    \u001b[32m'- List item 1\\n'\u001b[39m +\n    \u001b[32m'- List item 2, output: <h2>Test</h2>\\n'\u001b[39m +\n    \u001b[32m'<p><strong>Bold text</strong> and <e…\\n'\u001b[39m +\n    \u001b[32m'<li>List item 1</li>\\n'\u001b[39m +\n    \u001b[32m'<li>List item 2</li>\\n'\u001b[39m +\n    \u001b[32m'</ul>\\n'\u001b[39m +\n    \u001b[32m'}'\u001b[39m,\n  \u001b[32m'log: ✅ Markdown initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Application initialization complete'\u001b[39m,\n  \u001b[32m'log: ✅ 認証状態復元: yoshidaagri@gmail.com'\u001b[39m\n]\n"
+                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: {access_token: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M…gMTc1NTMxODkyNSwgImlzcyI6ICJhaS10b3VyaXNtLXBvYyJ9, user_info: Object}'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: {user_id: google_3fe63ea7c953262b, email: yoshidaagri@gmail.com, name: Manabu Yoshida, auth_provider: google}'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: {tourismAuth: true, accessToken: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M..., userInfo: Object}'\u001b[39m,\n  \u001b[32m'log: 🔄 Page loaded, checking authentication...'\u001b[39m,\n  \u001b[32m'log: 🔐 Checking authentication status...'\u001b[39m,\n  \u001b[32m'log: 📊 Found stored auth data, verifying with server...'\u001b[39m,\n  \u001b[32m'log: ✅ Authentication verified: yoshidaagri@gmail.com'\u001b[39m,\n  \u001b[32m'log: 📧 Stored user info matches server data'\u001b[39m,\n  \u001b[32m'log: ✅ User authenticated, showing main app'\u001b[39m,\n  \u001b[32m'log: 🎯 Initializing main application features...'\u001b[39m,\n  \u001b[32m'log: 🎨 UI elements initialized'\u001b[39m,\n  \u001b[32m'log: 🔗 Event listeners set up'\u001b[39m,\n  \u001b[32m'log: 🌐 Updating UI to language: ja'\u001b[39m,\n  \u001b[32m'log: ✅ UI updated to ja'\u001b[39m,\n  \u001b[32m'log: 🌐 Language initialized: ja'\u001b[39m,\n  \u001b[32m'log: 💳 Stripe initialized'\u001b[39m,\n  \u001b[32m'log: 📝 Markdown processing initialized'\u001b[39m,\n  \u001b[32m'log: ✅ Main application initialized successfully'\u001b[39m,\n  \u001b[32m'log: 🎨 Showing main application...'\u001b[39m,\n  \u001b[32m'log: 👤 User info display updated'\u001b[39m,\n  \u001b[32m'log: 🎯 Initializing main application features...'\u001b[39m,\n  \u001b[32m'log: 🎨 UI elements initialized'\u001b[39m,\n  \u001b[32m'log: 🔗 Event listeners set up'\u001b[39m,\n  \u001b[32m'log: 🌐 Updating UI to language: ja'\u001b[39m,\n  \u001b[32m'log: ✅ UI updated to ja'\u001b[39m,\n  \u001b[32m'log: 🌐 Language initialized: ja'\u001b[39m,\n  \u001b[32m'log: 💳 Stripe initialized'\u001b[39m,\n  \u001b[32m'log: 📝 Markdown processing initialized'\u001b[39m,\n  \u001b[32m'log: ✅ Main application initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Main application displayed successfully'\u001b[39m\n]\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-16T02:19:03.320Z",
+                      "startTime": "2025-08-16T04:35:19.491Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -175,11 +548,90 @@
               ],
               "id": "d748ac400d08b85935ef-53102bfcaf01692fd0a5",
               "file": "auth.spec.ts",
-              "line": 230,
+              "line": 231,
               "column": 7
             },
             {
-              "title": "実際のバックエンドAPI呼び出し確認",
+              "title": "モバイル表示対応確認",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 10766,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('.google-login-container')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.google-login-container')\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('.google-login-container')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.google-login-container')\u001b[22m\n\n    at /Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts:266:59",
+                        "location": {
+                          "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                          "column": 59,
+                          "line": 266
+                        },
+                        "snippet": "  264 |     \n  265 |     // モバイルでの表示確認\n> 266 |     await expect(page.locator('.google-login-container')).toBeVisible();\n      |                                                           ^\n  267 |     await expect(page.locator('#google-signin-button')).toBeVisible();\n  268 |     \n  269 |     // レスポンシブデザイン確認"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                            "column": 59,
+                            "line": 266
+                          },
+                          "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('.google-login-container')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.google-login-container')\u001b[22m\n\n\n  264 |     \n  265 |     // モバイルでの表示確認\n> 266 |     await expect(page.locator('.google-login-container')).toBeVisible();\n      |                                                           ^\n  267 |     await expect(page.locator('#google-signin-button')).toBeVisible();\n  268 |     \n  269 |     // レスポンシブデザイン確認\n    at /Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts:266:59"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T04:35:22.513Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-モバイル表示対応確認-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-モバイル表示対応確認-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-モバイル表示対応確認-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-モバイル表示対応確認-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                        "column": 59,
+                        "line": 266
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-c2fa448da29c187d9f3c",
+              "file": "auth.spec.ts",
+              "line": 258,
+              "column": 7
+            },
+            {
+              "title": "tourism-guide.htmlリダイレクト確認（後方互換性）",
               "ok": true,
               "tags": [],
               "tests": [
@@ -187,23 +639,23 @@
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
                   "results": [
                     {
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 10581,
+                      "duration": 3308,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: JSHandle@object'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: JSHandle@object'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: JSHandle@object'\u001b[39m,\n  \u001b[32m'log: 🚀 Initializing application...'\u001b[39m,\n  \u001b[32m'log: 📚 Library status at init: JSHandle@object'\u001b[39m,\n  \u001b[32m'log: ℹ️ No OAuth code found in URL'\u001b[39m,\n  \u001b[32m'log: 🌐 メイン画面言語更新: ja'\u001b[39m,\n  \u001b[32m'log: 🔧 Configuring marked.js options...'\u001b[39m,\n  \u001b[32m'log: 🎨 Setting up custom renderer...'\u001b[39m,\n  \u001b[32m'log: ✅ marked.js configuration completed successfully'\u001b[39m,\n  \u001b[32m'log: 🧪 Markdown test: JSHandle@object'\u001b[39m,\n  \u001b[32m'log: ✅ Markdown initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Application initialization complete'\u001b[39m,\n  \u001b[32m'log: ✅ 認証状態復元: yoshidaagri@gmail.com'\u001b[39m\n]\n"
+                          "text": "✅ tourism-guide.html → index.html → login.html リダイレクト成功\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-16T02:19:03.323Z",
+                      "startTime": "2025-08-16T04:35:27.628Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -211,13 +663,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "d748ac400d08b85935ef-d27a59713dabfffde360",
+              "id": "d748ac400d08b85935ef-63a5dd1875b6d6cbfbff",
               "file": "auth.spec.ts",
-              "line": 230,
+              "line": 275,
               "column": 7
             },
             {
-              "title": "実際のバックエンドAPI呼び出し確認",
+              "title": "統合login.html - メール認証ボタン表示確認",
               "ok": true,
               "tags": [],
               "tests": [
@@ -225,61 +677,23 @@
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 10567,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: {access_token: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M…gMTc1NTMxMDc1MCwgImlzcyI6ICJhaS10b3VyaXNtLXBvYyJ9, user_info: Object}'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: {user_id: google_3fe63ea7c953262b, email: yoshidaagri@gmail.com, name: Manabu Yoshida, auth_provider: google}'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: {tourismAuth: true, accessToken: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M..., userInfo: Object}'\u001b[39m,\n  \u001b[32m'log: 🚀 Initializing application...'\u001b[39m,\n  \u001b[32m'log: 📚 Library status at init: {marked: true, DOMPurify: true}'\u001b[39m,\n  \u001b[32m'log: ℹ️ No OAuth code found in URL'\u001b[39m,\n  \u001b[32m'log: 🌐 メイン画面言語更新: ja'\u001b[39m,\n  \u001b[32m'log: 🔧 Configuring marked.js options...'\u001b[39m,\n  \u001b[32m'log: 🎨 Setting up custom renderer...'\u001b[39m,\n  \u001b[32m'log: ✅ marked.js configuration completed successfully'\u001b[39m,\n  \u001b[32m'log: 🧪 Markdown test: {input: ## Test\\n'\u001b[39m +\n    \u001b[32m'**Bold text** and *italic text*\\n'\u001b[39m +\n    \u001b[32m'- List item 1\\n'\u001b[39m +\n    \u001b[32m'- List item 2, output: <h2>Test</h2>\\n'\u001b[39m +\n    \u001b[32m'<p><strong>Bold text</strong> and <e…\\n'\u001b[39m +\n    \u001b[32m'<li>List item 1</li>\\n'\u001b[39m +\n    \u001b[32m'<li>List item 2</li>\\n'\u001b[39m +\n    \u001b[32m'</ul>\\n'\u001b[39m +\n    \u001b[32m'}'\u001b[39m,\n  \u001b[32m'log: ✅ Markdown initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Application initialization complete'\u001b[39m,\n  \u001b[32m'log: ✅ 認証状態復元: yoshidaagri@gmail.com'\u001b[39m\n]\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-08-16T02:19:03.317Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d748ac400d08b85935ef-298c521ee1e7d214f121",
-              "file": "auth.spec.ts",
-              "line": 230,
-              "column": 7
-            },
-            {
-              "title": "実際のバックエンドAPI呼び出し確認",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 3,
+                      "workerIndex": 6,
                       "parallelIndex": 3,
                       "status": "passed",
-                      "duration": 10547,
+                      "duration": 2754,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: {access_token: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M…gMTc1NTMxMDc1MCwgImlzcyI6ICJhaS10b3VyaXNtLXBvYyJ9, user_info: Object}'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: {user_id: google_3fe63ea7c953262b, email: yoshidaagri@gmail.com, name: Manabu Yoshida, auth_provider: google}'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: {tourismAuth: true, accessToken: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M..., userInfo: Object}'\u001b[39m,\n  \u001b[32m'log: 🚀 Initializing application...'\u001b[39m,\n  \u001b[32m'log: 📚 Library status at init: {marked: true, DOMPurify: true}'\u001b[39m,\n  \u001b[32m'log: ℹ️ No OAuth code found in URL'\u001b[39m,\n  \u001b[32m'log: 🌐 メイン画面言語更新: ja'\u001b[39m,\n  \u001b[32m'log: 🔧 Configuring marked.js options...'\u001b[39m,\n  \u001b[32m'log: 🎨 Setting up custom renderer...'\u001b[39m,\n  \u001b[32m'log: ✅ marked.js configuration completed successfully'\u001b[39m,\n  \u001b[32m'log: 🧪 Markdown test: {input: ## Test\\n'\u001b[39m +\n    \u001b[32m'**Bold text** and *italic text*\\n'\u001b[39m +\n    \u001b[32m'- List item 1\\n'\u001b[39m +\n    \u001b[32m'- List item 2, output: <h2>Test</h2>\\n'\u001b[39m +\n    \u001b[32m'<p><strong>Bold text</strong> and <e…\\n'\u001b[39m +\n    \u001b[32m'<li>List item 1</li>\\n'\u001b[39m +\n    \u001b[32m'<li>List item 2</li>\\n'\u001b[39m +\n    \u001b[32m'</ul>\\n'\u001b[39m +\n    \u001b[32m'}'\u001b[39m,\n  \u001b[32m'log: ✅ Markdown initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Application initialization complete'\u001b[39m,\n  \u001b[32m'log: ✅ 認証状態復元: yoshidaagri@gmail.com'\u001b[39m\n]\n"
+                          "text": "✅ 統合login.html - メール認証UI表示確認成功\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-16T02:19:03.321Z",
+                      "startTime": "2025-08-16T04:35:29.488Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -287,13 +701,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "d748ac400d08b85935ef-791489c8fff2e1eb94d8",
+              "id": "d748ac400d08b85935ef-c1202658443f0b410d55",
               "file": "auth.spec.ts",
-              "line": 230,
+              "line": 288,
               "column": 7
             },
             {
-              "title": "実際のバックエンドAPI呼び出し確認",
+              "title": "統合login.html - メール認証フォーム表示確認",
               "ok": true,
               "tags": [],
               "tests": [
@@ -301,23 +715,23 @@
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
                   "results": [
                     {
                       "workerIndex": 4,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 9967,
+                      "duration": 2850,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "Backend API test logs: [\n  \u001b[32m'log: 🔄 Exchanging Google token for Cognito token...'\u001b[39m,\n  \u001b[32m'log: ✅ Token exchange successful: {access_token: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M…gMTc1NTMxMDc2MCwgImlzcyI6ICJhaS10b3VyaXNtLXBvYyJ9, user_info: Object}'\u001b[39m,\n  \u001b[32m'log: 📧 Using user info from backend: {user_id: google_3fe63ea7c953262b, email: yoshidaagri@gmail.com, name: Manabu Yoshida, auth_provider: google}'\u001b[39m,\n  \u001b[32m'log: 💾 Stored in localStorage: {tourismAuth: true, accessToken: simple_jwt_eyJ1c2VyX2lkIjogImdvb2dsZV8zZmU2M2VhN2M..., userInfo: Object}'\u001b[39m,\n  \u001b[32m'log: 🚀 Initializing application...'\u001b[39m,\n  \u001b[32m'log: 📚 Library status at init: {marked: true, DOMPurify: true}'\u001b[39m,\n  \u001b[32m'log: ℹ️ No OAuth code found in URL'\u001b[39m,\n  \u001b[32m'log: 🌐 メイン画面言語更新: ja'\u001b[39m,\n  \u001b[32m'log: 🔧 Configuring marked.js options...'\u001b[39m,\n  \u001b[32m'log: 🎨 Setting up custom renderer...'\u001b[39m,\n  \u001b[32m'log: ✅ marked.js configuration completed successfully'\u001b[39m,\n  \u001b[32m'log: 🧪 Markdown test: {input: ## Test\\n'\u001b[39m +\n    \u001b[32m'**Bold text** and *italic text*\\n'\u001b[39m +\n    \u001b[32m'- List item 1\\n'\u001b[39m +\n    \u001b[32m'- List item 2, output: <h2>Test</h2>\\n'\u001b[39m +\n    \u001b[32m'<p><strong>Bold text</strong> and <e…\\n'\u001b[39m +\n    \u001b[32m'<li>List item 1</li>\\n'\u001b[39m +\n    \u001b[32m'<li>List item 2</li>\\n'\u001b[39m +\n    \u001b[32m'</ul>\\n'\u001b[39m +\n    \u001b[32m'}'\u001b[39m,\n  \u001b[32m'log: ✅ Markdown initialized successfully'\u001b[39m,\n  \u001b[32m'log: ✅ Application initialization complete'\u001b[39m,\n  \u001b[32m'log: ✅ 認証状態復元: yoshidaagri@gmail.com'\u001b[39m\n]\n"
+                          "text": "✅ 統合login.html - メール認証フォーム表示確認成功\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-16T02:19:14.763Z",
+                      "startTime": "2025-08-16T04:35:30.287Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -325,9 +739,88 @@
                   "status": "expected"
                 }
               ],
-              "id": "d748ac400d08b85935ef-734668f183823c594784",
+              "id": "d748ac400d08b85935ef-8f53eef1dae8aba619c8",
               "file": "auth.spec.ts",
-              "line": 230,
+              "line": 301,
+              "column": 7
+            },
+            {
+              "title": "新しいindex.html認証フロー確認",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 18657,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('#mainApp')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('#mainApp')\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('#mainApp')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('#mainApp')\u001b[22m\n\n    at /Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts:345:44",
+                        "location": {
+                          "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                          "column": 44,
+                          "line": 345
+                        },
+                        "snippet": "  343 |     \n  344 |     // 認証チェック完了後にメインアプリが表示されることを確認\n> 345 |     await expect(page.locator('#mainApp')).toBeVisible({ timeout: 10000 });\n      |                                            ^\n  346 |     await expect(page.locator('#authLoading')).toBeHidden();\n  347 |     \n  348 |     // ヘッダーのユーザー情報表示確認"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                            "column": 44,
+                            "line": 345
+                          },
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('#mainApp')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('#mainApp')\u001b[22m\n\n\n  343 |     \n  344 |     // 認証チェック完了後にメインアプリが表示されることを確認\n> 345 |     await expect(page.locator('#mainApp')).toBeVisible({ timeout: 10000 });\n      |                                            ^\n  346 |     await expect(page.locator('#authLoading')).toBeHidden();\n  347 |     \n  348 |     // ヘッダーのユーザー情報表示確認\n    at /Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts:345:44"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-16T04:35:30.941Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-新しいindex-html認証フロー確認-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-新しいindex-html認証フロー確認-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-新しいindex-html認証フロー確認-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/test-results/auth-Google認証フロー-新しいindex-html認証フロー確認-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/manabu/python/Multimodal_Japan/frontend/e2e/tests/auth.spec.ts",
+                        "column": 44,
+                        "line": 345
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-5a2c161c0c174a7d12d7",
+              "file": "auth.spec.ts",
+              "line": 323,
               "column": 7
             }
           ]
@@ -337,11 +830,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-08-16T02:19:02.723Z",
-    "duration": 22312.649999999998,
-    "expected": 5,
+    "startTime": "2025-08-16T04:35:11.631Z",
+    "duration": 38078.571,
+    "expected": 8,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 5,
     "flaky": 0
   }
 }

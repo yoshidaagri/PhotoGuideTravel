@@ -3,30 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Googleでログイン - 観光アナライザー</title>
+    <title>ログイン - 観光アナライザー</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="google-login-container">
+    <div class="unified-login-container">
         <div class="login-content">
-            <h1>🌸 観光アナライザー</h1>
-            <p>札幌観光・グルメ画像のAI解析サービス</p>
+            <h1>🏔️ 観光アナライザー</h1>
+            <p>観光・グルメ画像のAI解析サービス</p>
             
-            <!-- Google OAuth リダイレクト -->
-            <div class="google-login-wrapper">
-                <p>Googleアカウントでログイン処理中...</p>
-                <p>まもなくGoogleのログイン画面へ移動します</p>
+            <!-- 言語選択セクション -->
+            <section class="language-selection-section">
+                <div class="language-selector-main" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                    <label style="display: flex; align-items: center; gap: 0.3rem;" class="lang-option">
+                        <input type="radio" name="mainLang" value="ja" checked> 🇯🇵 日本語
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;" class="lang-option">
+                        <input type="radio" name="mainLang" value="ko"> 🇰🇷 한국어
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;" class="lang-option">
+                        <input type="radio" name="mainLang" value="zh"> 🇨🇳 简体中文
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;" class="lang-option">
+                        <input type="radio" name="mainLang" value="tw"> 🇹🇼 繁體中文
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;" class="lang-option">
+                        <input type="radio" name="mainLang" value="en"> 🌍 English
+                    </label>
+                </div>
+            </section>
+            
+            <!-- Google認証セクション -->
+            <section class="google-auth-section">
+                <div class="google-login-wrapper">
+                    <p>Googleアカウントでログイン処理中...</p>
+                    <p>まもなくGoogleのログイン画面へ移動します</p>
+                </div>
+            </section>
+            
+            <!-- 区切り線 -->
+            <div class="auth-divider">
+                <span>または</span>
             </div>
             
-            <div class="back-link">
+            <!-- メール認証セクション -->
+            <section class="email-auth-section">
+                <button id="emailLoginBtn" class="email-login-btn">
+                    📧 メールでログイン
+                </button>
+                
+                <!-- 緊急ログインボタン（目立たないように配置） -->
+                <button id="emergencyLoginBtn" class="emergency-login-btn" style="
+                    width: 100%; 
+                    padding: 0.6rem; 
+                    margin-top: 0.5rem; 
+                    background: #f0f0f0; 
+                    color: #666; 
+                    border: 1px solid #ddd; 
+                    border-radius: 8px; 
+                    font-size: 0.8rem; 
+                    cursor: pointer;
+                    opacity: 0.7;
+                ">
+                    🛠️ 緊急ログイン
+                </button>
+            </section>
+            
+            <!-- メール認証フォーム（初期非表示） -->
+            <div id="emailAuthForm" class="email-auth-form" style="display: none;">
+                <!-- メール認証UI がここに動的に挿入される -->
+            </div>
+            
+            <div class="back-link" style="display: none;">
                 <a href="./tourism-guide.html">← 戻る</a>
             </div>
         </div>
     </div>
     
     <script>
+        // API Configuration
+        const API_BASE_URL = 'https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev';
+        
         // Google Identity Services (GIS) implementation
         let isGoogleInitialized = false;
+        
+        // Page translations for main content
+        const pageTranslations = {
+            ja: {
+                title: "🏔️ 観光アナライザー",
+                subtitle: "観光・グルメ画像のAI解析サービス",
+                googleLoginProcessing: "Googleアカウントでログイン処理中...",
+                googleLoginRedirect: "まもなくGoogleのログイン画面へ移動します",
+                googleLoginReady: "Googleアカウントでログイン",
+                divider: "または",
+                emailLoginBtn: "📧 メールでログイン",
+                emergencyLoginBtn: "🛠️ 緊急ログイン",
+                backLink: "← 戻る"
+            },
+            ko: {
+                title: "🏔️ 관광 분석기",
+                subtitle: "관광・음식 이미지의 AI 분석 서비스",
+                googleLoginProcessing: "Google 계정으로 로그인 처리 중...",
+                googleLoginRedirect: "곧 Google 로그인 화면으로 이동합니다",
+                googleLoginReady: "Google 계정으로 로그인",
+                divider: "또는",
+                emailLoginBtn: "📧 이메일로 로그인",
+                emergencyLoginBtn: "🛠️ 긴급 로그인",
+                backLink: "← 돌아가기"
+            },
+            zh: {
+                title: "🏔️ 旅游分析器",
+                subtitle: "观光・美食图像的AI分析服务",
+                googleLoginProcessing: "正在使用Google账户登录...",
+                googleLoginRedirect: "即将跳转到Google登录页面",
+                googleLoginReady: "使用Google账户登录",
+                divider: "或者",
+                emailLoginBtn: "📧 使用邮箱登录",
+                emergencyLoginBtn: "🛠️ 紧急登录",
+                backLink: "← 返回"
+            },
+            tw: {
+                title: "🏔️ 觀光分析器",
+                subtitle: "觀光・美食圖像的AI分析服務",
+                googleLoginProcessing: "正在使用Google帳戶登入...",
+                googleLoginRedirect: "即將跳轉到Google登入頁面",
+                googleLoginReady: "使用Google帳戶登入",
+                divider: "或者",
+                emailLoginBtn: "📧 使用電子郵件登入",
+                emergencyLoginBtn: "🛠️ 緊急登入",
+                backLink: "← 返回"
+            },
+            en: {
+                title: "🏔️ Tourism Analyzer",
+                subtitle: "AI Analysis Service for Tourism & Gourmet Images",
+                googleLoginProcessing: "Processing Google Account Login...",
+                googleLoginRedirect: "Redirecting to Google login page soon",
+                googleLoginReady: "Sign in with Google Account",
+                divider: "or",
+                emailLoginBtn: "📧 Sign in with Email",
+                emergencyLoginBtn: "🛠️ Emergency Login",
+                backLink: "← Back"
+            }
+        };
+
+        // Email authentication translations
+        const emailAuthTranslations = {
+            ja: {
+                emailLogin: "📧 メールでログイン",
+                loginTitle: "観光アナライザーにログイン", 
+                emailPlaceholder: "メールアドレス",
+                passwordPlaceholder: "パスワード",
+                confirmPassword: "パスワード確認",
+                loginButton: "ログイン",
+                signupButton: "新規登録",
+                signupLink: "新規登録",
+                forgotPassword: "パスワードを忘れた方",
+                languageSelect: "言語を選択",
+                backToLogin: "戻る"
+            },
+            ko: {
+                emailLogin: "📧 이메일로 로그인",
+                loginTitle: "관광 분석기에 로그인",
+                emailPlaceholder: "이메일 주소", 
+                passwordPlaceholder: "비밀번호",
+                confirmPassword: "비밀번호 확인",
+                loginButton: "로그인",
+                signupButton: "회원가입",
+                signupLink: "회원가입",
+                forgotPassword: "비밀번호 찾기",
+                languageSelect: "언어 선택",
+                backToLogin: "돌아가기"
+            },
+            zh: {
+                emailLogin: "📧 使用邮箱登录",
+                loginTitle: "登录旅游分析器",
+                emailPlaceholder: "邮箱地址",
+                passwordPlaceholder: "密码",
+                confirmPassword: "确认密码", 
+                loginButton: "登录",
+                signupButton: "注册账户",
+                signupLink: "注册账户",
+                forgotPassword: "忘记密码？",
+                languageSelect: "选择语言",
+                backToLogin: "返回"
+            },
+            tw: {
+                emailLogin: "📧 使用電子郵件登入",
+                loginTitle: "登入觀光分析器",
+                emailPlaceholder: "電子郵件地址",
+                passwordPlaceholder: "密碼",
+                confirmPassword: "確認密碼",
+                loginButton: "登入",
+                signupButton: "註冊帳號", 
+                signupLink: "註冊帳號",
+                forgotPassword: "忘記密碼？",
+                languageSelect: "選擇語言",
+                backToLogin: "返回"
+            },
+            en: {
+                emailLogin: "📧 Sign in with Email",
+                loginTitle: "Sign in to Tourism Analyzer",
+                emailPlaceholder: "Email address",
+                passwordPlaceholder: "Password",
+                confirmPassword: "Confirm Password",
+                loginButton: "Sign in",
+                signupButton: "Sign up",
+                signupLink: "Sign up", 
+                forgotPassword: "Forgot password?",
+                languageSelect: "Select language",
+                backToLogin: "Back"
+            }
+        };
         
         // Initialize Google Sign-In using new GIS API
         function initGoogleSignIn() {
@@ -172,8 +359,8 @@
                     userInfo: userInfo
                 });
                 
-                // Redirect back to main app
-                window.location.href = './tourism-guide.html';
+                // Redirect to new main app (index.html)
+                window.location.href = './index.html';
                 
             } catch (error) {
                 console.error('❌ Token exchange failed:', error);
@@ -207,9 +394,427 @@
             `;
         }
         
+        // Email Authentication Functions
+        function showEmailAuthForm() {
+            const currentLanguage = sessionStorage.getItem('selectedLanguage') || 'ja';
+            const t = emailAuthTranslations[currentLanguage] || emailAuthTranslations['ja'];
+            
+            const emailAuthForm = document.getElementById('emailAuthForm');
+            emailAuthForm.style.display = 'block';
+            
+            // Show back link when email form is displayed
+            const backLink = document.querySelector('.back-link');
+            if (backLink) {
+                backLink.style.display = 'block';
+            }
+            emailAuthForm.innerHTML = `
+                <h2 class="email-login-title">${t.loginTitle}</h2>
+                
+                <!-- 言語選択 -->
+                <div class="language-selector" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ja" ${currentLanguage === 'ja' ? 'checked' : ''}> 🇯🇵 日本語</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="ko" ${currentLanguage === 'ko' ? 'checked' : ''}> 🇰🇷 한국어</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="zh" ${currentLanguage === 'zh' ? 'checked' : ''}> 🇨🇳 简体中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="tw" ${currentLanguage === 'tw' ? 'checked' : ''}> 🇹🇼 繁體中文</label>
+                    <label style="display: flex; align-items: center; gap: 0.3rem;"><input type="radio" name="authLang" value="en" ${currentLanguage === 'en' ? 'checked' : ''}> 🌍 English</label>
+                </div>
+                
+                <!-- ログイン/サインアップ切り替え -->
+                <div class="auth-mode-switcher" style="display: flex; margin-bottom: 2rem; border-radius: 25px; background: #f5f5f5; overflow: hidden;">
+                    <button id="loginModeBtn" class="mode-btn active" style="flex: 1; padding: 0.8rem; border: none; background: var(--primary-color); color: white; font-weight: 600; cursor: pointer;">${t.loginButton}</button>
+                    <button id="signupModeBtn" class="mode-btn" style="flex: 1; padding: 0.8rem; border: none; background: transparent; color: #666; font-weight: 600; cursor: pointer;">${t.signupButton}</button>
+                </div>
+                
+                <!-- ログインフォーム -->
+                <form id="loginForm" style="display: block;">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <input type="email" id="loginEmail" placeholder="${t.emailPlaceholder}" required 
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <input type="password" id="loginPassword" placeholder="${t.passwordPlaceholder}" required
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 1rem; background: var(--primary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;">${t.loginButton}</button>
+                </form>
+                
+                <!-- サインアップフォーム -->
+                <form id="signupForm" style="display: none;">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <input type="email" id="signupEmail" placeholder="${t.emailPlaceholder}" required
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <input type="password" id="signupPassword" placeholder="${t.passwordPlaceholder}" required minlength="8"
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <input type="password" id="confirmPassword" placeholder="${t.confirmPassword}" required
+                               style="width: 100%; padding: 1rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 1rem; background: var(--secondary-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;">${t.signupButton}</button>
+                </form>
+                
+                <button onclick="hideEmailAuthForm()" style="width: 100%; padding: 0.8rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 12px; font-size: 1rem; cursor: pointer;">${t.backToLogin}</button>
+            `;
+            
+            setupEmailAuthListeners();
+        }
+        
+        function hideEmailAuthForm() {
+            const emailAuthForm = document.getElementById('emailAuthForm');
+            emailAuthForm.style.display = 'none';
+            
+            // Hide back link when email form is hidden
+            const backLink = document.querySelector('.back-link');
+            if (backLink) {
+                backLink.style.display = 'none';
+            }
+        }
+        
+        function setupEmailAuthListeners() {
+            // 言語選択リスナー
+            document.querySelectorAll('input[name="authLang"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    sessionStorage.setItem('selectedLanguage', this.value);
+                    showEmailAuthForm(); // 再描画
+                });
+            });
+            
+            // モード切り替えリスナー
+            const loginModeBtn = document.getElementById('loginModeBtn');
+            const signupModeBtn = document.getElementById('signupModeBtn');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            
+            if (loginModeBtn && signupModeBtn && loginForm && signupForm) {
+                loginModeBtn.addEventListener('click', function() {
+                    loginForm.style.display = 'block';
+                    signupForm.style.display = 'none';
+                    this.style.background = 'var(--primary-color)';
+                    this.style.color = 'white';
+                    signupModeBtn.style.background = 'transparent';
+                    signupModeBtn.style.color = '#666';
+                });
+                
+                signupModeBtn.addEventListener('click', function() {
+                    loginForm.style.display = 'none';
+                    signupForm.style.display = 'block';
+                    this.style.background = 'var(--secondary-color)';
+                    this.style.color = 'white';
+                    loginModeBtn.style.background = 'transparent';
+                    loginModeBtn.style.color = '#666';
+                });
+                
+                // フォーム送信リスナー
+                loginForm.addEventListener('submit', handleCognitoLogin);
+                signupForm.addEventListener('submit', handleCognitoSignup);
+            }
+        }
+        
+        async function handleCognitoLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            if (!email || !password) {
+                showMessage('すべてのフィールドを入力してください', 'error');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '認証中...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // ログイン成功
+                    localStorage.setItem('tourismAuth', 'true');
+                    localStorage.setItem('accessToken', data.tokens.AccessToken);
+                    localStorage.setItem('userInfo', JSON.stringify(data.user_info));
+                    
+                    showMessage('ログインに成功しました', 'success');
+                    setTimeout(() => {
+                        window.location.href = './index.html';
+                    }, 1500);
+                } else {
+                    throw new Error(data.error || 'ログインに失敗しました');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('ログインエラー: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'ログイン';
+            }
+        }
+        
+        async function handleCognitoSignup(e) {
+            e.preventDefault();
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            if (!email || !password || !confirmPassword) {
+                showMessage('すべてのフィールドを入力してください', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('パスワードが一致しません', 'error');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showMessage('パスワードは8文字以上で入力してください', 'error');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '登録中...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        display_name: email.split('@')[0]
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('メールに認証コードを送信しました', 'success');
+                } else {
+                    if (data.error.includes('User already exists')) {
+                        showMessage('このメールアドレスは既に使用されています', 'error');
+                    } else {
+                        throw new Error(data.error || '新規登録に失敗しました');
+                    }
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showMessage('登録エラー: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '新規登録';
+            }
+        }
+        
+        function showMessage(message, type = 'info') {
+            const emailAuthForm = document.getElementById('emailAuthForm');
+            let existingMessage = emailAuthForm.querySelector('.message');
+            
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.style.cssText = `
+                padding: 0.8rem;
+                margin: 1rem 0;
+                border-radius: 8px;
+                text-align: center;
+                font-weight: 500;
+                ${type === 'error' ? 'background: #fee; color: #c33; border: 1px solid #fcc;' : ''}
+                ${type === 'success' ? 'background: #efe; color: #383; border: 1px solid #cfc;' : ''}
+                ${type === 'info' ? 'background: #eef; color: #338; border: 1px solid #ccf;' : ''}
+            `;
+            messageDiv.textContent = message;
+            
+            emailAuthForm.insertBefore(messageDiv, emailAuthForm.firstChild);
+            
+            // 5秒後に自動削除
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+        
+        // Emergency Login Functions
+        function showEmergencyLogin() {
+            const emailAuthForm = document.getElementById('emailAuthForm');
+            emailAuthForm.style.display = 'block';
+            
+            // Show back link when emergency form is displayed
+            const backLink = document.querySelector('.back-link');
+            if (backLink) {
+                backLink.style.display = 'block';
+            }
+            emailAuthForm.innerHTML = `
+                <h2 class="emergency-login-title" style="font-size: 1.2rem; margin-bottom: 1rem; color: #666;">🛠️ 緊急ログイン</h2>
+                <p style="color: #666; margin-bottom: 1.5rem; font-size: 0.9rem;">開発テスト用の簡易ログインです</p>
+                
+                <form id="emergencyLoginForm">
+                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; font-size: 0.9rem;">ユーザーID:</label>
+                        <input type="text" id="emergencyUsername" value="sapporo-guide" 
+                               style="width: 100%; padding: 0.8rem; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; font-size: 0.9rem;">パスワード:</label>
+                        <input type="password" id="emergencyPassword" value="hokkaido2024"
+                               style="width: 100%; padding: 0.8rem; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 0.8rem; background: #ff9800; color: white; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;">緊急ログイン</button>
+                </form>
+                
+                <button onclick="hideEmergencyLogin()" style="width: 100%; padding: 0.6rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; cursor: pointer;">戻る</button>
+            `;
+            
+            setupEmergencyLoginListeners();
+        }
+        
+        function hideEmergencyLogin() {
+            const emailAuthForm = document.getElementById('emailAuthForm');
+            emailAuthForm.style.display = 'none';
+            
+            // Hide back link when emergency form is hidden
+            const backLink = document.querySelector('.back-link');
+            if (backLink) {
+                backLink.style.display = 'none';
+            }
+        }
+        
+        function setupEmergencyLoginListeners() {
+            const emergencyLoginForm = document.getElementById('emergencyLoginForm');
+            if (emergencyLoginForm) {
+                emergencyLoginForm.addEventListener('submit', handleEmergencyLogin);
+            }
+        }
+        
+        function handleEmergencyLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('emergencyUsername').value;
+            const password = document.getElementById('emergencyPassword').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'ログイン中...';
+            
+            setTimeout(() => {
+                if (username === 'sapporo-guide' && password === 'hokkaido2024') {
+                    // 成功時のログイン状態設定
+                    localStorage.setItem('tourismAuth', 'true');
+                    localStorage.setItem('accessToken', 'emergency-login-token-dev');
+                    localStorage.setItem('userInfo', JSON.stringify({
+                        email: 'emergency@example.com',
+                        name: 'Emergency User',
+                        auth_provider: 'emergency'
+                    }));
+                    
+                    showMessage('緊急ログインに成功しました', 'success');
+                    setTimeout(() => {
+                        window.location.href = './index.html';
+                    }, 1500);
+                } else {
+                    showMessage('ユーザーIDまたはパスワードが正しくありません', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '緊急ログイン';
+                }
+            }, 1000);
+        }
+        
+        // Language switching functions
+        function updatePageLanguage(language) {
+            console.log('🌍 Updating page language to:', language);
+            
+            const translations = pageTranslations[language] || pageTranslations['ja'];
+            
+            try {
+                // Update page title and main elements
+                const titleElement = document.querySelector('h1');
+                if (titleElement) titleElement.textContent = translations.title;
+                
+                const subtitleElement = document.querySelector('.login-content > p');
+                if (subtitleElement) subtitleElement.textContent = translations.subtitle;
+                
+                // Update divider text
+                const dividerElement = document.querySelector('.auth-divider span');
+                if (dividerElement) dividerElement.textContent = translations.divider;
+                
+                // Update button texts
+                const emailLoginBtn = document.getElementById('emailLoginBtn');
+                if (emailLoginBtn) emailLoginBtn.textContent = translations.emailLoginBtn;
+                
+                const emergencyLoginBtn = document.getElementById('emergencyLoginBtn');
+                if (emergencyLoginBtn) emergencyLoginBtn.textContent = translations.emergencyLoginBtn;
+                
+                // Update back link
+                const backLink = document.querySelector('.back-link a');
+                if (backLink) backLink.textContent = translations.backLink;
+                
+                // Update Google login text if visible
+                const googleLoginText = document.querySelector('.google-login-wrapper p');
+                if (googleLoginText && !isGoogleInitialized) {
+                    googleLoginText.textContent = translations.googleLoginProcessing;
+                    const googleRedirectText = document.querySelector('.google-login-wrapper p:last-child');
+                    if (googleRedirectText) googleRedirectText.textContent = translations.googleLoginRedirect;
+                } else if (googleLoginText && isGoogleInitialized) {
+                    googleLoginText.textContent = translations.googleLoginReady;
+                }
+                
+                // Save selected language
+                localStorage.setItem('selectedLanguage', language);
+                sessionStorage.setItem('selectedLanguage', language);
+                
+                console.log('✅ Page language updated successfully');
+                
+            } catch (error) {
+                console.error('🚨 Error updating page language:', error);
+            }
+        }
+        
+        function setupMainLanguageSelector() {
+            // Get saved language or default to Japanese
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'ja';
+            
+            // Set the saved language as selected
+            const langRadios = document.querySelectorAll('input[name="mainLang"]');
+            langRadios.forEach(radio => {
+                if (radio.value === savedLanguage) {
+                    radio.checked = true;
+                }
+                
+                // Add change event listener
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        updatePageLanguage(this.value);
+                    }
+                });
+            });
+            
+            // Apply initial language
+            updatePageLanguage(savedLanguage);
+        }
+        
         // Load Google Identity Services and initialize
         window.addEventListener('load', function() {
             console.log('📄 login.html loaded, initializing Google Identity Services...');
+            
+            // Setup main language selector first
+            setupMainLanguageSelector();
             
             // Load Google Identity Services script
             const script = document.createElement('script');
@@ -224,6 +829,24 @@
                 showError('Google認証サービスの読み込みに失敗しました。インターネット接続を確認してください。');
             };
             document.head.appendChild(script);
+            
+            // Setup Email Login Button Event Listener
+            const emailLoginBtn = document.getElementById('emailLoginBtn');
+            if (emailLoginBtn) {
+                emailLoginBtn.addEventListener('click', function() {
+                    console.log('📧 Email login button clicked');
+                    showEmailAuthForm();
+                });
+            }
+            
+            // Setup Emergency Login Button Event Listener
+            const emergencyLoginBtn = document.getElementById('emergencyLoginBtn');
+            if (emergencyLoginBtn) {
+                emergencyLoginBtn.addEventListener('click', function() {
+                    console.log('🛠️ Emergency login button clicked');
+                    showEmergencyLogin();
+                });
+            }
         });
     </script>
 </body>

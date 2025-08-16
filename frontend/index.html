@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>観光アナライザー</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+    <!-- Google Fonts for enhanced UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20250816000000">
+    
+    <!-- Markdown parsing and security libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    
+    <!-- Stripe.js SDK -->
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <!-- Authentication Check Loading -->
+    <div id="authLoading" class="auth-loading">
+        <div class="loading-content">
+            <h1>🏔️ 観光アナライザー</h1>
+            <p>認証状態を確認中...</p>
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Main Application (shown after auth verification) -->
+    <div class="app" id="mainApp" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    🏔️ <span data-i18n="title">観光アナライザー</span>
+                    <span class="version-tag">ver1.3</span>
+                </div>
+                <div class="user-section">
+                    <div id="userInfo" class="user-info">
+                        <span>👤 <span id="currentUser">tourist-guide</span></span>
+                        <span id="userPlan" class="user-plan">Free (残り5回)</span>
+                        <button id="upgradeBtn" onclick="showUpgradeModal()" class="upgrade-btn" style="display: none;">⭐ アップグレード</button>
+                        <button onclick="logout()" class="logout-btn" data-i18n="logout">ログアウト</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Main Application -->
+            <div class="main-app">
+                <!-- Welcome Section -->
+                <section class="welcome-section fade-in">
+                    <h1 class="welcome-title" data-i18n="title">観光AI画像解析</h1>
+                    <p class="welcome-description">
+                        <span data-i18n="description">店舗・観光地・料理の画像をAIが詳しく解析し、地元情報やおすすめスポットをご紹介します</span>
+                    </p>
+                </section>
+
+                <!-- Language Selection -->
+                <section class="language-section">
+                    <h3 class="language-title" data-i18n="languageSelect">🌐 解析言語を選択</h3>
+                    <div class="language-options">
+                        <label class="language-option">
+                            <input type="radio" name="language" value="ja" checked>
+                            <span class="language-name">🇯🇵 日本語</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="ko">
+                            <span class="language-name">🇰🇷 한국어</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="zh">
+                            <span class="language-name">🇨🇳 简体中文</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="zh-tw">
+                            <span class="language-name">🇹🇼 繁體中文</span>
+                        </label>
+                        <label class="language-option">
+                            <input type="radio" name="language" value="en">
+                            <span class="language-name">🌍 English</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Analysis Type Selection -->
+                <section class="analysis-type-section">
+                    <h3 class="analysis-title" data-i18n="analysisTypeSelect">🔍 解析タイプを選択</h3>
+                    <div class="analysis-options">
+                        <label class="analysis-option store-option">
+                            <input type="radio" name="analysisType" value="store" checked>
+                            <span class="analysis-icon">🏪🕌</span>
+                            <span class="analysis-name" data-i18n="storeAnalysis">店舗・観光地分析</span>
+                        </label>
+                        <label class="analysis-option menu-option">
+                            <input type="radio" name="analysisType" value="menu">
+                            <span class="analysis-icon">📋🍜</span>
+                            <span class="analysis-name" data-i18n="menuTranslation">看板・メニュー翻訳</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Upload Section -->
+                <section id="uploadSection" class="upload-section">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text" data-i18n="uploadText">画像をアップロード</div>
+                    <div class="upload-subtext">
+                        <span data-i18n="uploadSubtext">店舗・観光地・料理の写真をクリックまたはドラッグ＆ドロップ</span><br>
+                        <strong><span data-i18n="fileFormat">対応形式: JPG, PNG, GIF (最大 10MB)</span></strong><br>
+                        <strong><span id="recommendedText" data-i18n="storeRecommended">推奨: 名物料理、観光名所、イベント等</span></strong>
+                    </div>
+                    <input type="file" id="imageInput" class="file-input" accept="image/*">
+                </section>
+
+                <!-- Preview Section -->
+                <section id="previewSection" class="preview-section hidden">
+                    <h3 class="preview-title" data-i18n="previewTitle">📋 アップロード画像プレビュー</h3>
+                    <img id="previewImage" class="preview-image" alt="プレビュー">
+                    <div id="imageDetails" class="image-details"></div>
+                    <button onclick="handleAnalyzeClick()" id="analyzeBtn" class="analyze-btn">
+                        <span id="analyzeBtnText" data-i18n="analyzeButton">🤖 観光AI解析を開始</span>
+                    </button>
+                </section>
+
+                <!-- Loading Section -->
+                <section id="loadingSection" class="loading-section hidden">
+                    <div class="loading-spinner-container">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-counter">
+                            <span id="loadingCounter">0</span>
+                        </div>
+                    </div>
+                    <div class="loading-text" data-i18n="loading">観光AIが解析中...</div>
+                    <div class="loading-subtext">
+                        <span data-i18n="loadingSubtext">名物料理・観光名所・地元情報</span><br>
+                        <span data-i18n="loadingDetail">詳細な地元情報を分析しています</span>
+                    </div>
+                </section>
+
+                <!-- Results Section -->
+                <section id="resultsSection" class="results-section hidden">
+                    <div class="results-header">
+                        <h3 class="results-title">🏔️ 観光AI解析結果</h3>
+                        <button onclick="handleNewAnalysisClick()" class="new-analysis-btn" data-i18n="newAnalysis">🔄 新しい解析</button>
+                    </div>
+                    <div id="resultsContent" class="results-content"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="js/translations.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        // Initialize application when page loads
+        window.addEventListener('load', async () => {
+            console.log('🔄 Page loaded, checking authentication...');
+            
+            const authLoading = document.getElementById('authLoading');
+            const mainApp = document.getElementById('mainApp');
+            
+            console.log('🔍 Debug: Elements found:', {
+                authLoading: !!authLoading,
+                mainApp: !!mainApp,
+                container: !!document.querySelector('.container'),
+                header: !!document.querySelector('.header')
+            });
+            
+            try {
+                // Check authentication status
+                console.log('🔍 Debug: About to check authentication...');
+                const isAuthenticated = await checkAuthenticationStatus();
+                console.log('🔍 Debug: Authentication result:', isAuthenticated);
+                
+                if (isAuthenticated) {
+                    console.log('✅ User authenticated, showing main app');
+                    console.log('🔍 Debug: About to hide authLoading...');
+                    authLoading.style.display = 'none';
+                    console.log('🔍 Debug: About to show mainApp...');
+                    mainApp.style.display = 'block';
+                    
+                    // Add active class to main-app for CSS visibility
+                    const mainAppElement = document.querySelector('.main-app');
+                    if (mainAppElement) {
+                        mainAppElement.classList.add('active');
+                        console.log('🔍 Debug: Added active class to main-app');
+                    }
+                    
+                    // Initialize main application
+                    console.log('🔍 Debug: About to call initializeMainApplication...');
+                    if (typeof initializeMainApplication === 'function') {
+                        initializeMainApplication();
+                        console.log('🔍 Debug: initializeMainApplication completed');
+                    } else {
+                        console.error('🚨 Debug: initializeMainApplication is not a function!');
+                    }
+                    
+                    console.log('🔍 Debug: About to call showMainApplication...');
+                    if (typeof showMainApplication === 'function') {
+                        showMainApplication();
+                        console.log('🔍 Debug: showMainApplication completed');
+                    } else {
+                        console.error('🚨 Debug: showMainApplication is not a function!');
+                    }
+                    
+                    // Force user info display update after authentication
+                    console.log('🔍 Debug: Forcing user info display update...');
+                    setTimeout(() => {
+                        if (typeof updateUserInfoDisplay === 'function') {
+                            console.log('👤 Current user before update:', getCurrentUser());
+                            updateUserInfoDisplay();
+                            console.log('✅ Debug: updateUserInfoDisplay completed');
+                        } else {
+                            console.error('🚨 Debug: updateUserInfoDisplay is not a function!');
+                        }
+                    }, 500); // 500ms後に実行して確実に反映
+                } else {
+                    console.log('❌ User not authenticated, redirecting to login');
+                    window.location.href = './login.html';
+                }
+            } catch (error) {
+                console.error('🚨 Authentication check error:', error);
+                console.error('🚨 Error stack:', error.stack);
+                window.location.href = './login.html';
+            }
+        });
+    </script>
+</body>
+</html>
