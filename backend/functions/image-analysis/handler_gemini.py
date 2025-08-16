@@ -186,8 +186,8 @@ def main(event, context):
                 'body': json.dumps({'error': 'Image data is required'})
             }
         
-        # Gemini API呼び出し
-        analysis_result = analyze_image_with_gemini_rest(image_data, language, analysis_type)
+        # Gemini API呼び出し（地域コンテキスト付き）
+        analysis_result = analyze_image_with_gemini_rest(image_data, language, analysis_type, user_id)
         
         # 解析成功時に使用回数を増加
         if analysis_result.get('status') == 'success':
@@ -246,6 +246,83 @@ def main(event, context):
             print(f"Error log save failed (ignored): {str(log_error)[:200]}")
         
         return error_response
+
+
+def get_user_location(user_id):
+    """
+    ユーザーの地域設定をDynamoDBから取得
+    """
+    try:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
+        
+        response = table.get_item(Key={'user_id': user_id})
+        
+        if 'Item' in response:
+            user_data = response['Item']
+            return {
+                'country': user_data.get('country', ''),
+                'city': user_data.get('city', ''),
+                'location_updated_at': user_data.get('location_updated_at', '')
+            }
+        else:
+            print(f"User {user_id} not found in DynamoDB")
+            return {'country': '', 'city': '', 'location_updated_at': ''}
+        
+    except Exception as e:
+        print(f"Error getting user location for {user_id}: {e}")
+        return {'country': '', 'city': '', 'location_updated_at': ''}
+
+
+def build_context_prompt(user_id, language, analysis_type):
+    """
+    地域コンテキスト付きプロンプト構築
+    """
+    try:
+        # 分析タイプ別プロンプト選択
+        if analysis_type == 'menu':
+            tourism_prompts = get_menu_analysis_prompts()
+        else:
+            tourism_prompts = get_store_tourism_prompts()
+        
+        # ベースプロンプト取得
+        base_prompt = tourism_prompts.get(language, tourism_prompts['ja'])
+        
+        # ユーザーの地域設定取得
+        user_location = get_user_location(user_id)
+        country = user_location.get('country', '').strip()
+        city = user_location.get('city', '').strip()
+        
+        # 地域コンテキスト生成
+        location_context = ""
+        if country and city:
+            location_context = f"私は{country}の{city}の情報を知りたい。"
+        elif country:
+            location_context = f"私は{country}のことを尋ねている。"
+        elif city:
+            location_context = f"私は{city}の情報を知りたい。"
+        
+        # 地域コンテキスト + ベースプロンプト結合
+        enhanced_prompt = location_context + base_prompt
+        
+        # 中国語の場合は特別強化
+        if language == 'zh':
+            prompt = f"请用简体中文回答。{enhanced_prompt}请确保回答完全使用简体中文。"
+        elif language == 'zh-tw':
+            prompt = f"請用繁體中文回答。{enhanced_prompt}請確保回答完全使用繁體中文。"
+        else:
+            prompt = enhanced_prompt
+        
+        print(f"Location context added: country={country}, city={city}")
+        print(f"Enhanced prompt starts with: {prompt[:150]}...")
+        
+        return prompt
+        
+    except Exception as e:
+        print(f"Error building context prompt: {e}")
+        # エラー時はベースプロンプトのみ返却
+        tourism_prompts = get_menu_analysis_prompts() if analysis_type == 'menu' else get_store_tourism_prompts()
+        return tourism_prompts.get(language, tourism_prompts['ja'])
 
 
 def get_user_from_token(event):
@@ -370,7 +447,7 @@ def handle_simple_jwt_token(access_token):
         return None
 
 
-def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='store'):
+def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='store', user_id=None):
     """
     REST APIでGemini APIを呼び出す（依存関係なし）
     """
@@ -383,34 +460,12 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
         if image_data.startswith('data:image'):
             image_data = image_data.split(',')[1]
         
-        # 分析タイプ別プロンプト選択
-        if analysis_type == 'menu':
-            tourism_prompts = get_menu_analysis_prompts()
-        else:
-            tourism_prompts = get_store_tourism_prompts()
-        
-        # 分析タイプ別の要約指示を追加（一時的にOFF）
-        base_prompt = tourism_prompts.get(language, tourism_prompts['ja'])
-        
-        # 要約指示機能を一時的に無効化
-        # if analysis_type == 'menu':
-        #     summary_instruction = get_menu_summary_instructions()
-        # else:
-        #     summary_instruction = get_store_summary_instructions()
-        
-        # 中国語の場合は特別強化（こちらは有効のまま）
-        if language == 'zh':
-            prompt = f"请用简体中文回答。{base_prompt}请确保回答完全使用简体中文。"
-        elif language == 'zh-tw':
-            prompt = f"請用繁體中文回答。{base_prompt}請確保回答完全使用繁體中文。"
-        else:
-            prompt = base_prompt
+        # 地域コンテキスト付きプロンプト構築
+        prompt = build_context_prompt(user_id, language, analysis_type)
         
         # デバッグログ
-        print(f"Analysis type: {analysis_type}, Language: {language}")
-        print(f"Available languages in prompts: {list(tourism_prompts.keys())}")
-        # print(f"Available languages in summary: {list(summary_instruction.keys())}")  # 要約指示機能OFF
-        print(f"Selected base prompt starts with: {base_prompt[:100]}...")
+        print(f"Analysis type: {analysis_type}, Language: {language}, User ID: {user_id}")
+        print(f"Enhanced prompt starts with: {prompt[:100]}...")
         
         # === 分析タイプによるAPI分岐 ===
         if analysis_type == 'menu':

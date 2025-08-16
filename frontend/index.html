@@ -93,6 +93,40 @@
                     </div>
                 </section>
 
+                <!-- Location Settings Section -->
+                <section class="location-section">
+                    <h3 class="location-title" data-i18n="locationSettings">📍 地域設定（解析精度向上）</h3>
+                    <div class="location-content">
+                        <div class="location-inputs">
+                            <div class="input-group">
+                                <label for="countryInput" class="input-label" data-i18n="countryLabel">国名</label>
+                                <input type="text" id="countryInput" class="location-input" 
+                                       placeholder="例: 日本" data-i18n-placeholder="countryPlaceholder" maxlength="50">
+                            </div>
+                            <div class="input-group">
+                                <label for="cityInput" class="input-label" data-i18n="cityLabel">都市名</label>
+                                <input type="text" id="cityInput" class="location-input" 
+                                       placeholder="例: 札幌" data-i18n-placeholder="cityPlaceholder" maxlength="50">
+                            </div>
+                        </div>
+                        <div class="location-actions">
+                            <button id="saveLocationBtn" class="save-location-btn" onclick="saveLocationSettings()">
+                                <span data-i18n="saveLocation">💾 保存</span>
+                            </button>
+                            <button id="editLocationBtn" class="edit-location-btn" onclick="editLocationSettings()" style="display: none;">
+                                <span data-i18n="editLocation">✏️ 編集</span>
+                            </button>
+                        </div>
+                        <div class="location-display" id="locationDisplay" style="display: none;">
+                            <span class="location-icon">📍</span>
+                            <span id="currentLocation" class="current-location"></span>
+                        </div>
+                        <div class="location-help">
+                            <span data-i18n="locationHelp">💡 地域を指定するとAI解析がより正確になります</span>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Analysis Type Selection -->
                 <section class="analysis-type-section">
                     <h3 class="analysis-title" data-i18n="analysisTypeSelect">🔍 解析タイプを選択</h3>

@@ -150,6 +150,8 @@ def main(event, context):
             return handle_resend_confirmation_code(event, headers)
         elif path == 'google-signin':
             return handle_google_signin(event, headers)
+        elif path == 'update-location':
+            return handle_update_location(event, headers)
         else:
             return {
                 'statusCode': 404,
@@ -300,18 +302,61 @@ def handle_get_user_info(event, headers):
         user_id = user_info['user_id']
         print(f"Getting user info for user_id: {user_id}")
         
-        # 緊急ログインユーザーの場合はダミーデータを返す
+        # DynamoDBクライアント初期化
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
+        
+        # 緊急ログインユーザーの場合はDynamoDBから実際のデータを取得
         if user_id == 'emergency-user':
-            safe_user_data = {
-                'user_id': 'emergency-user',
-                'email': 'emergency@test.com',
-                'display_name': 'Emergency User',
-                'user_type': 'free',
-                'monthly_analysis_count': 2,  # テスト用に2回使用済みとする
-                'total_analysis_count': 5,
-                'premium_expiry': None,
-                'preferred_language': 'ja'
-            }
+            try:
+                response = table.get_item(Key={'user_id': user_id})
+                if 'Item' in response:
+                    user_data = response['Item']
+                    safe_user_data = {
+                        'user_id': user_data.get('user_id'),
+                        'email': user_data.get('email', 'emergency@test.com'),
+                        'display_name': user_data.get('display_name', 'Emergency User'),
+                        'user_type': user_data.get('user_type', 'free'),
+                        'monthly_analysis_count': int(user_data.get('monthly_analysis_count', 2)),
+                        'total_analysis_count': int(user_data.get('total_analysis_count', 5)),
+                        'premium_expiry': user_data.get('premium_expiry'),
+                        'preferred_language': user_data.get('preferred_language', 'ja'),
+                        'country': user_data.get('country', ''),
+                        'city': user_data.get('city', ''),
+                        'location_updated_at': user_data.get('location_updated_at', '')
+                    }
+                else:
+                    # DynamoDBにない場合はデフォルトデータ
+                    safe_user_data = {
+                        'user_id': 'emergency-user',
+                        'email': 'emergency@test.com',
+                        'display_name': 'Emergency User',
+                        'user_type': 'free',
+                        'monthly_analysis_count': 2,
+                        'total_analysis_count': 5,
+                        'premium_expiry': None,
+                        'preferred_language': 'ja',
+                        'country': '',
+                        'city': '',
+                        'location_updated_at': ''
+                    }
+            except Exception as e:
+                print(f"Emergency user DynamoDB error: {e}")
+                # エラー時はデフォルトデータ
+                safe_user_data = {
+                    'user_id': 'emergency-user',
+                    'email': 'emergency@test.com',
+                    'display_name': 'Emergency User',
+                    'user_type': 'free',
+                    'monthly_analysis_count': 2,
+                    'total_analysis_count': 5,
+                    'premium_expiry': None,
+                    'preferred_language': 'ja',
+                    'country': '',
+                    'city': '',
+                    'location_updated_at': ''
+                }
+            
             print(f"Emergency user data: {safe_user_data}")
             return {
                 'statusCode': 200,
@@ -320,8 +365,6 @@ def handle_get_user_info(event, headers):
             }
         
         # DynamoDBからユーザー詳細情報取得
-        dynamodb = boto3.resource('dynamodb')
-        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
         
         try:
             response = table.get_item(Key={'user_id': user_id})
@@ -382,7 +425,10 @@ def handle_get_user_info(event, headers):
                     'monthly_analysis_count': int(user_data.get('monthly_analysis_count', 0)),
                     'total_analysis_count': int(user_data.get('total_analysis_count', 0)),
                     'premium_expiry': user_data.get('premium_expiry'),
-                    'preferred_language': user_data.get('preferred_language', 'ja')
+                    'preferred_language': user_data.get('preferred_language', 'ja'),
+                    'country': user_data.get('country', ''),
+                    'city': user_data.get('city', ''),
+                    'location_updated_at': user_data.get('location_updated_at', '')
                 }
                 print(f"Safe user data to return: {safe_user_data}")
                 
@@ -404,7 +450,10 @@ def handle_get_user_info(event, headers):
                         'monthly_analysis_count': 0,
                         'total_analysis_count': 0,
                         'premium_expiry': None,
-                        'preferred_language': 'ja'
+                        'preferred_language': 'ja',
+                        'country': '',
+                        'city': '',
+                        'location_updated_at': ''
                     }
                     return {
                         'statusCode': 200,
@@ -1060,3 +1109,91 @@ def handle_simple_jwt_token(access_token):
     except Exception as e:
         print(f"Error handling simple JWT token: {str(e)}")
         return None
+
+
+def handle_update_location(event, headers):
+    """
+    ユーザーの地域設定更新処理
+    """
+    try:
+        # HTTPメソッドチェック
+        if event['httpMethod'] != 'PUT':
+            return {
+                'statusCode': 405,
+                'headers': headers,
+                'body': json.dumps({'error': 'Method not allowed'})
+            }
+        
+        # Cognitoトークンからユーザー情報取得
+        user_info = get_user_from_token(event)
+        if not user_info:
+            return {
+                'statusCode': 401,
+                'headers': headers,
+                'body': json.dumps({'error': 'Invalid or expired token'})
+            }
+        
+        user_id = user_info['user_id']
+        print(f"Updating location for user: {user_id}")
+        
+        # リクエストボディ解析
+        try:
+            body = json.loads(event.get('body', '{}'))
+        except json.JSONDecodeError:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'body': json.dumps({'error': 'Invalid JSON in request body'})
+            }
+        
+        country = body.get('country', '').strip()
+        city = body.get('city', '').strip()
+        
+        # 入力値検証
+        if len(country) > 100 or len(city) > 100:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'body': json.dumps({'error': 'Country or city name too long (max 100 characters)'})
+            }
+        
+        # DynamoDB更新
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(f"{os.environ.get('PROJECT_NAME', 'ai-tourism-poc')}-users-{os.environ.get('STAGE', 'dev')}")
+        
+        timestamp = get_jst_isoformat()
+        
+        # 地域設定更新
+        update_expression = 'SET country = :country, city = :city, location_updated_at = :updated, updated_at = :updated'
+        expression_attribute_values = {
+            ':country': country,
+            ':city': city,
+            ':updated': timestamp
+        }
+        
+        table.update_item(
+            Key={'user_id': user_id},
+            UpdateExpression=update_expression,
+            ExpressionAttributeValues=expression_attribute_values
+        )
+        
+        print(f"Location updated successfully for user: {user_id}, country: {country}, city: {city}")
+        
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'body': json.dumps({
+                'message': 'Location updated successfully',
+                'country': country,
+                'city': city,
+                'updated_at': timestamp
+            })
+        }
+        
+    except Exception as e:
+        print(f"Location update error: {str(e)}")
+        return {
+            'statusCode': 500,
+            'headers': headers,
+            'body': json.dumps({'error': f'Location update failed: {str(e)}'})
+        }

@@ -32,6 +32,9 @@ function initializeMainApplication() {
         // Initialize language
         initializeLanguage();
         
+        // Load saved location settings
+        loadLocationSettings();
+        
         // Initialize Stripe if needed
         initializeStripe();
         
@@ -1438,4 +1441,220 @@ function showMessage(message, type = 'info') {
             messageEl.style.display = 'none';
         }
     }, 5000);
+}
+
+/**
+ * Save location settings to backend
+ * 地域設定をバックエンドに保存
+ */
+async function saveLocationSettings() {
+    console.log('📍 Saving location settings...');
+    
+    const countryInput = document.getElementById('countryInput');
+    const cityInput = document.getElementById('cityInput');
+    const saveBtn = document.getElementById('saveLocationBtn');
+    
+    if (!countryInput || !cityInput) {
+        console.error('❌ Location input elements not found');
+        return;
+    }
+    
+    const country = countryInput.value.trim();
+    const city = cityInput.value.trim();
+    
+    // Validate at least one field is filled
+    if (!country && !city) {
+        showMessage('国名または都市名のいずれかを入力してください', 'error');
+        return;
+    }
+    
+    // Show loading state
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span>💾 保存中...</span>';
+    }
+    
+    try {
+        const token = getAuthToken();
+        if (!token) {
+            throw new Error('認証トークンが見つかりません');
+        }
+        
+        const requestBody = {
+            country: country || '',
+            city: city || ''
+        };
+        
+        console.log('📤 Sending location update:', requestBody);
+        
+        const response = await fetch(`${API_BASE_URL}/auth/update-location`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(`保存に失敗しました: ${response.status} - ${errorData}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ Location saved successfully:', result);
+        
+        // Show success message
+        showMessage('地域設定を保存しました', 'success');
+        
+        // Switch to display mode
+        displayLocationInfo(country, city);
+        
+        // Update localStorage for quick access
+        localStorage.setItem('userLocation', JSON.stringify({ country, city }));
+        
+    } catch (error) {
+        console.error('🚨 Error saving location:', error);
+        showMessage('地域設定の保存に失敗しました: ' + error.message, 'error');
+    } finally {
+        // Reset button state
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<span data-i18n="saveLocation">💾 保存</span>';
+        }
+    }
+}
+
+/**
+ * Edit location settings (switch to input mode)
+ * 地域設定編集（入力モードに切り替え）
+ */
+function editLocationSettings() {
+    console.log('✏️ Switching to location edit mode...');
+    
+    const locationInputs = document.querySelector('.location-inputs');
+    const locationActions = document.querySelector('.location-actions');
+    const locationDisplay = document.getElementById('locationDisplay');
+    const saveBtn = document.getElementById('saveLocationBtn');
+    const editBtn = document.getElementById('editLocationBtn');
+    
+    // Show input fields and save button
+    if (locationInputs) locationInputs.style.display = 'flex';
+    if (saveBtn) saveBtn.style.display = 'inline-block';
+    
+    // Hide display and edit button
+    if (locationDisplay) locationDisplay.style.display = 'none';
+    if (editBtn) editBtn.style.display = 'none';
+    
+    // Load current values into input fields
+    loadCurrentLocationToInputs();
+    
+    console.log('✅ Switched to edit mode');
+}
+
+/**
+ * Display saved location information
+ * 保存された地域情報を表示
+ */
+function displayLocationInfo(country, city) {
+    console.log('📍 Displaying location info:', { country, city });
+    
+    const locationInputs = document.querySelector('.location-inputs');
+    const locationDisplay = document.getElementById('locationDisplay');
+    const currentLocation = document.getElementById('currentLocation');
+    const saveBtn = document.getElementById('saveLocationBtn');
+    const editBtn = document.getElementById('editLocationBtn');
+    
+    // Build display text
+    let displayText = '';
+    if (country && city) {
+        displayText = `${country} / ${city}`;
+    } else if (country) {
+        displayText = country;
+    } else if (city) {
+        displayText = city;
+    }
+    
+    if (displayText) {
+        // Show display mode
+        if (locationInputs) locationInputs.style.display = 'none';
+        if (saveBtn) saveBtn.style.display = 'none';
+        if (locationDisplay) locationDisplay.style.display = 'flex';
+        if (editBtn) editBtn.style.display = 'inline-block';
+        if (currentLocation) currentLocation.textContent = displayText;
+        
+        console.log('✅ Location displayed:', displayText);
+    } else {
+        // Show input mode if no location saved
+        if (locationInputs) locationInputs.style.display = 'flex';
+        if (saveBtn) saveBtn.style.display = 'inline-block';
+        if (locationDisplay) locationDisplay.style.display = 'none';
+        if (editBtn) editBtn.style.display = 'none';
+    }
+}
+
+/**
+ * Load current location data into input fields
+ * 現在の地域データを入力フィールドにロード
+ */
+function loadCurrentLocationToInputs() {
+    try {
+        // Try to get from localStorage first
+        const savedLocation = localStorage.getItem('userLocation');
+        if (savedLocation) {
+            const location = JSON.parse(savedLocation);
+            const countryInput = document.getElementById('countryInput');
+            const cityInput = document.getElementById('cityInput');
+            
+            if (countryInput) countryInput.value = location.country || '';
+            if (cityInput) cityInput.value = location.city || '';
+            
+            console.log('📋 Loaded location from localStorage:', location);
+        }
+    } catch (error) {
+        console.error('🚨 Error loading location to inputs:', error);
+    }
+}
+
+/**
+ * Load saved location settings from backend/localStorage
+ * 保存された地域設定をバックエンド/localStorageからロード
+ */
+async function loadLocationSettings() {
+    console.log('📍 Loading saved location settings...');
+    
+    try {
+        // First try to get from user info if available
+        const userInfo = localStorage.getItem('userInfo');
+        if (userInfo) {
+            const userData = JSON.parse(userInfo);
+            const country = userData.country || '';
+            const city = userData.city || '';
+            
+            if (country || city) {
+                console.log('✅ Location loaded from user info:', { country, city });
+                displayLocationInfo(country, city);
+                // Save to localStorage for quick access
+                localStorage.setItem('userLocation', JSON.stringify({ country, city }));
+                return;
+            }
+        }
+        
+        // Fallback to localStorage
+        const savedLocation = localStorage.getItem('userLocation');
+        if (savedLocation) {
+            const location = JSON.parse(savedLocation);
+            console.log('✅ Location loaded from localStorage:', location);
+            displayLocationInfo(location.country, location.city);
+            return;
+        }
+        
+        console.log('ℹ️ No saved location found, showing input mode');
+        displayLocationInfo('', ''); // Show input mode
+        
+    } catch (error) {
+        console.error('🚨 Error loading location settings:', error);
+        // Show input mode on error
+        displayLocationInfo('', '');
+    }
 }

@@ -792,6 +792,134 @@ body {
     margin: 0 auto;
 }
 
+/* ===== Location Settings Section ===== */
+.location-section {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--glass-border);
+}
+
+.location-title {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.location-content {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.location-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.input-group {
+    text-align: left;
+}
+
+.input-label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.location-input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid var(--glass-border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.location-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    background: rgba(255, 255, 255, 1);
+}
+
+.location-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+.location-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.save-location-btn, .edit-location-btn {
+    background: linear-gradient(135deg, var(--primary-color), #66BB6A);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
+}
+
+.save-location-btn:hover, .edit-location-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.edit-location-btn {
+    background: linear-gradient(135deg, #FF9800, #FFB74D);
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+}
+
+.edit-location-btn:hover {
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.location-display {
+    background: rgba(46, 125, 50, 0.1);
+    border: 1px solid rgba(46, 125, 50, 0.3);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.location-icon {
+    font-size: 1.2rem;
+}
+
+.current-location {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.location-help {
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+}
+
 /* Mobile optimization for language options */
 @media (max-width: 640px) {
     .language-options {
@@ -824,6 +952,22 @@ body {
     .analysis-icon {
         font-size: 1.5rem;
     }
+    
+    /* Mobile optimization for location settings */
+    .location-inputs {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .location-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .save-location-btn, .edit-location-btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.85rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -841,6 +985,30 @@ body {
     
     .language-name {
         font-size: 0.75rem;
+    }
+    
+    /* Mobile optimization for location settings - small screens */
+    .location-section {
+        padding: 1.5rem;
+    }
+    
+    .location-title {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .location-input {
+        padding: 0.7rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .save-location-btn, .edit-location-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .location-help {
+        font-size: 0.8rem;
     }
 }
 

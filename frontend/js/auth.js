@@ -339,6 +339,9 @@ function updateUserInfoDisplay() {
         // Update upgrade button visibility
         updateUpgradeButtonVisibility();
         
+        // Update location display if location data is available
+        updateLocationDisplay();
+        
         // Make sure user info section is visible
         if (userInfoSection) {
             userInfoSection.style.display = 'block';
@@ -416,5 +419,42 @@ function updateUpgradeButtonVisibility() {
             upgradeBtn.style.display = 'none';
             console.log(`🔒 Upgrade button hidden (${remaining} analyses remaining)`);
         }
+    }
+}
+
+/**
+ * Update location display based on current user data
+ * 現在のユーザーデータに基づいて地域表示を更新
+ */
+function updateLocationDisplay() {
+    try {
+        console.log('📍 Updating location display from user data...');
+        
+        if (!currentUser) {
+            console.log('⚠️ No current user data for location update');
+            return;
+        }
+        
+        const country = currentUser.country || '';
+        const city = currentUser.city || '';
+        
+        console.log('📍 User location data:', { country, city });
+        
+        // Update localStorage for quick access by main.js
+        if (country || city) {
+            localStorage.setItem('userLocation', JSON.stringify({ country, city }));
+            console.log('💾 Updated localStorage with user location');
+        }
+        
+        // Call displayLocationInfo from main.js if available
+        if (typeof displayLocationInfo === 'function') {
+            displayLocationInfo(country, city);
+            console.log('✅ Location display updated via main.js');
+        } else {
+            console.log('⚠️ displayLocationInfo function not available (main.js not loaded yet)');
+        }
+        
+    } catch (error) {
+        console.error('🚨 Error updating location display:', error);
     }
 }

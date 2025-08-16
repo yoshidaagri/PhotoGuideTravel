@@ -57,7 +57,16 @@ const translations = {
         popularPlan: "人気プラン",
         paymentPreparation: "💳 決済ページに移動中...",
         stripeRedirect: "安全なStripe決済ページへリダイレクトしています...",
-        paymentSecurity: "🔒 SSL暗号化通信・Stripe社による安全決済"
+        paymentSecurity: "🔒 SSL暗号化通信・Stripe社による安全決済",
+        // Location Settings
+        locationSettings: "📍 地域設定（解析精度向上）",
+        countryLabel: "国名",
+        cityLabel: "都市名",
+        countryPlaceholder: "例: 日本",
+        cityPlaceholder: "例: 札幌",
+        saveLocation: "💾 保存",
+        editLocation: "✏️ 編集",
+        locationHelp: "💡 地域を指定するとAI解析がより正確になります"
     },
     ko: {
         title: "관광 애널라이저",
@@ -111,7 +120,16 @@ const translations = {
         popularPlan: "인기 플랜",
         paymentPreparation: "💳 결제 페이지로 이동 중...",
         stripeRedirect: "안전한 Stripe 결제 페이지로 리다이렉트하고 있습니다...",
-        paymentSecurity: "🔒 SSL 암호화 통신・Stripe사의 안전 결제"
+        paymentSecurity: "🔒 SSL 암호화 통신・Stripe사의 안전 결제",
+        // Location Settings
+        locationSettings: "📍 지역 설정（분석 정확도 향상）",
+        countryLabel: "국가명",
+        cityLabel: "도시명",
+        countryPlaceholder: "예: 일본",
+        cityPlaceholder: "예: 삿포로",
+        saveLocation: "💾 저장",
+        editLocation: "✏️ 편집",
+        locationHelp: "💡 지역을 지정하면 AI 분석이 더 정확해집니다"
     },
     zh: {
         title: "旅游分析器",
@@ -165,7 +183,16 @@ const translations = {
         popularPlan: "热门计划",
         paymentPreparation: "💳 正在转到支付页面...",
         stripeRedirect: "正在跳转到安全的Stripe支付页面...",
-        paymentSecurity: "🔒 SSL加密通信・Stripe公司安全支付"
+        paymentSecurity: "🔒 SSL加密通信・Stripe公司安全支付",
+        // Location Settings
+        locationSettings: "📍 地区设置（提高分析精度）",
+        countryLabel: "国家",
+        cityLabel: "城市",
+        countryPlaceholder: "例: 日本",
+        cityPlaceholder: "例: 札幌",
+        saveLocation: "💾 保存",
+        editLocation: "✏️ 编辑",
+        locationHelp: "💡 指定地区可以使AI分析更加准确"
     },
     tw: {
         title: "旅遊分析器",
@@ -219,7 +246,16 @@ const translations = {
         popularPlan: "熱門計劃",
         paymentPreparation: "💳 正在轉到支付頁面...",
         stripeRedirect: "正在跳轉到安全的Stripe支付頁面...",
-        paymentSecurity: "🔒 SSL加密通信・Stripe公司安全支付"
+        paymentSecurity: "🔒 SSL加密通信・Stripe公司安全支付",
+        // Location Settings
+        locationSettings: "📍 地區設置（提高分析精度）",
+        countryLabel: "國家",
+        cityLabel: "城市",
+        countryPlaceholder: "例: 日本",
+        cityPlaceholder: "例: 札幌",
+        saveLocation: "💾 保存",
+        editLocation: "✏️ 編輯",
+        locationHelp: "💡 指定地區可以使AI分析更加準確"
     },
     en: {
         title: "Tourism Analyzer",
@@ -273,7 +309,16 @@ const translations = {
         popularPlan: "Popular Plan",
         paymentPreparation: "💳 Moving to payment page...",
         stripeRedirect: "Redirecting to secure Stripe payment page...",
-        paymentSecurity: "🔒 SSL encrypted communication・Secure payment by Stripe"
+        paymentSecurity: "🔒 SSL encrypted communication・Secure payment by Stripe",
+        // Location Settings
+        locationSettings: "📍 Location Settings (Improve Analysis Accuracy)",
+        countryLabel: "Country",
+        cityLabel: "City",
+        countryPlaceholder: "e.g.: Japan",
+        cityPlaceholder: "e.g.: Sapporo",
+        saveLocation: "💾 Save",
+        editLocation: "✏️ Edit",
+        locationHelp: "💡 Specifying your location will make AI analysis more accurate"
     }
 };
 
