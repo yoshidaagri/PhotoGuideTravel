@@ -3,6 +3,9 @@
  * メインアプリケーション機能
  */
 
+// API Configuration
+const API_BASE_URL = 'https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev';
+
 // Global variables
 let currentFile = null;
 let isAnalyzing = false;
@@ -18,6 +21,8 @@ function initializeMainApplication() {
     console.log('🎯 Initializing main application features...');
     
     try {
+        // Check for payment result from URL parameters
+        checkPaymentResult();
         // Initialize UI elements
         initializeUI();
         
@@ -360,6 +365,10 @@ async function handleAnalyzeClick() {
         // Show results
         showAnalysisResults(result);
         
+        // Refresh user info to update usage count after successful analysis
+        console.log('🔄 Refreshing user info after successful analysis');
+        await refreshUserInfo();
+        
     } catch (error) {
         console.error('🚨 Analysis error:', error);
         
@@ -454,7 +463,7 @@ async function uploadImageToS3(file) {
         token: token ? token.substring(0, 20) + '...' : 'No token'
     });
     
-    const response = await fetch('https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/upload-image', {
+    const response = await fetch(`${API_BASE_URL}/upload-image`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -513,7 +522,7 @@ async function performImageAnalysis(base64Data, language, analysisType) {
     }
     
     try {
-        const response = await fetch('https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/analyze', {
+        const response = await fetch(`${API_BASE_URL}/analyze`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1064,7 +1073,7 @@ function selectPlan(planType) {
  * Proceed to payment
  * 決済処理
  */
-function proceedToPayment() {
+async function proceedToPayment() {
     if (!window.selectedPlan) {
         showMessage('プランを選択してください', 'error');
         return;
@@ -1078,9 +1087,153 @@ function proceedToPayment() {
         return;
     }
     
+    const currentUser = getCurrentUser();
+    if (!currentUser || !currentUser.user_id) {
+        showMessage('ユーザー情報の取得に失敗しました', 'error');
+        return;
+    }
+    
     console.log(`💳 Proceeding to payment for plan: ${window.selectedPlan}`);
-    showMessage('決済機能は準備中です', 'info');
-    closeUpgradeModal();
+    
+    // Show loading state
+    const proceedBtn = document.getElementById('proceedBtn');
+    if (proceedBtn) {
+        proceedBtn.disabled = true;
+        proceedBtn.textContent = '決済画面に移動中...';
+    }
+    
+    try {
+        // Call backend to create Stripe Checkout Session
+        const response = await fetch(`${API_BASE_URL}/payment/create-checkout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}`
+            },
+            body: JSON.stringify({
+                planType: window.selectedPlan,
+                userId: currentUser.user_id
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Checkout session creation failed');
+        }
+        
+        const data = await response.json();
+        console.log('✅ Checkout session created:', data.session_id);
+        
+        // Redirect to Stripe Checkout
+        window.location.href = data.checkout_url;
+        
+    } catch (error) {
+        console.error('❌ Payment initiation error:', error);
+        showMessage('決済処理でエラーが発生しました: ' + error.message, 'error');
+        
+        // Reset button state
+        if (proceedBtn) {
+            proceedBtn.disabled = false;
+            proceedBtn.textContent = '決済に進む';
+        }
+    }
+}
+
+/**
+ * Check payment result from URL parameters
+ * URLパラメータから決済結果をチェック
+ */
+function checkPaymentResult() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const sessionId = urlParams.get('session_id');
+    
+    if (paymentStatus === 'success' && sessionId) {
+        console.log('💳 Payment success detected:', sessionId);
+        
+        // Show success message
+        showMessage('✅ 決済が完了しました！プレミアムプランをお楽しみください。', 'success');
+        
+        // Clean URL parameters
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+        
+        // Refresh user info to show premium status
+        setTimeout(() => {
+            if (typeof updateUserInfoDisplay === 'function') {
+                updateUserInfoDisplay();
+            }
+        }, 2000);
+        
+    } else if (paymentStatus === 'cancel') {
+        console.log('💳 Payment cancelled');
+        
+        // Show cancel message
+        showMessage('決済がキャンセルされました。', 'info');
+        
+        // Clean URL parameters
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+    }
+}
+
+/**
+ * Refresh user info from server
+ * サーバーからユーザー情報を再取得してUI更新
+ */
+async function refreshUserInfo() {
+    try {
+        const token = getAuthToken();
+        if (!token) {
+            console.warn('⚠️ No auth token found for user info refresh');
+            return;
+        }
+        
+        // Emergency login token handling
+        if (token === 'emergency-login-token-dev') {
+            console.log('🛠️ Emergency login - skipping server refresh');
+            return;
+        }
+        
+        console.log('🔄 Fetching updated user info from server...');
+        
+        const response = await fetch(`${API_BASE_URL}/auth/user-info`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const updatedUserInfo = await response.json();
+            console.log('✅ User info refreshed:', updatedUserInfo);
+            
+            // Update global user info
+            // Update localStorage first
+            localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
+            
+            // Update currentUser in auth.js (global variable)
+            if (typeof window !== 'undefined' && typeof currentUser !== 'undefined') {
+                currentUser = updatedUserInfo;
+                console.log('🔄 Updated global currentUser variable');
+            }
+            
+            // Update UI display
+            if (typeof updateUserInfoDisplay === 'function') {
+                updateUserInfoDisplay();
+                console.log('🎨 User info display updated');
+            } else {
+                console.warn('⚠️ updateUserInfoDisplay function not available');
+            }
+        } else {
+            console.warn('⚠️ Failed to refresh user info:', response.status);
+        }
+        
+    } catch (error) {
+        console.error('🚨 Error refreshing user info:', error);
+        // Don't throw error to avoid disrupting the main flow
+    }
 }
 
 /**

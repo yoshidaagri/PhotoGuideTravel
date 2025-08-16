@@ -39,6 +39,7 @@ const translations = {
         logout: "ログアウト",
         newAnalysis: "新しい解析",
         startText: "開始",
+        serviceSuspended: "機能停止",
         // Premium Modal
         upgradeTitle: "⭐ プレミアムプランにアップグレード",
         upgradeDescription: "無制限でAI解析をお楽しみください",
@@ -92,6 +93,7 @@ const translations = {
         logout: "로그아웃",
         newAnalysis: "새로운 분석",
         startText: "시작",
+        serviceSuspended: "기능 정지",
         // Premium Modal
         upgradeTitle: "⭐ 프리미엄 플랜으로 업그레이드",
         upgradeDescription: "무제한으로 AI 분석을 즐겨보세요",
@@ -145,6 +147,7 @@ const translations = {
         logout: "登出",
         newAnalysis: "新分析",
         startText: "开始",
+        serviceSuspended: "功能停止",
         // Premium Modal
         upgradeTitle: "⭐ 升级到高级计划",
         upgradeDescription: "享受无限AI分析",
@@ -198,6 +201,7 @@ const translations = {
         logout: "登出",
         newAnalysis: "新分析",
         startText: "開始",
+        serviceSuspended: "功能停止",
         // Premium Modal
         upgradeTitle: "⭐ 升級到高級計劃",
         upgradeDescription: "享受無限AI分析",
@@ -251,6 +255,7 @@ const translations = {
         logout: "Logout",
         newAnalysis: "New Analysis",
         startText: "Start",
+        serviceSuspended: "Service Suspended",
         // Premium Modal
         upgradeTitle: "⭐ Upgrade to Premium Plan",
         upgradeDescription: "Enjoy unlimited AI analysis",

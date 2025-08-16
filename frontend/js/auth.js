@@ -306,7 +306,26 @@ function updateUserInfoDisplay() {
                     planText = `Free (残り${remaining}回)`;
                     userPlanElement.className = 'user-plan';
                 } else {
-                    planText = 'Free (制限達成)';
+                    // Get current language and use appropriate translation
+                    const currentLanguage = localStorage.getItem('selectedLanguage') || 'ja';
+                    let suspendedText = '機能停止'; // Default Japanese
+                    
+                    // Use translation if available
+                    if (typeof getTranslation === 'function') {
+                        suspendedText = getTranslation('serviceSuspended', currentLanguage);
+                    } else {
+                        // Fallback translations for different languages
+                        const suspendedTranslations = {
+                            'ja': '機能停止',
+                            'ko': '기능 정지', 
+                            'zh': '功能停止',
+                            'tw': '功能停止',
+                            'en': 'Service Suspended'
+                        };
+                        suspendedText = suspendedTranslations[currentLanguage] || '機能停止';
+                    }
+                    
+                    planText = `Free (${suspendedText})`;
                     userPlanElement.className = 'user-plan limit-reached';
                 }
             }
