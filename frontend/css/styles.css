@@ -54,7 +54,38 @@ body {
     margin: 0 auto;
     padding: 0 1rem;
     display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Header Row 1: Logo and Logout */
+.header-row-1 {
+    display: flex;
     justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Header Row 2: User Email */
+.header-row-2 {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding-left: 0.5rem;
+}
+
+/* Header Row 3: Plan Info */
+.header-row-3 {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding-left: 0.5rem;
+}
+
+.logout-section {
+    display: flex;
     align-items: center;
 }
 
@@ -82,6 +113,27 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.user-email-section {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.user-plan-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
 }
 
 .user-info {
@@ -1268,22 +1320,69 @@ body {
     }
 }
 
+@media (max-width: 768px) {
+    .header-content {
+        gap: 0.3rem;
+    }
+    
+    .header-row-2,
+    .header-row-3 {
+        padding-left: 0.25rem;
+    }
+    
+    .logo {
+        font-size: 1.2rem;
+    }
+    
+    .user-name {
+        font-size: 0.85rem;
+    }
+    
+    .user-plan-section {
+        font-size: 0.75rem;
+        gap: 0.75rem;
+    }
+}
+
 @media (max-width: 480px) {
     .header-content {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        gap: 0.5rem;
+        gap: 0.25rem;
+        padding: 0 0.75rem;
     }
 
-    .user-section {
-        width: auto;
-        justify-content: flex-end;
+    .header-row-2,
+    .header-row-3 {
+        padding-left: 0;
     }
 
     .logo {
         font-size: 1.1rem;
         flex-shrink: 0;
+    }
+    
+    .version-tag {
+        font-size: 0.6rem;
+        padding: 1px 4px;
+    }
+    
+    .user-name {
+        font-size: 0.8rem;
+    }
+    
+    .user-plan-section {
+        font-size: 0.7rem;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .logout-btn {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.6rem;
+    }
+    
+    .upgrade-btn {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
     }
 }
 

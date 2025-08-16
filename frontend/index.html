@@ -34,16 +34,29 @@
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <div class="logo">
-                    🏔️ <span data-i18n="title">観光アナライザー</span>
-                    <span class="version-tag">ver1.3</span>
+                <!-- 1行目: ロゴ・バージョン とログアウトボタン -->
+                <div class="header-row-1">
+                    <div class="logo">
+                        🏔️ <span data-i18n="title">観光アナライザー</span>
+                        <span class="version-tag">ver1.3</span>
+                    </div>
+                    <div class="logout-section">
+                        <button onclick="logout()" class="logout-btn" data-i18n="logout">ログアウト</button>
+                    </div>
                 </div>
-                <div class="user-section">
-                    <div id="userInfo" class="user-info">
-                        <span>👤 <span id="currentUser">tourist-guide</span></span>
+                
+                <!-- 2行目: ユーザー名（メールアドレス） -->
+                <div class="header-row-2">
+                    <div id="userInfo" class="user-email-section">
+                        <span class="user-name">👤 <span id="currentUser">tourist-guide</span></span>
+                    </div>
+                </div>
+                
+                <!-- 3行目: プラン情報・アップグレードボタン -->
+                <div class="header-row-3">
+                    <div class="user-plan-section">
                         <span id="userPlan" class="user-plan">Free (残り5回)</span>
                         <button id="upgradeBtn" onclick="showUpgradeModal()" class="upgrade-btn" style="display: none;">⭐ アップグレード</button>
-                        <button onclick="logout()" class="logout-btn" data-i18n="logout">ログアウト</button>
                     </div>
                 </div>
             </div>
@@ -52,13 +65,6 @@
         <div class="container">
             <!-- Main Application -->
             <div class="main-app">
-                <!-- Welcome Section -->
-                <section class="welcome-section fade-in">
-                    <h1 class="welcome-title" data-i18n="title">観光AI画像解析</h1>
-                    <p class="welcome-description">
-                        <span data-i18n="description">店舗・観光地・料理の画像をAIが詳しく解析し、地元情報やおすすめスポットをご紹介します</span>
-                    </p>
-                </section>
 
                 <!-- Language Selection -->
                 <section class="language-section">
