@@ -1104,9 +1104,9 @@
                             continue;
                         }
                         
-                        if (imageResult && imageResult.blobUrl) {
-                            // 既に作成済みのBlob URLを使用
-                            const blobUrl = imageResult.blobUrl;
+                        if (imageResult && imageResult.blob) {
+                            // 新しいBlob URLを作成（確実に有効）
+                            const blobUrl = URL.createObjectURL(imageResult.blob);
                             
                             // img要素を作成
                             const imgElement = document.createElement('img');
@@ -1114,12 +1114,26 @@
                             imgElement.className = 'analysis-thumbnail';
                             imgElement.alt = '分析画像';
                             imgElement.onclick = () => showImageModal(blobUrl);
-                            imgElement.onerror = () => console.error(`Image load error for item ${itemIndex}`);
+                            
+                            // Blobオブジェクトを要素に保持（GC防止）
+                            imgElement._blobData = imageResult.blob;
+                            imgElement._blobUrl = blobUrl;
+                            
+                            // エラーハンドリングの改善
+                            imgElement.onerror = () => {
+                                console.error(`❌ Image load error for item ${itemIndex}, blobUrl: ${blobUrl}`);
+                                console.error(`Blob size: ${imageResult.blob.size}, type: ${imageResult.blob.type}`);
+                            };
+                            
+                            // 成功時の処理
+                            imgElement.onload = () => {
+                                console.log(`✅ Image successfully displayed for item ${itemIndex}`);
+                            };
                             
                             // 安全にplaceholderを画像に置き換え
                             try {
                                 placeholder.parentNode.replaceChild(imgElement, placeholder);
-                                console.log(`✅ Image loaded for item ${itemIndex}: ${blobUrl}`);
+                                console.log(`✅ Image element created for item ${itemIndex}: ${blobUrl}`);
                             } catch (domError) {
                                 console.error(`DOM error for item ${itemIndex}:`, domError);
                             }
