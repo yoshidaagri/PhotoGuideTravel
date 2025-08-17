@@ -1082,19 +1082,33 @@
                 const placeholders = document.querySelectorAll('.image-placeholder[data-image-url]');
                 console.log(`🔄 Loading ${placeholders.length} images for latest data`);
                 
-                const imagePromises = Array.from(placeholders).map(async (placeholder) => {
+                // 並列処理を避けて順次処理でDOM競合を防ぐ
+                for (let i = 0; i < placeholders.length; i++) {
+                    const placeholder = placeholders[i];
                     const imageUrl = placeholder.getAttribute('data-image-url');
                     const itemIndex = placeholder.getAttribute('data-item-index');
                     
+                    // 要素がまだ存在するかチェック（競合回避）
+                    if (!placeholder.parentNode) {
+                        console.warn(`⚠️ Placeholder for item ${itemIndex} already removed, skipping`);
+                        continue;
+                    }
+                    
                     try {
-                        console.log(`📸 Fetching image: ${imageUrl}`);
+                        console.log(`📸 Fetching image ${i+1}/${placeholders.length}: ${imageUrl}`);
                         const imageResult = await fetchImageWithAuth(imageUrl);
+                        
+                        // 再度要素の存在確認（非同期処理後）
+                        if (!placeholder.parentNode) {
+                            console.warn(`⚠️ Placeholder for item ${itemIndex} removed during fetch, skipping`);
+                            continue;
+                        }
                         
                         if (imageResult && imageResult.blobUrl) {
                             // 既に作成済みのBlob URLを使用
                             const blobUrl = imageResult.blobUrl;
                             
-                            // img要素を作成して置き換え
+                            // img要素を作成
                             const imgElement = document.createElement('img');
                             imgElement.src = blobUrl;
                             imgElement.className = 'analysis-thumbnail';
@@ -1102,21 +1116,26 @@
                             imgElement.onclick = () => showImageModal(blobUrl);
                             imgElement.onerror = () => console.error(`Image load error for item ${itemIndex}`);
                             
-                            // placeholderを画像に置き換え
-                            placeholder.parentNode.replaceChild(imgElement, placeholder);
-                            
-                            console.log(`✅ Image loaded for item ${itemIndex}: ${blobUrl}`);
+                            // 安全にplaceholderを画像に置き換え
+                            try {
+                                placeholder.parentNode.replaceChild(imgElement, placeholder);
+                                console.log(`✅ Image loaded for item ${itemIndex}: ${blobUrl}`);
+                            } catch (domError) {
+                                console.error(`DOM error for item ${itemIndex}:`, domError);
+                            }
                         } else {
                             console.warn(`❌ Failed to fetch image for item ${itemIndex}`);
-                            placeholder.innerHTML = '❌<br><small>読み込み失敗</small>';
+                            if (placeholder.parentNode) {
+                                placeholder.innerHTML = '❌<br><small>読み込み失敗</small>';
+                            }
                         }
                     } catch (error) {
                         console.error(`Error loading image for item ${itemIndex}:`, error);
-                        placeholder.innerHTML = '❌<br><small>エラー</small>';
+                        if (placeholder.parentNode) {
+                            placeholder.innerHTML = '❌<br><small>エラー</small>';
+                        }
                     }
-                });
-                
-                await Promise.all(imagePromises);
+                }
                 console.log('✅ All content refreshed successfully');
                 
             } catch (error) {
