@@ -428,11 +428,21 @@ async function handleAnalyzeClick() {
 async function analyzeImage(file, language, analysisType) {
     console.log(`🤖 Analyzing image: ${file.name} (${language}, ${analysisType})`);
     
-    // Convert file to base64 for direct analysis
+    // Step 1: Upload image to S3 first (for images table record)
+    console.log('📤 Step 1: Uploading image to S3 for record keeping...');
+    let uploadResult = null;
+    try {
+        uploadResult = await uploadImageToS3(file);
+        console.log('✅ S3 upload successful:', uploadResult);
+    } catch (uploadError) {
+        console.warn('⚠️ S3 upload failed, proceeding with analysis only:', uploadError);
+    }
+    
+    // Step 2: Convert file to base64 for direct analysis
     const base64Data = await fileToBase64(file);
     
-    // Perform direct analysis with base64 data
-    const analysisResult = await performImageAnalysis(base64Data, language, analysisType);
+    // Step 3: Perform direct analysis with base64 data (include image_id if available)
+    const analysisResult = await performImageAnalysis(base64Data, language, analysisType, uploadResult);
     
     return analysisResult;
 }
@@ -498,7 +508,7 @@ async function uploadImageToS3(file) {
  * Perform image analysis
  * 画像解析実行
  */
-async function performImageAnalysis(base64Data, language, analysisType) {
+async function performImageAnalysis(base64Data, language, analysisType, uploadResult = null) {
     const token = getAuthToken();
     
     const requestBody = {
@@ -506,6 +516,16 @@ async function performImageAnalysis(base64Data, language, analysisType) {
         language: language,
         type: analysisType  // バックエンドは'type'を期待
     };
+    
+    // Include image_id and s3Url if upload was successful
+    if (uploadResult && uploadResult.image_id) {
+        requestBody.imageId = uploadResult.image_id;
+        requestBody.s3Url = uploadResult.s3_url;
+        console.log('📎 Including upload result in analysis:', {
+            imageId: uploadResult.image_id,
+            s3Url: uploadResult.s3_url
+        });
+    }
     
     const payloadSize = JSON.stringify(requestBody).length;
     console.log('🔍 Analysis request details:', {
