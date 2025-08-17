@@ -9,3 +9,6 @@ google-generativeai==0.8.3
 # For Google OAuth authentication
 google-auth==2.23.0
 google-auth-httplib2==0.1.1
+
+# For admin dashboard authentication
+PyJWT==2.8.0

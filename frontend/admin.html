@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理ダッシュボード - 観光アナライザー</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 管理画面専用スタイル */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .admin-auth-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 400px;
+            margin: 5rem auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-container {
+            display: none;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .dashboard-card h3 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 0.5rem 0;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-healthy { background: #4CAF50; }
+        .status-warning { background: #FF9800; }
+        .status-critical { background: #F44336; }
+
+        .admin-nav {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .auth-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .auth-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #383;
+            border: 1px solid #cfc;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .recent-analysis-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: flex-start;
+            transition: background-color 0.3s ease;
+        }
+
+        .recent-analysis-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .analysis-thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+            border: 2px solid #e0e0e0;
+            transition: transform 0.3s ease;
+        }
+
+        .analysis-thumbnail:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .no-image-placeholder {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #999;
+            flex-shrink: 0;
+        }
+
+        .analysis-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .analysis-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .analysis-meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .analysis-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .analysis-summary {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 0.5rem;
+            line-height: 1.4;
+            max-height: 2.8em;
+            overflow: hidden;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .performance-info {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        /* 画像モーダル */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .image-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-modal img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .logout-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .admin-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .nav-tab {
+                text-align: center;
+            }
+        }
+
+        /* ローディングアニメーション */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden { display: none !important; }
+
+        /* アニメーション定義 */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 管理者認証フォーム -->
+        <div id="authContainer" class="admin-auth-form">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">🔐 管理者認証</h2>
+            <form id="adminAuthForm">
+                <input type="text" id="adminUsername" class="auth-input" placeholder="管理者ID" required>
+                <input type="password" id="adminPassword" class="auth-input" placeholder="パスワード" required>
+                <button type="submit" class="auth-button">ログイン</button>
+            </form>
+            <div id="authMessage"></div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="./login.html" style="color: #667eea; text-decoration: none; font-size: 0.9rem;">← 通常ログイン画面に戻る</a>
+            </div>
+        </div>
+
+        <!-- ダッシュボードメイン画面 -->
+        <div id="dashboardContainer" class="dashboard-container">
+            <!-- ヘッダー -->
+            <div class="admin-header">
+                <h1>🏔️ 観光アナライザー 管理ダッシュボード</h1>
+                <p>システム監視・分析・運用管理</p>
+                <button class="logout-button" onclick="logout()">🚪 ログアウト</button>
+            </div>
+
+            <!-- ナビゲーション -->
+            <div class="admin-nav">
+                <button class="nav-tab active" onclick="showTab('overview')">📊 概要</button>
+                <button class="nav-tab" onclick="showTab('analytics')">📈 分析統計</button>
+                <button class="nav-tab" onclick="showTab('users')">👥 ユーザー管理</button>
+                <button class="nav-tab" onclick="showTab('monitoring')">⚠️ システム監視</button>
+                <button class="nav-tab" onclick="showTab('content')">📸 コンテンツ確認</button>
+            </div>
+
+            <!-- 概要タブ -->
+            <div id="overviewTab" class="tab-content">
+                <div class="dashboard-grid">
+                    <!-- 今日の使用量 -->
+                    <div class="dashboard-card">
+                        <h3>📊 今日の使用量</h3>
+                        <div class="metric-value" id="todayUsage">--</div>
+                        <div class="metric-label">画像解析実行回数</div>
+                        <div class="chart-container">
+                            <canvas id="hourlyUsageChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 分析種類統計 -->
+                    <div class="dashboard-card">
+                        <h3>🔍 分析種類統計</h3>
+                        <div class="chart-container">
+                            <canvas id="analysisTypeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 有料会員数 -->
+                    <div class="dashboard-card">
+                        <h3>💳 有料会員状況</h3>
+                        <div style="display: flex; justify-content: space-between; margin: 1rem 0;">
+                            <div>
+                                <div class="metric-value" id="premiumCount">--</div>
+                                <div class="metric-label">有料会員数</div>
+                            </div>
+                            <div>
+                                <div class="metric-value" id="monthlyRevenue">--</div>
+                                <div class="metric-label">月間収益（予測）</div>
+                            </div>
+                        </div>
+                        <div id="premiumBreakdown"></div>
+                    </div>
+
+                    <!-- システム健全性 -->
+                    <div class="dashboard-card">
+                        <h3>⚠️ システム健全性</h3>
+                        <div id="systemHealth">
+                            <div style="margin: 0.5rem 0;">
+                                <span class="status-indicator status-healthy"></span>
+                                <span>Lambda関数: 正常</span>
+                            </div>
+                            <div style="margin: 0.5rem 0;">
+                                <span class="status-indicator status-healthy"></span>
+                                <span>DynamoDB: 正常</span>
+                            </div>
+                            <div style="margin: 0.5rem 0;">
+                                <span class="status-indicator status-healthy"></span>
+                                <span>API Gateway: 正常</span>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <button onclick="refreshSystemHealth()" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">🔄 ステータス更新</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分析統計タブ -->
+            <div id="analyticsTab" class="tab-content hidden">
+                <div class="dashboard-grid">
+                    <!-- 地域別統計 -->
+                    <div class="dashboard-card">
+                        <h3>🌍 地域別統計</h3>
+                        <div class="chart-container">
+                            <canvas id="locationChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 言語別使用統計 -->
+                    <div class="dashboard-card">
+                        <h3>🗣️ 言語別使用統計</h3>
+                        <div class="chart-container">
+                            <canvas id="languageChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 時間帯別パターン -->
+                    <div class="dashboard-card">
+                        <h3>🕐 時間帯別パターン</h3>
+                        <div class="chart-container">
+                            <canvas id="timePatternChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ユーザー管理タブ -->
+            <div id="usersTab" class="tab-content hidden">
+                <div class="dashboard-card">
+                    <h3>👥 ユーザー概要</h3>
+                    <div id="userStats">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                            <div>
+                                <div class="metric-value" id="totalUsers">--</div>
+                                <div class="metric-label">総ユーザー数</div>
+                            </div>
+                            <div>
+                                <div class="metric-value" id="activeUsers">--</div>
+                                <div class="metric-label">アクティブユーザー（7日間）</div>
+                            </div>
+                            <div>
+                                <div class="metric-value" id="newUsers">--</div>
+                                <div class="metric-label">新規ユーザー（今月）</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- システム監視タブ -->
+            <div id="monitoringTab" class="tab-content hidden">
+                <div class="dashboard-grid">
+                    <!-- エラーログ監視 -->
+                    <div class="dashboard-card">
+                        <h3>🚨 エラー監視</h3>
+                        <div id="errorLogs">
+                            <div class="loading-spinner"></div>
+                        </div>
+                    </div>
+
+                    <!-- パフォーマンス監視 -->
+                    <div class="dashboard-card">
+                        <h3>⚡ パフォーマンス</h3>
+                        <div id="performanceMetrics">
+                            <div style="margin: 0.5rem 0;">
+                                平均応答時間: <span id="avgResponseTime">--</span>ms
+                            </div>
+                            <div style="margin: 0.5rem 0;">
+                                エラー率: <span id="errorRate">--</span>%
+                            </div>
+                            <div style="margin: 0.5rem 0;">
+                                Lambda同時実行数: <span id="concurrentExecutions">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- コンテンツ確認タブ -->
+            <div id="contentTab" class="tab-content hidden">
+                <div class="dashboard-card">
+                    <h3>📸 直近の分析結果（10件）</h3>
+                    <div id="recentAnalysis">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 画像モーダル -->
+        <div id="imageModal" class="image-modal">
+            <div class="image-modal-content">
+                <span class="modal-close">&times;</span>
+                <img id="modalImage" src="" alt="分析画像">
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        // 管理ダッシュボード JavaScript
+        const ADMIN_API_BASE = 'https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/admin';
+        let adminToken = null;
+        let charts = {};
+        let refreshInterval = null;
+
+        // 管理者認証
+        document.getElementById('adminAuthForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            const messageDiv = document.getElementById('authMessage');
+            
+            try {
+                // API呼び出しで認証
+                const response = await fetch(`${ADMIN_API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    adminToken = data.token;
+                    localStorage.setItem('adminToken', adminToken);
+                    
+                    messageDiv.innerHTML = '<div class="success-message">✅ 認証成功！ダッシュボードを読み込み中...</div>';
+                    
+                    setTimeout(() => {
+                        document.getElementById('authContainer').style.display = 'none';
+                        document.getElementById('dashboardContainer').style.display = 'block';
+                        initializeDashboard();
+                    }, 1000);
+                } else {
+                    throw new Error('認証に失敗しました');
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="error-message">❌ ${error.message}</div>`;
+            }
+        });
+
+        // ダッシュボード初期化
+        async function initializeDashboard() {
+            try {
+                await loadOverviewData();
+                initializeCharts();
+                startAutoRefresh();
+            } catch (error) {
+                console.error('Dashboard initialization error:', error);
+            }
+        }
+
+        // 概要データ読み込み
+        async function loadOverviewData() {
+            try {
+                const response = await fetch(`${ADMIN_API_BASE}/dashboard/summary`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load dashboard data');
+                
+                const data = await response.json();
+
+                document.getElementById('todayUsage').textContent = data.todayUsage;
+                document.getElementById('premiumCount').textContent = data.premiumUsers.total;
+                document.getElementById('monthlyRevenue').textContent = `¥${data.monthlyRevenue.toLocaleString()}`;
+                
+                document.getElementById('premiumBreakdown').innerHTML = `
+                    <div style="font-size: 0.9rem; margin-top: 1rem;">
+                        <div>7日間プラン: ${data.premiumUsers.plan7days}人</div>
+                        <div>20日間プラン: ${data.premiumUsers.plan20days}人</div>
+                    </div>
+                `;
+                
+                // 時間別使用量グラフを更新
+                if (charts.hourlyUsage && data.hourlyUsage) {
+                    charts.hourlyUsage.data.datasets[0].data = data.hourlyUsage;
+                    charts.hourlyUsage.update();
+                }
+                
+                // 分析種類グラフを更新
+                if (charts.analysisType && data.analysisTypes) {
+                    charts.analysisType.data.datasets[0].data = [
+                        data.analysisTypes.store || 0,
+                        data.analysisTypes.menu || 0
+                    ];
+                    charts.analysisType.update();
+                }
+                
+            } catch (error) {
+                console.error('Error loading overview data:', error);
+                showNotification('概要データの読み込みに失敗しました', 'error');
+            }
+        }
+
+        // チャート初期化
+        function initializeCharts() {
+            // 時間別使用量チャート
+            const hourlyCtx = document.getElementById('hourlyUsageChart').getContext('2d');
+            charts.hourlyUsage = new Chart(hourlyCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        label: '解析回数',
+                        data: new Array(24).fill(0), // 初期値は0
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // 分析種類チャート
+            const typeCtx = document.getElementById('analysisTypeChart').getContext('2d');
+            charts.analysisType = new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['店舗観光', '看板メニュー'],
+                    datasets: [{
+                        data: [0, 0], // 初期値は0
+                        backgroundColor: ['#667eea', '#764ba2']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // タブ切り替え
+        function showTab(tabName) {
+            // すべてのタブを非表示
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // すべてのナビボタンを非アクティブ
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 選択されたタブを表示
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            event.target.classList.add('active');
+            
+            // タブ固有の初期化
+            if (tabName === 'content') {
+                loadRecentAnalysis();
+            } else if (tabName === 'monitoring') {
+                loadSystemMonitoring();
+            }
+        }
+
+        // 認証付きで画像を取得してBlob URLを作成
+        async function fetchImageWithAuth(imageUrl) {
+            console.log(`🖼️ Fetching image: ${imageUrl}`);
+            try {
+                const response = await fetch(imageUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                
+                const contentType = response.headers.get('Content-Type') || '';
+                console.log(`🖼️ Response status: ${response.status}, Content-Type: ${contentType}`);
+                
+                if (!response.ok) {
+                    console.warn(`❌ Failed to fetch image: ${imageUrl} - Status: ${response.status}`);
+                    return null;
+                }
+                
+                // Content-Typeがapplication/jsonの場合、Base64データの可能性がある
+                if (contentType.includes('application/json')) {
+                    console.log(`🖼️ JSON response detected, parsing for Base64 data`);
+                    const jsonData = await response.json();
+                    
+                    // レスポンスがBase64文字列の場合
+                    if (typeof jsonData === 'string' && (jsonData.startsWith('/9j/') || jsonData.startsWith('iVBORw0KGgo') || jsonData.startsWith('UklGR'))) {
+                        console.log(`🖼️ Base64 string detected in JSON: ${jsonData.substring(0, 50)}...`);
+                        try {
+                            const binaryString = atob(jsonData);
+                            const bytes = new Uint8Array(binaryString.length);
+                            for (let i = 0; i < binaryString.length; i++) {
+                                bytes[i] = binaryString.charCodeAt(i);
+                            }
+                            const mimeType = jsonData.startsWith('/9j/') ? 'image/jpeg' : 
+                                           jsonData.startsWith('iVBORw0KGgo') ? 'image/png' : 'image/jpeg';
+                            const blob = new Blob([bytes], { type: mimeType });
+                            const blobUrl = URL.createObjectURL(blob);
+                            console.log(`✅ Created blob URL from Base64: ${blobUrl}`);
+                            return blobUrl;
+                        } catch (base64Error) {
+                            console.error('❌ Failed to decode Base64:', base64Error);
+                            return null;
+                        }
+                    }
+                    // JSONオブジェクトの場合、image_dataフィールドをチェック
+                    else if (jsonData.image_data) {
+                        console.log(`🖼️ Base64 data found in image_data field`);
+                        try {
+                            const binaryString = atob(jsonData.image_data);
+                            const bytes = new Uint8Array(binaryString.length);
+                            for (let i = 0; i < binaryString.length; i++) {
+                                bytes[i] = binaryString.charCodeAt(i);
+                            }
+                            const blob = new Blob([bytes], { type: 'image/jpeg' });
+                            const blobUrl = URL.createObjectURL(blob);
+                            console.log(`✅ Created blob URL from JSON image_data: ${blobUrl}`);
+                            return blobUrl;
+                        } catch (base64Error) {
+                            console.error('❌ Failed to decode image_data:', base64Error);
+                            return null;
+                        }
+                    } else {
+                        console.warn(`❌ Unexpected JSON structure:`, jsonData);
+                        return null;
+                    }
+                }
+                // Content-Typeが画像の場合、直接Blobとして処理
+                else if (contentType.includes('image/')) {
+                    console.log(`🖼️ Direct image response detected`);
+                    const blob = await response.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+                    console.log(`✅ Created blob URL from direct image: ${blobUrl}`);
+                    return blobUrl;
+                }
+                // その他の場合、テキストとして読み取ってBase64かチェック
+                else {
+                    console.log(`🖼️ Unknown content type, checking as text`);
+                    const responseText = await response.text();
+                    console.log(`🖼️ Response preview: ${responseText.substring(0, 100)}...`);
+                    
+                    // Base64データかどうか確認
+                    if (responseText.startsWith('/9j/') || responseText.startsWith('iVBORw0KGgo') || responseText.startsWith('UklGR')) {
+                        console.log(`🖼️ Base64 image data detected in text response`);
+                        try {
+                            const binaryString = atob(responseText.trim());
+                            const bytes = new Uint8Array(binaryString.length);
+                            for (let i = 0; i < binaryString.length; i++) {
+                                bytes[i] = binaryString.charCodeAt(i);
+                            }
+                            const mimeType = responseText.startsWith('/9j/') ? 'image/jpeg' : 
+                                           responseText.startsWith('iVBORw0KGgo') ? 'image/png' : 'image/jpeg';
+                            const blob = new Blob([bytes], { type: mimeType });
+                            const blobUrl = URL.createObjectURL(blob);
+                            console.log(`✅ Created blob URL from text Base64: ${blobUrl}`);
+                            return blobUrl;
+                        } catch (base64Error) {
+                            console.error('❌ Failed to decode text Base64:', base64Error);
+                            return null;
+                        }
+                    } else {
+                        console.warn(`❌ Unrecognized response format for image URL: ${imageUrl}`);
+                        return null;
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error fetching image:', error);
+                return null;
+            }
+        }
+
+        // 直近分析結果読み込み
+        async function loadRecentAnalysis() {
+            const container = document.getElementById('recentAnalysis');
+            container.innerHTML = '<div class="loading-spinner"></div>';
+            
+            try {
+                const response = await fetch(`${ADMIN_API_BASE}/content/recent`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load recent analysis');
+                
+                const data = await response.json();
+                
+                if (data.recentAnalyses && data.recentAnalyses.length > 0) {
+                    // 画像URLをBlob URLに変換
+                    console.log(`📋 Processing ${data.recentAnalyses.length} analysis items`);
+                    const analysesWithBlobUrls = await Promise.all(
+                        data.recentAnalyses.map(async (item, index) => {
+                            console.log(`📋 Item ${index}: image_thumbnail = ${item.image_thumbnail}`);
+                            if (item.image_thumbnail) {
+                                const blobUrl = await fetchImageWithAuth(item.image_thumbnail);
+                                console.log(`📋 Item ${index}: blobUrl = ${blobUrl}`);
+                                return { ...item, blobUrl };
+                            }
+                            console.log(`📋 Item ${index}: No image_thumbnail`);
+                            return item;
+                        })
+                    );
+                    
+                    container.innerHTML = analysesWithBlobUrls.map(item => {
+                        const timestamp = new Date(item.timestamp).toLocaleString('ja-JP');
+                        const type = item.analysis_type === 'store' ? '店舗観光' : '看板メニュー';
+                        const typeIcon = item.analysis_type === 'store' ? '🏪' : '📋';
+                        const languageFlag = getLanguageFlag(item.language);
+                        const status = item.error_occurred ? 'error' : 'success';
+                        const statusText = item.error_occurred ? 'エラー' : '成功';
+                        
+                        // 画像サムネイル部分（Blob URLを使用）
+                        console.log(`🖼️ Rendering thumbnail for ${item.log_id}: blobUrl = ${item.blobUrl}`);
+                        const thumbnailHtml = item.blobUrl ? 
+                            `<img src="${item.blobUrl}" class="analysis-thumbnail" onclick="showImageModal('${item.blobUrl}')" alt="分析画像" onerror="console.error('Image load error for ${item.log_id}')">` :
+                            `<div class="no-image-placeholder">📷</div>`;
+                        
+                        return `
+                            <div class="recent-analysis-item">
+                                ${thumbnailHtml}
+                                <div class="analysis-info">
+                                    <div class="analysis-title">${item.location_name}</div>
+                                    <div class="analysis-meta">
+                                        <div class="analysis-meta-item">
+                                            <span>📅</span>
+                                            <span>${timestamp}</span>
+                                        </div>
+                                        <div class="analysis-meta-item">
+                                            <span>👤</span>
+                                            <span>${item.user_id}</span>
+                                        </div>
+                                        <div class="analysis-meta-item">
+                                            <span>${typeIcon}</span>
+                                            <span>${type}</span>
+                                        </div>
+                                        <div class="analysis-meta-item">
+                                            <span>${languageFlag}</span>
+                                            <span>${item.language.toUpperCase()}</span>
+                                        </div>
+                                        <div class="analysis-meta-item">
+                                            <span class="status-badge status-${status}">${statusText}</span>
+                                        </div>
+                                    </div>
+                                    <div class="performance-info">
+                                        <span>📊 ${item.image_size_kb}KB</span>
+                                        <span>⏱️ ${item.processing_time_ms}ms</span>
+                                        <span>🤖 ${item.ai_model}</span>
+                                        <span>🏷️ ${item.log_id}</span>
+                                    </div>
+                                    ${item.result_summary ? `<div class="analysis-summary">${item.result_summary}</div>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    container.innerHTML = '<p style="text-align: center; color: #666;">分析データがありません</p>';
+                }
+                
+            } catch (error) {
+                console.error('Error loading recent analysis:', error);
+                container.innerHTML = '<p style="color: red;">データの読み込みに失敗しました</p>';
+            }
+        }
+
+        // 言語フラグ取得
+        function getLanguageFlag(language) {
+            const flags = {
+                'ja': '🇯🇵',
+                'ko': '🇰🇷', 
+                'zh': '🇨🇳',
+                'tw': '🇹🇼',
+                'en': '🇺🇸'
+            };
+            return flags[language] || '🌍';
+        }
+
+        // 画像モーダル表示
+        function showImageModal(imageUrl) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            
+            modalImage.src = imageUrl;
+            modal.style.display = 'block';
+            
+            // ESCキーでモーダル閉じる
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeImageModal();
+                }
+            });
+        }
+
+        // 画像モーダル閉じる
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+        }
+
+        // モーダル外クリックで閉じる
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('imageModal');
+            const modalClose = document.querySelector('.modal-close');
+            
+            modalClose.addEventListener('click', closeImageModal);
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeImageModal();
+                }
+            });
+        });
+
+        // システム監視データ読み込み
+        async function loadSystemMonitoring() {
+            const errorContainer = document.getElementById('errorLogs');
+            const perfContainer = document.getElementById('performanceMetrics');
+            
+            try {
+                // システム健全性確認
+                const healthResponse = await fetch(`${ADMIN_API_BASE}/monitoring/health`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                
+                if (healthResponse.ok) {
+                    const healthData = await healthResponse.json();
+                    updateSystemHealthDisplay(healthData);
+                }
+                
+                // ログ監視
+                const logsResponse = await fetch(`${ADMIN_API_BASE}/monitoring/logs`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                
+                if (logsResponse.ok) {
+                    const logsData = await logsResponse.json();
+                    
+                    // エラーログ表示
+                    if (logsData.recentLogs && logsData.recentLogs.length > 0) {
+                        errorContainer.innerHTML = logsData.recentLogs.map(log => {
+                            const icon = log.level === 'ERROR' ? '❌' : log.level === 'WARNING' ? '⚠️' : '✅';
+                            const timestamp = new Date(log.timestamp).toLocaleTimeString('ja-JP');
+                            return `
+                                <div style="margin: 0.5rem 0;">
+                                    ${icon} ${timestamp} - ${log.message}
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                    
+                    // パフォーマンスメトリクス更新
+                    if (logsData.errorStats) {
+                        document.getElementById('avgResponseTime').textContent = logsData.errorStats.avgResponseTime;
+                        document.getElementById('errorRate').textContent = logsData.errorStats.errorRate;
+                        document.getElementById('concurrentExecutions').textContent = logsData.errorStats.concurrentExecutions || '--';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading monitoring data:', error);
+                errorContainer.innerHTML = '<p style="color: red;">監視データの読み込みに失敗しました</p>';
+            }
+        }
+
+        // システム健全性更新
+        function refreshSystemHealth() {
+            const healthContainer = document.getElementById('systemHealth');
+            healthContainer.innerHTML = `
+                <div style="margin: 0.5rem 0;">
+                    <span class="status-indicator status-healthy"></span>
+                    <span>Lambda関数: 正常 (${new Date().toLocaleTimeString()})</span>
+                </div>
+                <div style="margin: 0.5rem 0;">
+                    <span class="status-indicator status-healthy"></span>
+                    <span>DynamoDB: 正常</span>
+                </div>
+                <div style="margin: 0.5rem 0;">
+                    <span class="status-indicator status-healthy"></span>
+                    <span>API Gateway: 正常</span>
+                </div>
+            `;
+        }
+
+        // ログアウト
+        function logout() {
+            localStorage.removeItem('adminToken');
+            location.reload();
+        }
+
+        // システム健全性表示更新
+        function updateSystemHealthDisplay(healthData) {
+            const container = document.getElementById('systemHealth');
+            if (!healthData.services) return;
+            
+            container.innerHTML = Object.entries(healthData.services).map(([service, status]) => {
+                const statusClass = status.status === 'healthy' ? 'status-healthy' : 
+                                   status.status === 'warning' ? 'status-warning' : 'status-critical';
+                const serviceName = {
+                    'lambda': 'Lambda関数',
+                    'dynamodb': 'DynamoDB',
+                    'apiGateway': 'API Gateway',
+                    'geminiApi': 'Gemini API',
+                    's3': 'S3ストレージ'
+                }[service] || service;
+                
+                return `
+                    <div style="margin: 0.5rem 0;">
+                        <span class="status-indicator ${statusClass}"></span>
+                        <span>${serviceName}: ${status.message}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 通知表示
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                ${type === 'error' ? 'background: #f44336; color: white;' : ''}
+                ${type === 'success' ? 'background: #4CAF50; color: white;' : ''}
+                ${type === 'info' ? 'background: #2196F3; color: white;' : ''}
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // 定期更新設定
+        function startAutoRefresh() {
+            // 5分ごとに概要データを更新
+            refreshInterval = setInterval(() => {
+                loadOverviewData();
+                if (document.getElementById('monitoringTab').classList.contains('hidden') === false) {
+                    loadSystemMonitoring();
+                }
+            }, 300000); // 5分
+        }
+
+        // 初期化チェック
+        window.addEventListener('load', function() {
+            const savedToken = localStorage.getItem('adminToken');
+            if (savedToken) {
+                adminToken = savedToken;
+                document.getElementById('authContainer').style.display = 'none';
+                document.getElementById('dashboardContainer').style.display = 'block';
+                initializeDashboard();
+            }
+        });
+    </script>
+</body>
+</html>

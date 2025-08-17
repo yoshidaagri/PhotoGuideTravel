@@ -1,0 +1,5 @@
+# Minimal requirements for auth function only
+requests==2.31.0
+google-auth==2.23.0
+google-auth-httplib2==0.1.1
+boto3==1.34.0

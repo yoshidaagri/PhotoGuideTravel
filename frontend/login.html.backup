@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Googleでログイン - 観光アナライザー</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="google-login-container">
+        <div class="login-content">
+            <h1>🌸 観光アナライザー</h1>
+            <p>札幌観光・グルメ画像のAI解析サービス</p>
+            
+            <!-- Google OAuth リダイレクト -->
+            <div class="google-login-wrapper">
+                <p>Googleアカウントでログイン処理中...</p>
+                <p>まもなくGoogleのログイン画面へ移動します</p>
+            </div>
+            
+            <div class="back-link">
+                <a href="./tourism-guide.html">← 戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Google Identity Services (GIS) implementation
+        let isGoogleInitialized = false;
+        
+        // Initialize Google Sign-In using new GIS API
+        function initGoogleSignIn() {
+            console.log('🔧 Initializing Google Identity Services...');
+            
+            try {
+                // Initialize Google Identity Services
+                google.accounts.id.initialize({
+                    client_id: '293286695075-k6d4ojbtag15f8jl9mbd22sjbuvstm3k.apps.googleusercontent.com',
+                    callback: handleCredentialResponse,
+                    auto_select: false,
+                    cancel_on_tap_outside: false
+                });
+                
+                console.log('✅ Google Identity Services initialized');
+                isGoogleInitialized = true;
+                showGoogleSignInButton();
+                
+            } catch (error) {
+                console.error('❌ Google Identity Services エラー:', error);
+                showError('Google認証の初期化に失敗しました。しばらく後に再度お試しください。');
+            }
+        }
+        
+        // Handle credential response from Google
+        function handleCredentialResponse(response) {
+            console.log('🔒 Google credential received');
+            
+            try {
+                // Extract JWT token
+                const idToken = response.credential;
+                console.log('✅ Google ID Token received');
+                
+                // Show loading state
+                showLoading();
+                
+                // Send to backend for processing
+                exchangeGoogleTokenForCognitoToken(idToken);
+                
+            } catch (error) {
+                console.error('❌ Credential processing error:', error);
+                showError('Google認証の処理でエラーが発生しました。');
+            }
+        }
+        
+        function showGoogleSignInButton() {
+            const wrapper = document.querySelector('.google-login-wrapper');
+            wrapper.innerHTML = `
+                <p>Googleアカウントでログイン</p>
+                <div id="google-signin-button"></div>
+                <div id="loading" style="display: none;">
+                    <p>ログイン処理中...</p>
+                </div>
+            `;
+            
+            // Render Google Sign-In button using GIS API
+            if (isGoogleInitialized) {
+                google.accounts.id.renderButton(
+                    document.getElementById('google-signin-button'),
+                    {
+                        theme: 'outline',
+                        size: 'large',
+                        text: 'signin_with',
+                        shape: 'rectangular',
+                        logo_alignment: 'left'
+                    }
+                );
+            }
+        }
+        
+        function showLoading() {
+            const wrapper = document.querySelector('.google-login-wrapper');
+            wrapper.innerHTML = `
+                <div id="loading">
+                    <p>🔄 ログイン処理中...</p>
+                    <p>お待ちください</p>
+                </div>
+            `;
+        }
+        
+        async function exchangeGoogleTokenForCognitoToken(idToken) {
+            try {
+                console.log('🔄 Exchanging Google token for Cognito token...');
+                
+                const response = await fetch('https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev/auth/google-signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        google_id_token: idToken
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('✅ Token exchange successful:', result);
+                
+                // Cognitoレスポンス形式に対応
+                const accessToken = result.AccessToken || result.access_token;
+                const cognitoIdToken = result.IdToken || result.id_token;
+                
+                if (!accessToken) {
+                    throw new Error('Access token not found in response');
+                }
+                
+                // バックエンドから返されたユーザー情報を使用
+                let userInfo = result.user_info || { email: '', name: '', auth_provider: 'google' };
+                
+                // フォールバック: IDTokenからユーザー情報を抽出（バックエンドにuser_infoがない場合）
+                if (!result.user_info && cognitoIdToken) {
+                    try {
+                        const payload = JSON.parse(atob(cognitoIdToken.split('.')[1]));
+                        userInfo = {
+                            email: payload.email || '',
+                            name: payload.name || payload.given_name || '',
+                            picture: payload.picture || '',
+                            auth_provider: 'google'
+                        };
+                        console.log('📧 Fallback: Extracted user info from ID token:', userInfo);
+                    } catch (e) {
+                        console.warn('⚠️ Could not extract user info from ID token:', e);
+                    }
+                } else {
+                    console.log('📧 Using user info from backend:', userInfo);
+                }
+                
+                // 成功メッセージを2秒間表示
+                showSuccess('認証成功！メイン画面に移動します...');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Store authentication info in localStorage (to match tourism-guide.html)
+                localStorage.setItem('tourismAuth', 'true');
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                
+                console.log('💾 Stored in localStorage:', {
+                    tourismAuth: 'true',
+                    accessToken: accessToken.substring(0, 50) + '...',
+                    userInfo: userInfo
+                });
+                
+                // Redirect to new main app (index.html)
+                window.location.href = './index.html';
+                
+            } catch (error) {
+                console.error('❌ Token exchange failed:', error);
+                showError('認証処理でエラーが発生しました。');
+                // エラーを確認するため3秒間表示
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+        }
+        
+        function showError(message) {
+            const wrapper = document.querySelector('.google-login-wrapper');
+            wrapper.innerHTML = `
+                <div style="color: red; margin: 20px 0;">
+                    <p>❌ ${message}</p>
+                    <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px;">
+                        再試行
+                    </button>
+                </div>
+            `;
+        }
+        
+        function showSuccess(message) {
+            const wrapper = document.querySelector('.google-login-wrapper');
+            wrapper.innerHTML = `
+                <div style="color: green; margin: 20px 0; text-align: center;">
+                    <p>✅ ${message}</p>
+                    <div style="margin-top: 10px;">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Load Google Identity Services and initialize
+        window.addEventListener('load', function() {
+            console.log('📄 login.html loaded, initializing Google Identity Services...');
+            
+            // Load Google Identity Services script
+            const script = document.createElement('script');
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.onload = function() {
+                console.log('📥 Google Identity Services script loaded');
+                // Add small delay to ensure Google object is ready
+                setTimeout(initGoogleSignIn, 100);
+            };
+            script.onerror = function() {
+                console.error('❌ Google Identity Services script load failed');
+                showError('Google認証サービスの読み込みに失敗しました。インターネット接続を確認してください。');
+            };
+            document.head.appendChild(script);
+        });
+    </script>
+</body>
+</html>

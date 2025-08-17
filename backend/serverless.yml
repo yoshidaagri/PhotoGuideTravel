@@ -100,6 +100,21 @@ functions:
           path: upload-image
           method: POST
           cors: true
+  adminDashboard:
+    handler: functions/admin-dashboard/handler.lambda_handler
+    timeout: 30
+    memorySize: 512
+    environment:
+      ADMIN_SECRET: ${env:ADMIN_SECRET, 'admin-secret-key-2024'}
+      USERS_TABLE: ${self:service}-users-${self:provider.stage}
+      IMAGES_TABLE: ${self:service}-images-${self:provider.stage}
+      ANALYZE_LOGS_TABLE: ${self:service}-analyze-logs-${self:provider.stage}
+      S3_BUCKET: ${self:service}-images-${self:provider.stage}
+    events:
+      - http:
+          path: admin/{proxy+}
+          method: ANY
+          cors: true
 
 resources:
   Resources:
