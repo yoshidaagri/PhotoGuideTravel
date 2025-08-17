@@ -816,7 +816,7 @@
                             const blob = new Blob([bytes], { type: mimeType });
                             const blobUrl = URL.createObjectURL(blob);
                             console.log(`✅ Created blob URL from Base64: ${blobUrl}`);
-                            return blobUrl;
+                            return { blobUrl, blob };
                         } catch (base64Error) {
                             console.error('❌ Failed to decode Base64:', base64Error);
                             return null;
@@ -834,7 +834,7 @@
                             const blob = new Blob([bytes], { type: 'image/jpeg' });
                             const blobUrl = URL.createObjectURL(blob);
                             console.log(`✅ Created blob URL from JSON image_data: ${blobUrl}`);
-                            return blobUrl;
+                            return { blobUrl, blob };
                         } catch (base64Error) {
                             console.error('❌ Failed to decode image_data:', base64Error);
                             return null;
@@ -848,9 +848,10 @@
                 else if (contentType.includes('image/')) {
                     console.log(`🖼️ Direct image response detected`);
                     const blob = await response.blob();
+                    // Blobオブジェクトも一緒に返して参照を保持
                     const blobUrl = URL.createObjectURL(blob);
                     console.log(`✅ Created blob URL from direct image: ${blobUrl}`);
-                    return blobUrl;
+                    return { blobUrl, blob };
                 }
                 // その他の場合、テキストとして読み取ってBase64かチェック
                 else {
@@ -872,7 +873,7 @@
                             const blob = new Blob([bytes], { type: mimeType });
                             const blobUrl = URL.createObjectURL(blob);
                             console.log(`✅ Created blob URL from text Base64: ${blobUrl}`);
-                            return blobUrl;
+                            return { blobUrl, blob };
                         } catch (base64Error) {
                             console.error('❌ Failed to decode text Base64:', base64Error);
                             return null;
@@ -911,16 +912,19 @@
                         data.recentAnalyses.map(async (item, index) => {
                             console.log(`📋 Item ${index}: image_thumbnail = ${item.image_thumbnail}`);
                             if (item.image_thumbnail) {
-                                const blobUrl = await fetchImageWithAuth(item.image_thumbnail);
-                                console.log(`📋 Item ${index}: blobUrl = ${blobUrl}`);
-                                return { ...item, blobUrl };
+                                const imageResult = await fetchImageWithAuth(item.image_thumbnail);
+                                if (imageResult) {
+                                    console.log(`📋 Item ${index}: blobUrl = ${imageResult.blobUrl}`);
+                                    return { ...item, blobUrl: imageResult.blobUrl, blob: imageResult.blob };
+                                }
+                                return { ...item, blobUrl: null, blob: null };
                             }
                             console.log(`📋 Item ${index}: No image_thumbnail`);
                             return item;
                         })
                     );
                     
-                    container.innerHTML = analysesWithBlobUrls.map(item => {
+                    container.innerHTML = analysesWithBlobUrls.map((item, index) => {
                         const timestamp = new Date(item.timestamp).toLocaleString('ja-JP');
                         const type = item.analysis_type === 'store' ? '店舗観光' : '看板メニュー';
                         const typeIcon = item.analysis_type === 'store' ? '🏪' : '📋';
@@ -928,10 +932,10 @@
                         const status = item.error_occurred ? 'error' : 'success';
                         const statusText = item.error_occurred ? 'エラー' : '成功';
                         
-                        // 画像サムネイル部分（Blob URLを使用）
-                        console.log(`🖼️ Rendering thumbnail for ${item.log_id}: blobUrl = ${item.blobUrl}`);
-                        const thumbnailHtml = item.blobUrl ? 
-                            `<img src="${item.blobUrl}" class="analysis-thumbnail" onclick="showImageModal('${item.blobUrl}')" alt="分析画像" onerror="console.error('Image load error for ${item.log_id}')">` :
+                        // 画像サムネイル部分（data属性でインデックス保持、後でBlob URL設定）
+                        console.log(`🖼️ Preparing thumbnail for ${item.log_id} (index: ${index})`);
+                        const thumbnailHtml = item.blob ? 
+                            `<img data-image-index="${index}" class="analysis-thumbnail" alt="分析画像" style="background: #f0f0f0;" onerror="console.error('Image load error for ${item.log_id}')">` :
                             `<div class="no-image-placeholder">📷</div>`;
                         
                         return `
@@ -971,6 +975,31 @@
                             </div>
                         `;
                     }).join('');
+                    
+                    // DOM挿入後に各img要素にBlob URLを設定
+                    setTimeout(() => {
+                        const imgElements = container.querySelectorAll('img[data-image-index]');
+                        console.log(`🖼️ Setting Blob URLs for ${imgElements.length} images`);
+                        
+                        imgElements.forEach(img => {
+                            const index = parseInt(img.getAttribute('data-image-index'));
+                            const item = analysesWithBlobUrls[index];
+                            
+                            if (item && item.blob) {
+                                // 新しいBlob URLを作成（確実に有効なもの）
+                                const newBlobUrl = URL.createObjectURL(item.blob);
+                                img.src = newBlobUrl;
+                                img.onclick = () => showImageModal(newBlobUrl);
+                                console.log(`✅ Set Blob URL for ${item.log_id}: ${newBlobUrl}`);
+                                
+                                // 古いBlob URLをクリーンアップ（必要に応じて）
+                                img.addEventListener('load', () => {
+                                    console.log(`🖼️ Image loaded successfully: ${item.log_id}`);
+                                });
+                            }
+                        });
+                    }, 10); // 短い遅延でDOM更新を確実にする
+                    
                 } else {
                     container.innerHTML = '<p style="text-align: center; color: #666;">分析データがありません</p>';
                 }
