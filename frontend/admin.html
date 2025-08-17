@@ -1104,9 +1104,10 @@
                             continue;
                         }
                         
-                        if (imageResult && imageResult.blob) {
-                            // 新しいBlob URLを作成（確実に有効）
-                            const blobUrl = URL.createObjectURL(imageResult.blob);
+                        if (imageResult && (imageResult.blobUrl || imageResult.blob)) {
+                            // fetchImageWithAuth()で既に作成されたBlob URLを使用
+                            const blobUrl = imageResult.blobUrl || URL.createObjectURL(imageResult.blob);
+                            console.log(`🔗 Using blob URL: ${blobUrl} (from fetchImageWithAuth: ${!!imageResult.blobUrl})`);
                             
                             // img要素を作成
                             const imgElement = document.createElement('img');
@@ -1116,13 +1117,17 @@
                             imgElement.onclick = () => showImageModal(blobUrl);
                             
                             // Blobオブジェクトを要素に保持（GC防止）
-                            imgElement._blobData = imageResult.blob;
-                            imgElement._blobUrl = blobUrl;
+                            if (imageResult.blob) {
+                                imgElement._blobData = imageResult.blob;
+                                imgElement._blobUrl = blobUrl;
+                            }
                             
                             // エラーハンドリングの改善
                             imgElement.onerror = () => {
                                 console.error(`❌ Image load error for item ${itemIndex}, blobUrl: ${blobUrl}`);
-                                console.error(`Blob size: ${imageResult.blob.size}, type: ${imageResult.blob.type}`);
+                                if (imageResult.blob) {
+                                    console.error(`Blob size: ${imageResult.blob.size}, type: ${imageResult.blob.type}`);
+                                }
                             };
                             
                             // 成功時の処理
