@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理ダッシュボード - 観光アナライザー</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -1089,22 +1090,22 @@
                         console.log(`📸 Fetching image: ${imageUrl}`);
                         const imageResult = await fetchImageWithAuth(imageUrl);
                         
-                        if (imageResult && imageResult.blob) {
-                            // 新しいBlob URLを作成
-                            const newBlobUrl = URL.createObjectURL(imageResult.blob);
+                        if (imageResult && imageResult.blobUrl) {
+                            // 既に作成済みのBlob URLを使用
+                            const blobUrl = imageResult.blobUrl;
                             
                             // img要素を作成して置き換え
                             const imgElement = document.createElement('img');
-                            imgElement.src = newBlobUrl;
+                            imgElement.src = blobUrl;
                             imgElement.className = 'analysis-thumbnail';
                             imgElement.alt = '分析画像';
-                            imgElement.onclick = () => showImageModal(newBlobUrl);
+                            imgElement.onclick = () => showImageModal(blobUrl);
                             imgElement.onerror = () => console.error(`Image load error for item ${itemIndex}`);
                             
                             // placeholderを画像に置き換え
                             placeholder.parentNode.replaceChild(imgElement, placeholder);
                             
-                            console.log(`✅ Image loaded for item ${itemIndex}: ${newBlobUrl}`);
+                            console.log(`✅ Image loaded for item ${itemIndex}: ${blobUrl}`);
                         } else {
                             console.warn(`❌ Failed to fetch image for item ${itemIndex}`);
                             placeholder.innerHTML = '❌<br><small>読み込み失敗</small>';
