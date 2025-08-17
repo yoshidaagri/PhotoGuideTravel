@@ -212,6 +212,34 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
+        .image-placeholder {
+            width: 80px;
+            height: 80px;
+            background-color: #e9ecef;
+            border: 2px dashed #adb5bd;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image-placeholder:hover {
+            background-color: #dee2e6;
+            border-color: #868e96;
+        }
+
+        .image-placeholder small {
+            font-size: 10px;
+            margin-top: 4px;
+            line-height: 1.2;
+        }
+
         .no-image-placeholder {
             width: 80px;
             height: 80px;
@@ -594,7 +622,12 @@
             <!-- コンテンツ確認タブ -->
             <div id="contentTab" class="tab-content hidden">
                 <div class="dashboard-card">
-                    <h3>📸 直近の分析結果（10件）</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>📸 直近の分析結果（10件）</h3>
+                        <button onclick="refreshImages()" class="refresh-btn" style="padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            🔄 画像を再読み込み
+                        </button>
+                    </div>
                     <div id="recentAnalysis">
                         <div class="loading-spinner"></div>
                     </div>
@@ -889,7 +922,10 @@
             }
         }
 
-        // 直近分析結果読み込み
+        // 分析データ保存用（リフレッシュ機能で使用）
+        let currentAnalysisData = [];
+
+        // 直近分析結果読み込み（画像なし）
         async function loadRecentAnalysis() {
             const container = document.getElementById('recentAnalysis');
             container.innerHTML = '<div class="loading-spinner"></div>';
@@ -906,25 +942,12 @@
                 const data = await response.json();
                 
                 if (data.recentAnalyses && data.recentAnalyses.length > 0) {
-                    // 画像URLをBlob URLに変換
-                    console.log(`📋 Processing ${data.recentAnalyses.length} analysis items`);
-                    const analysesWithBlobUrls = await Promise.all(
-                        data.recentAnalyses.map(async (item, index) => {
-                            console.log(`📋 Item ${index}: image_thumbnail = ${item.image_thumbnail}`);
-                            if (item.image_thumbnail) {
-                                const imageResult = await fetchImageWithAuth(item.image_thumbnail);
-                                if (imageResult) {
-                                    console.log(`📋 Item ${index}: blobUrl = ${imageResult.blobUrl}`);
-                                    return { ...item, blobUrl: imageResult.blobUrl, blob: imageResult.blob };
-                                }
-                                return { ...item, blobUrl: null, blob: null };
-                            }
-                            console.log(`📋 Item ${index}: No image_thumbnail`);
-                            return item;
-                        })
-                    );
+                    // データを保存（リフレッシュで使用）
+                    currentAnalysisData = data.recentAnalyses;
                     
-                    container.innerHTML = analysesWithBlobUrls.map((item, index) => {
+                    console.log(`📋 Processing ${data.recentAnalyses.length} analysis items (no images)`);
+                    
+                    container.innerHTML = data.recentAnalyses.map((item, index) => {
                         const timestamp = new Date(item.timestamp).toLocaleString('ja-JP');
                         const type = item.analysis_type === 'store' ? '店舗観光' : '看板メニュー';
                         const typeIcon = item.analysis_type === 'store' ? '🏪' : '📋';
@@ -932,10 +955,11 @@
                         const status = item.error_occurred ? 'error' : 'success';
                         const statusText = item.error_occurred ? 'エラー' : '成功';
                         
-                        // 画像サムネイル部分（data属性でインデックス保持、後でBlob URL設定）
-                        console.log(`🖼️ Preparing thumbnail for ${item.log_id} (index: ${index})`);
-                        const thumbnailHtml = item.blob ? 
-                            `<img data-image-index="${index}" class="analysis-thumbnail" alt="分析画像" style="background: #f0f0f0;" onerror="console.error('Image load error for ${item.log_id}')">` :
+                        // 初回は画像プレースホルダー表示
+                        const thumbnailHtml = item.image_thumbnail ? 
+                            `<div class="image-placeholder" data-image-url="${item.image_thumbnail}" data-item-index="${index}">
+                                📷<br><small>画像を再読み込み<br>ボタンで表示</small>
+                             </div>` :
                             `<div class="no-image-placeholder">📷</div>`;
                         
                         return `
@@ -976,30 +1000,6 @@
                         `;
                     }).join('');
                     
-                    // DOM挿入後に各img要素にBlob URLを設定
-                    setTimeout(() => {
-                        const imgElements = container.querySelectorAll('img[data-image-index]');
-                        console.log(`🖼️ Setting Blob URLs for ${imgElements.length} images`);
-                        
-                        imgElements.forEach(img => {
-                            const index = parseInt(img.getAttribute('data-image-index'));
-                            const item = analysesWithBlobUrls[index];
-                            
-                            if (item && item.blob) {
-                                // 新しいBlob URLを作成（確実に有効なもの）
-                                const newBlobUrl = URL.createObjectURL(item.blob);
-                                img.src = newBlobUrl;
-                                img.onclick = () => showImageModal(newBlobUrl);
-                                console.log(`✅ Set Blob URL for ${item.log_id}: ${newBlobUrl}`);
-                                
-                                // 古いBlob URLをクリーンアップ（必要に応じて）
-                                img.addEventListener('load', () => {
-                                    console.log(`🖼️ Image loaded successfully: ${item.log_id}`);
-                                });
-                            }
-                        });
-                    }, 10); // 短い遅延でDOM更新を確実にする
-                    
                 } else {
                     container.innerHTML = '<p style="text-align: center; color: #666;">分析データがありません</p>';
                 }
@@ -1007,6 +1007,62 @@
             } catch (error) {
                 console.error('Error loading recent analysis:', error);
                 container.innerHTML = '<p style="color: red;">データの読み込みに失敗しました</p>';
+            }
+        }
+
+        // 画像リフレッシュ機能
+        async function refreshImages() {
+            const button = document.querySelector('.refresh-btn');
+            const originalText = button.textContent;
+            button.textContent = '🔄 読み込み中...';
+            button.disabled = true;
+            
+            try {
+                const placeholders = document.querySelectorAll('.image-placeholder[data-image-url]');
+                console.log(`🔄 Refreshing ${placeholders.length} images`);
+                
+                const refreshPromises = Array.from(placeholders).map(async (placeholder) => {
+                    const imageUrl = placeholder.getAttribute('data-image-url');
+                    const itemIndex = placeholder.getAttribute('data-item-index');
+                    
+                    try {
+                        console.log(`📸 Fetching image: ${imageUrl}`);
+                        const imageResult = await fetchImageWithAuth(imageUrl);
+                        
+                        if (imageResult && imageResult.blob) {
+                            // 新しいBlob URLを作成
+                            const newBlobUrl = URL.createObjectURL(imageResult.blob);
+                            
+                            // img要素を作成して置き換え
+                            const imgElement = document.createElement('img');
+                            imgElement.src = newBlobUrl;
+                            imgElement.className = 'analysis-thumbnail';
+                            imgElement.alt = '分析画像';
+                            imgElement.onclick = () => showImageModal(newBlobUrl);
+                            imgElement.onerror = () => console.error(`Image load error for item ${itemIndex}`);
+                            
+                            // placeholderを画像に置き換え
+                            placeholder.parentNode.replaceChild(imgElement, placeholder);
+                            
+                            console.log(`✅ Image refreshed for item ${itemIndex}: ${newBlobUrl}`);
+                        } else {
+                            console.warn(`❌ Failed to fetch image for item ${itemIndex}`);
+                            placeholder.innerHTML = '❌<br><small>読み込み失敗</small>';
+                        }
+                    } catch (error) {
+                        console.error(`Error refreshing image for item ${itemIndex}:`, error);
+                        placeholder.innerHTML = '❌<br><small>エラー</small>';
+                    }
+                });
+                
+                await Promise.all(refreshPromises);
+                console.log('✅ All images refreshed');
+                
+            } catch (error) {
+                console.error('Error during image refresh:', error);
+            } finally {
+                button.textContent = originalText;
+                button.disabled = false;
             }
         }
 
