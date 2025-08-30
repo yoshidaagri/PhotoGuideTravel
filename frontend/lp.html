@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>観光アナライザー - AI画像解析サービス</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="landing-page">
+    <div class="landing-container">
+        <!-- Header -->
+        <header class="landing-header">
+            <div class="header-content">
+                <div class="logo">
+                    🏔️ <span id="titleText">観光アナライザー</span>
+                </div>
+                <div class="header-actions">
+                    <button onclick="window.location.href='./login.html'" class="login-btn" id="loginBtn">
+                        ログイン / 新規登録
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 id="heroTitle">AI画像解析で観光をもっと楽しく</h1>
+                <p id="heroDescription">写真を撮るだけで観光地や料理の詳しい情報がわかる、画期的なサービスです</p>
+                
+                <!-- Language Selection -->
+                <div class="language-selection">
+                    <h3 id="selectLanguageText">言語を選択してください / Select Language</h3>
+                    <div class="language-buttons">
+                        <button class="lang-btn active" onclick="setLanguage('ja')" data-lang="ja">
+                            🇯🇵 日本語
+                        </button>
+                        <button class="lang-btn" onclick="setLanguage('ko')" data-lang="ko">
+                            🇰🇷 한국어
+                        </button>
+                        <button class="lang-btn" onclick="setLanguage('zh')" data-lang="zh">
+                            🇨🇳 简体中文
+                        </button>
+                        <button class="lang-btn" onclick="setLanguage('zh-tw')" data-lang="zh-tw">
+                            🇹🇼 繁體中文
+                        </button>
+                        <button class="lang-btn" onclick="setLanguage('en')" data-lang="en">
+                            🌍 English
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="window.location.href='./login.html'" class="cta-btn" id="ctaBtn">
+                    今すぐ始める
+                </button>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2 id="featuresTitle">サービスの特徴</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📸</div>
+                    <h3 id="feature1Title">画像解析</h3>
+                    <p id="feature1Desc">最新の技術で観光地や料理を瞬時に識別</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3 id="feature2Title">多言語対応</h3>
+                    <p id="feature2Desc">日本語・韓国語・中国語・英語に対応</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗾</div>
+                    <h3 id="feature3Title">地域特化</h3>
+                    <p id="feature3Desc">札幌・北海道の観光情報に特化した精度の高い解析</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="pricing-section">
+            <h2 id="pricingTitle">料金プラン</h2>
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <h3 id="freeTitle">無料プラン</h3>
+                    <div class="price">¥0</div>
+                    <ul class="features-list">
+                        <li id="freePlan1">月5回まで解析可能</li>
+                        <li id="freePlan2">基本機能すべて利用可能</li>
+                    </ul>
+                    <button onclick="window.location.href='./login.html'" class="plan-btn" id="freePlanBtn">
+                        無料で始める
+                    </button>
+                </div>
+                <div class="price-card featured">
+                    <div class="popular-badge" id="popularBadge">人気プラン</div>
+                    <h3 id="weekTitle">7日間プラン</h3>
+                    <div class="price">¥980</div>
+                    <ul class="features-list">
+                        <li id="weekPlan1">7日間無制限解析</li>
+                        <li id="weekPlan2">すべての機能が利用可能</li>
+                    </ul>
+                    <button onclick="window.location.href='./login.html'" class="plan-btn premium" id="weekPlanBtn">
+                        7日間プラン選択
+                    </button>
+                </div>
+                <div class="price-card">
+                    <h3 id="monthTitle">20日間プラン</h3>
+                    <div class="price">¥1,980</div>
+                    <ul class="features-list">
+                        <li id="monthPlan1">20日間無制限解析</li>
+                        <li id="monthPlan2">長期利用でお得</li>
+                    </ul>
+                    <button onclick="window.location.href='./login.html'" class="plan-btn" id="monthPlanBtn">
+                        20日間プラン選択
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <div class="footer-content">
+                <p>&copy; 2025 観光アナライザー. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="tokusho.html">特定商取引法に基づく表記</a>
+                    <a href="about.html">運営会社について</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Landing page translations
+        const landingTranslations = {
+            ja: {
+                title: "観光アナライザー",
+                loginBtn: "ログイン / 新規登録",
+                heroTitle: "AI画像解析で観光をもっと楽しく",
+                heroDescription: "写真を撮るだけで観光地や料理の詳しい情報がわかる、画期的なサービスです",
+                selectLanguage: "言語を選択してください / Select Language",
+                ctaBtn: "今すぐ始める",
+                featuresTitle: "サービスの特徴",
+                feature1Title: "画像解析",
+                feature1Desc: "最新の技術で観光地や料理を瞬時に識別",
+                feature2Title: "多言語対応", 
+                feature2Desc: "日本語・韓国語・中国語・英語に対応",
+                feature3Title: "地域特化",
+                feature3Desc: "札幌・北海道の観光情報に特化した精度の高い解析",
+                pricingTitle: "料金プラン",
+                freeTitle: "無料プラン",
+                freePlan1: "月5回まで解析可能",
+                freePlan2: "基本機能すべて利用可能",
+                freePlanBtn: "無料で始める",
+                popularBadge: "人気プラン",
+                weekTitle: "7日間プラン",
+                weekPlan1: "7日間無制限解析",
+                weekPlan2: "すべての機能が利用可能",
+                weekPlanBtn: "7日間プラン選択",
+                monthTitle: "20日間プラン", 
+                monthPlan1: "20日間無制限解析",
+                monthPlan2: "長期利用でお得",
+                monthPlanBtn: "20日間プラン選択"
+            },
+            ko: {
+                title: "관광 애널라이저",
+                loginBtn: "로그인 / 신규 가입",
+                heroTitle: "AI 이미지 분석으로 관광을 더욱 즐겁게",
+                heroDescription: "사진 한 장으로 관광지나 요리의 자세한 정보를 알 수 있는 혁신적인 서비스입니다",
+                selectLanguage: "언어를 선택해주세요 / Select Language",
+                ctaBtn: "지금 시작하기",
+                featuresTitle: "서비스 특징",
+                feature1Title: "이미지 분석",
+                feature1Desc: "최신 기술로 관광지나 요리를 즉시 식별",
+                feature2Title: "다국어 지원",
+                feature2Desc: "일본어・한국어・중국어・영어 지원",
+                feature3Title: "지역 특화",
+                feature3Desc: "삿포로・홋카이도 관광 정보에 특화된 고정밀 분석",
+                pricingTitle: "요금 플랜",
+                freeTitle: "무료 플랜",
+                freePlan1: "월 5회까지 분석 가능",
+                freePlan2: "기본 기능 모두 이용 가능",
+                freePlanBtn: "무료로 시작하기",
+                popularBadge: "인기 플랜",
+                weekTitle: "7일 플랜",
+                weekPlan1: "7일간 무제한 분석",
+                weekPlan2: "모든 기능 이용 가능",
+                weekPlanBtn: "7일 플랜 선택",
+                monthTitle: "20일 플랜",
+                monthPlan1: "20일간 무제한 분석",
+                monthPlan2: "장기 이용으로 저렴",
+                monthPlanBtn: "20일 플랜 선택"
+            },
+            zh: {
+                title: "旅游分析器",
+                loginBtn: "登录 / 注册",
+                heroTitle: "AI图像分析让旅游更有趣",
+                heroDescription: "只需拍一张照片就能了解观光地和料理的详细信息，这是一项划时代的服务",
+                selectLanguage: "请选择语言 / Select Language",
+                ctaBtn: "立即开始",
+                featuresTitle: "服务特色",
+                feature1Title: "图像分析",
+                feature1Desc: "采用最新技术即时识别观光地和料理",
+                feature2Title: "多语言支持",
+                feature2Desc: "支持日语・韩语・中文・英语",
+                feature3Title: "地区专业化",
+                feature3Desc: "专门针对札幌・北海道观光信息的高精度分析",
+                pricingTitle: "价格方案",
+                freeTitle: "免费方案",
+                freePlan1: "每月可分析5次",
+                freePlan2: "所有基本功能均可使用",
+                freePlanBtn: "免费开始",
+                popularBadge: "热门方案",
+                weekTitle: "7天方案",
+                weekPlan1: "7天无限制分析",
+                weekPlan2: "所有功能均可使用",
+                weekPlanBtn: "选择7天方案",
+                monthTitle: "20天方案",
+                monthPlan1: "20天无限制分析",
+                monthPlan2: "长期使用更优惠",
+                monthPlanBtn: "选择20天方案"
+            },
+            "zh-tw": {
+                title: "旅遊分析器",
+                loginBtn: "登入 / 註冊",
+                heroTitle: "AI圖像分析讓旅遊更有趣",
+                heroDescription: "只需拍一張照片就能了解觀光地和料理的詳細資訊，這是一項劃時代的服務",
+                selectLanguage: "請選擇語言 / Select Language",
+                ctaBtn: "立即開始",
+                featuresTitle: "服務特色",
+                feature1Title: "圖像分析",
+                feature1Desc: "採用最新技術即時識別觀光地和料理",
+                feature2Title: "多語言支援",
+                feature2Desc: "支援日語・韓語・中文・英語",
+                feature3Title: "地區專業化",
+                feature3Desc: "專門針對札幌・北海道觀光資訊的高精度分析",
+                pricingTitle: "價格方案",
+                freeTitle: "免費方案",
+                freePlan1: "每月可分析5次",
+                freePlan2: "所有基本功能均可使用",
+                freePlanBtn: "免費開始",
+                popularBadge: "熱門方案",
+                weekTitle: "7天方案",
+                weekPlan1: "7天無限制分析",
+                weekPlan2: "所有功能均可使用",
+                weekPlanBtn: "選擇7天方案",
+                monthTitle: "20天方案",
+                monthPlan1: "20天無限制分析",
+                monthPlan2: "長期使用更優惠",
+                monthPlanBtn: "選擇20天方案"
+            },
+            en: {
+                title: "Tourism Analyzer",
+                loginBtn: "Login / Sign Up",
+                heroTitle: "Make tourism more fun with AI image analysis",
+                heroDescription: "A revolutionary service that provides detailed information about tourist spots and cuisine just by taking a photo",
+                selectLanguage: "Please select language",
+                ctaBtn: "Get Started Now",
+                featuresTitle: "Service Features",
+                feature1Title: "Image Analysis",
+                feature1Desc: "Instantly identify tourist spots and cuisine with cutting-edge technology",
+                feature2Title: "Multilingual Support",
+                feature2Desc: "Supports Japanese, Korean, Chinese, and English",
+                feature3Title: "Regional Specialization", 
+                feature3Desc: "High-precision analysis specialized in Sapporo and Hokkaido tourism information",
+                pricingTitle: "Pricing Plans",
+                freeTitle: "Free Plan",
+                freePlan1: "Up to 5 analyses per month",
+                freePlan2: "All basic features available",
+                freePlanBtn: "Start Free",
+                popularBadge: "Popular Plan",
+                weekTitle: "7-Day Plan",
+                weekPlan1: "Unlimited analysis for 7 days",
+                weekPlan2: "All features available",
+                weekPlanBtn: "Select 7-Day Plan",
+                monthTitle: "20-Day Plan",
+                monthPlan1: "Unlimited analysis for 20 days",
+                monthPlan2: "Great value for extended use",
+                monthPlanBtn: "Select 20-Day Plan"
+            }
+        };
+
+        // Current language
+        let currentLanguage = 'ja';
+
+        // Set language function
+        function setLanguage(lang) {
+            console.log('🌐 Setting language to:', lang);
+            currentLanguage = lang;
+            
+            // Update active button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+            
+            // Update page content
+            updatePageContent(lang);
+            
+            // Save language preference
+            localStorage.setItem('selectedLanguage', lang);
+        }
+
+        // Update page content with selected language
+        function updatePageContent(lang) {
+            const t = landingTranslations[lang] || landingTranslations.ja;
+            
+            // Update all text elements
+            document.getElementById('titleText').textContent = t.title;
+            document.getElementById('loginBtn').textContent = t.loginBtn;
+            document.getElementById('heroTitle').textContent = t.heroTitle;
+            document.getElementById('heroDescription').textContent = t.heroDescription;
+            document.getElementById('selectLanguageText').textContent = t.selectLanguage;
+            document.getElementById('ctaBtn').textContent = t.ctaBtn;
+            document.getElementById('featuresTitle').textContent = t.featuresTitle;
+            document.getElementById('feature1Title').textContent = t.feature1Title;
+            document.getElementById('feature1Desc').textContent = t.feature1Desc;
+            document.getElementById('feature2Title').textContent = t.feature2Title;
+            document.getElementById('feature2Desc').textContent = t.feature2Desc;
+            document.getElementById('feature3Title').textContent = t.feature3Title;
+            document.getElementById('feature3Desc').textContent = t.feature3Desc;
+            document.getElementById('pricingTitle').textContent = t.pricingTitle;
+            document.getElementById('freeTitle').textContent = t.freeTitle;
+            document.getElementById('freePlan1').textContent = t.freePlan1;
+            document.getElementById('freePlan2').textContent = t.freePlan2;
+            document.getElementById('freePlanBtn').textContent = t.freePlanBtn;
+            document.getElementById('popularBadge').textContent = t.popularBadge;
+            document.getElementById('weekTitle').textContent = t.weekTitle;
+            document.getElementById('weekPlan1').textContent = t.weekPlan1;
+            document.getElementById('weekPlan2').textContent = t.weekPlan2;
+            document.getElementById('weekPlanBtn').textContent = t.weekPlanBtn;
+            document.getElementById('monthTitle').textContent = t.monthTitle;
+            document.getElementById('monthPlan1').textContent = t.monthPlan1;
+            document.getElementById('monthPlan2').textContent = t.monthPlan2;
+            document.getElementById('monthPlanBtn').textContent = t.monthPlanBtn;
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            console.log('📄 Landing page loaded');
+            
+            // Get saved language or default to Japanese
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'ja';
+            setLanguage(savedLanguage);
+        });
+    </script>
+</body>
+</html>

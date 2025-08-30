@@ -21,6 +21,10 @@
     --forest-green: #388E3C;
     --leaf-green: #9CCC65;
     --auth-overlay: rgba(0, 0, 0, 0.5);
+    --hero-gradient: linear-gradient(135deg, rgba(46, 125, 50, 0.1) 0%, rgba(102, 187, 106, 0.1) 100%);
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --text-primary: #333;
+    --text-secondary: #666;
 }
 
 body {
@@ -2132,5 +2136,463 @@ body {
     
     .copyright {
         font-size: 0.65rem;
+    }
+}
+
+/* ================================================================
+   LANDING PAGE STYLES (lp.html)
+   ================================================================ */
+
+.landing-page {
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    font-family: 'Roboto', 'BIZ UDPGothic', sans-serif;
+}
+
+.landing-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Landing Header */
+.landing-header {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+}
+
+.landing-header .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.landing-header .logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.login-btn {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+}
+
+.login-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4);
+}
+
+/* Hero Section */
+.hero-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    background: var(--hero-gradient);
+}
+
+.hero-content {
+    max-width: 800px;
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+/* Language Selection */
+.language-selection {
+    margin: 3rem 0;
+}
+
+.language-selection h3 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.language-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.lang-btn {
+    background: var(--card-bg);
+    border: 2px solid var(--glass-border);
+    padding: 0.8rem 1.2rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    color: var(--text-primary);
+}
+
+.lang-btn:hover {
+    border-color: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(46, 125, 50, 0.2);
+}
+
+.lang-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 8px 25px rgba(46, 125, 50, 0.3);
+}
+
+/* CTA Button */
+.cta-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(46, 125, 50, 0.3);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(46, 125, 50, 0.4);
+}
+
+/* Features Section */
+.features-section {
+    padding: 5rem 2rem;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+}
+
+.features-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 3rem;
+}
+
+.features-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Pricing Section */
+.pricing-section {
+    padding: 5rem 2rem;
+    background: var(--hero-gradient);
+}
+
+.pricing-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 3rem;
+}
+
+.pricing-grid {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.price-card {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--glass-border);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.price-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.price-card.featured {
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.price-card.featured:hover {
+    transform: scale(1.08) translateY(-5px);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.price-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.features-list {
+    list-style: none;
+    margin-bottom: 2rem;
+}
+
+.features-list li {
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    position: relative;
+}
+
+.features-list li::before {
+    content: "✅";
+    margin-right: 0.5rem;
+}
+
+.plan-btn {
+    width: 100%;
+    background: var(--primary-light);
+    color: white;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.plan-btn:hover {
+    background: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4);
+}
+
+.plan-btn.premium {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Landing Footer */
+.landing-footer {
+    background: var(--primary-color);
+    color: white;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.landing-footer .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.landing-footer .footer-links {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.landing-footer .footer-links a {
+    color: white;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.landing-footer .footer-links a:hover {
+    opacity: 1;
+}
+
+/* Responsive Design for Landing Page */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero-content p {
+        font-size: 1rem;
+    }
+    
+    .language-buttons {
+        gap: 0.5rem;
+    }
+    
+    .lang-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .features-section h2,
+    .pricing-section h2 {
+        font-size: 2rem;
+    }
+    
+    .features-section,
+    .pricing-section {
+        padding: 3rem 1rem;
+    }
+    
+    .feature-card,
+    .price-card {
+        padding: 2rem;
+    }
+    
+    .pricing-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .price-card.featured {
+        transform: none;
+    }
+    
+    .price-card.featured:hover {
+        transform: translateY(-5px);
+    }
+}
+
+@media (max-width: 480px) {
+    .landing-header .header-content {
+        padding: 0 1rem;
+    }
+    
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+    
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+    
+    .language-buttons {
+        grid-template-columns: repeat(2, 1fr);
+        display: grid;
+    }
+    
+    .cta-btn {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
+    
+    .price-card {
+        padding: 1.5rem;
+    }
+    
+    .landing-footer .footer-links {
+        flex-direction: column;
+        gap: 1rem;
     }
 }

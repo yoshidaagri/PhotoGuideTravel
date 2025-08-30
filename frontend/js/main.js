@@ -347,7 +347,7 @@ async function handleAnalyzeClick() {
     
     if (!token) {
         showMessage('認証トークンが見つかりません。再ログインしてください。', 'error');
-        window.location.href = './login.html';
+        window.location.href = './lp.html';
         return;
     }
     
@@ -389,7 +389,7 @@ async function handleAnalyzeClick() {
             
             showMessage('認証が無効です。再ログインしてください。', 'error');
             setTimeout(() => {
-                window.location.href = './login.html';
+                window.location.href = './lp.html';
             }, 2000);
         } else if (error.message.includes('403')) {
             // Usage limit exceeded - show upgrade modal
@@ -1106,7 +1106,7 @@ async function proceedToPayment() {
     if (!isUserAuthenticated()) {
         showMessage('決済にはログインが必要です', 'info');
         closeUpgradeModal();
-        window.location.href = './login.html';
+        window.location.href = './lp.html';
         return;
     }
     

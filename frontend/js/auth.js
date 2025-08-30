@@ -155,9 +155,9 @@ function forceClearAndRelogin() {
     
     showMessage('キャッシュをクリアしました。再ログインしてください。', 'info');
     
-    // Redirect to login page
+    // Redirect to landing page
     setTimeout(() => {
-        window.location.href = './login.html';
+        window.location.href = './lp.html';
     }, 2000);
 }
 
@@ -175,15 +175,15 @@ async function logout() {
         // Show logout message
         showMessage('ログアウトしました', 'info');
         
-        // Redirect to login page after short delay
+        // Redirect to landing page after short delay
         setTimeout(() => {
-            window.location.href = './login.html';
+            window.location.href = './lp.html';
         }, 1500);
         
     } catch (error) {
         console.error('🚨 Logout error:', error);
         // Force redirect even if error occurs
-        window.location.href = './login.html';
+        window.location.href = './lp.html';
     }
 }
 
@@ -224,7 +224,7 @@ function showMainApplication() {
         
     } catch (error) {
         console.error('🚨 Error showing main application:', error);
-        window.location.href = './login.html';
+        window.location.href = './lp.html';
     }
 }
 

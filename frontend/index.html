@@ -262,13 +262,13 @@
                         }
                     }, 500); // 500ms後に実行して確実に反映
                 } else {
-                    console.log('❌ User not authenticated, redirecting to login');
-                    window.location.href = './login.html';
+                    console.log('❌ User not authenticated, redirecting to landing page');
+                    window.location.href = './lp.html';
                 }
             } catch (error) {
                 console.error('🚨 Authentication check error:', error);
                 console.error('🚨 Error stack:', error.stack);
-                window.location.href = './login.html';
+                window.location.href = './lp.html';
             }
         });
     </script>

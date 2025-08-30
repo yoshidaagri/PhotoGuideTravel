@@ -1,0 +1,42 @@
+{
+  "analysis_date": "2025-08-17T16:52:56.417323",
+  "data_source": "ai-tourism-poc-analyze-logs-dev",
+  "sample_size": 37,
+  "statistics": {
+    "average_ms": 9560.22,
+    "average_sec": 9.56,
+    "median_ms": 9464,
+    "median_sec": 9.46,
+    "min_ms": 6142,
+    "min_sec": 6.14,
+    "max_ms": 14332,
+    "max_sec": 14.33,
+    "standard_deviation_ms": 2094.15,
+    "percentiles": {
+      "75th_ms": 10681.5,
+      "90th_ms": 13619.6,
+      "95th_ms": 14161.0
+    }
+  },
+  "performance_distribution": {
+    "fast_responses": {
+      "count": 9,
+      "percentage": 24.3,
+      "description": "< 8秒"
+    },
+    "medium_responses": {
+      "count": 23,
+      "percentage": 62.2,
+      "description": "8-12秒"
+    },
+    "slow_responses": {
+      "count": 5,
+      "percentage": 13.5,
+      "description": "> 12秒"
+    }
+  },
+  "recommendations": [
+    "平均応答時間は良好 - 現在の設定を維持",
+    "最大応答時間が14秒超 - タイムアウト設定の見直し推奨"
+  ]
+}

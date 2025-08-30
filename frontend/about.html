@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>運営会社について - 観光アナライザー</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+    <link rel="stylesheet" href="css/styles.css?v=20250824000000">
+    <style>
+        .about-content {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--glass-bg);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow);
+            line-height: 1.8;
+        }
+        
+        .about-title {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .about-section {
+            margin-bottom: 3rem;
+        }
+        
+        .about-section h2 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-light);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+        
+        .about-section h3 {
+            color: var(--forest-green);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .developer-profile {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .service-features {
+            background: linear-gradient(135deg, var(--nature-accent), var(--leaf-green));
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        
+        .service-features h3 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            margin-bottom: 0.8rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            content: "🌟";
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .mission-statement {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .contact-section {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 10px;
+        }
+        
+        .contact-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            min-width: 2rem;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin: 3rem 0;
+        }
+        
+        .back-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .back-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+        }
+        
+        .highlight-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .tech-item {
+            background: rgba(46, 125, 50, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .tech-item h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .about-content {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .about-title {
+                font-size: 1.5rem;
+            }
+            
+            .tech-stack {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .contact-icon {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header-content">
+                <div class="header-row-1">
+                    <div class="logo">
+                        🏔️ <span>観光アナライザー</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="container">
+            <div class="about-content">
+                <h1 class="about-title">運営会社について</h1>
+                
+                <div class="mission-statement">
+                    <h2>🎯 私たちのミッション</h2>
+                    <p>AI技術と多言語対応により、日本の美しい観光地と食文化を世界中の旅行者に届け、<br>より豊かで深い観光体験を創造します。</p>
+                </div>
+                
+                <div class="about-section">
+                    <h2>🏢 運営事業者について</h2>
+                    <div class="developer-profile">
+                        <h3>吉田中小企業診断士事務所</h3>
+                        <p><strong>代表者:</strong> 吉田 学</p>
+                        <p><strong>所在地:</strong> 〒064-0944 北海道札幌市中央区円山西町四丁目4番</p>
+                        <p><strong>設立:</strong> 2025年8月（サービス開始）</p>
+                        <p><strong>事業内容:</strong> AI画像解析技術を活用した観光支援サービスの開発・運営</p>
+                    </div>
+                </div>
+                
+                <div class="about-section">
+                    <h2>🚀 サービスについて</h2>
+                    <div class="service-features">
+                        <h3>主要機能</h3>
+                        <ul class="feature-list">
+                            <li>AI画像解析による観光地・店舗・料理の詳細分析</li>
+                            <li>多言語対応（日本語・韓国語・中国語・英語）</li>
+                            <li>文化的配慮情報とアレルギー情報の提供</li>
+                            <li>リアルタイム翻訳機能</li>
+                            <li>個人情報保護に配慮した安全な画像処理</li>
+                            <li>使いやすいモバイル対応インターフェース</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="about-section">
+                    <h2>📞 お問い合わせ</h2>
+                    <div class="contact-section">
+                        <div class="contact-item">
+                            <div class="contact-icon">📧</div>
+                            <div>
+                                <strong>メール:</strong><br>
+                                yoshidaagri@gmail.com<br>
+                                <small>（お返事まで1-2営業日お時間をいただく場合があります）</small>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">🏢</div>
+                            <div>
+                                <strong>所在地:</strong><br>
+                                〒064-0944<br>
+                                北海道札幌市中央区円山西町四丁目4番
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">🌐</div>
+                            <div>
+                                <strong>サービスURL:</strong><br>
+                                https://anatri.net/
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="back-link">
+                    <a href="index.html" class="back-btn">🔙 メインページに戻る</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <p class="copyright">© 2025 観光アナライザー. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="tokusho.html" class="footer-link">特定商取引法に基づく表記</a>
+                    <span class="footer-separator">|</span>
+                    <a href="about.html" class="footer-link">運営会社について</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
