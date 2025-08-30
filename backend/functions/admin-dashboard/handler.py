@@ -21,6 +21,8 @@ s3_client = boto3.client('s3')
 
 # 環境変数
 ADMIN_SECRET = os.environ.get('ADMIN_SECRET', 'admin-secret-key-2024')
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'tourism2024')
 USERS_TABLE = os.environ.get('USERS_TABLE', 'ai-tourism-poc-users-dev')
 IMAGES_TABLE = os.environ.get('IMAGES_TABLE', 'ai-tourism-poc-images-dev')
 ANALYZE_LOGS_TABLE = os.environ.get('ANALYZE_LOGS_TABLE', 'ai-tourism-poc-analyze-logs-dev')
@@ -78,7 +80,11 @@ def lambda_handler(event, context):
         if proxy_path == 'login' and method == 'POST':
             return handle_admin_login(event, headers)
         
-        # 以降は認証必須
+        # image/proxy は独自認証（クエリパラメーター対応）
+        if proxy_path.startswith('image/'):
+            return handle_image_proxy(event, headers)
+        
+        # 以降は認証必須（ヘッダー認証）
         auth_result = verify_admin_token(event)
         if not auth_result['authorized']:
             return {
@@ -119,10 +125,6 @@ def lambda_handler(event, context):
         elif proxy_path == 'content/recent':
             return handle_recent_content(headers)
         
-        # image/proxy - 画像プロキシ（認証済み）
-        elif proxy_path.startswith('image/'):
-            return handle_image_proxy(event, headers)
-        
         # 404
         return {
             'statusCode': 404,
@@ -145,8 +147,8 @@ def handle_admin_login(event, headers):
         username = body.get('username', '')
         password = body.get('password', '')
         
-        # 簡易認証（本番環境では強化必要）
-        if username == 'admin' and password == 'tourism2024':
+        # 環境変数から管理者認証情報を取得
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             # JWTトークン生成
             payload = {
                 'username': username,
@@ -608,81 +610,62 @@ def handle_location_stats(headers):
         }
 
 def handle_recent_content(headers):
-    """直近の分析結果（画像サムネイル付き）"""
+    """直近の分析結果（analyze-logs-devから取得）"""
     try:
-        # S3から最新画像10件を直接取得
-        response = s3_client.list_objects_v2(
-            Bucket=S3_BUCKET,
-            Prefix='users/',
-            MaxKeys=50  # 余裕を持って取得
+        # analyze-logs-devテーブルから最新5件を取得
+        table = dynamodb.Table(ANALYZE_LOGS_TABLE)
+        
+        # テーブル全体をスキャンして真の最新5件を取得
+        response = table.scan(
+            ProjectionExpression='log_id, created_at_jst, analysis_type, user_id, user_email, kekka_summary, processing_time_ms'
+            # Limitなし = 全件取得でcreated_at_jstの真の最新順を保証
         )
         
-        # 最新の画像ファイルを選択
-        images = []
-        if 'Contents' in response:
-            for obj in response['Contents']:
-                if obj['Key'].endswith('.jpg') or obj['Key'].endswith('.png'):
-                    images.append({
-                        'key': obj['Key'],
-                        'last_modified': obj['LastModified'],
-                        'size': obj['Size']
-                    })
+        if 'Items' not in response or len(response['Items']) == 0:
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'body': json.dumps({'recentAnalyses': []})
+            }
         
-        # 日時でソート（最新順）
-        images.sort(key=lambda x: x['last_modified'], reverse=True)
-        images = images[:10]  # 最新10件
+        # created_at_jst(分析実行日時)で降順ソート（最新順）
+        items = response['Items']
+        items.sort(key=lambda x: x.get('created_at_jst', ''), reverse=True)
+        recent_items = items[:5]  # 真の最新5件に制限
         
-        # 画像情報から表示用データを作成
+        # レスポンス用データ作成
         recent_analyses = []
-        for img in images:
-            # S3キーからユーザー情報を抽出
-            # パス形式: users/{user_email}/images/20250816_142342_18702292.jpg
-            path_parts = img['key'].split('/')
-            if len(path_parts) >= 3:
-                user_email = path_parts[1]
-                filename = path_parts[-1]
-            else:
-                continue
-            
+        for item in recent_items:
             # ユーザーID匿名化
-            if user_email and '@' in user_email:
-                email_parts = user_email.split('@')
+            user_id = item.get('user_id', 'unknown')
+            if '@' in user_id:
+                email_parts = user_id.split('@')
                 anonymized_id = email_parts[0][:3] + '***@' + email_parts[1]
             else:
-                anonymized_id = user_email[:10] + '***' if len(user_email) > 10 else user_email
+                anonymized_id = user_id[:10] + '***' if len(user_id) > 10 else user_id
             
-            # Lambda プロキシURL でサムネイル生成（S3パブリックアクセスブロック回避）
-            try:
-                # API Gateway URL でプロキシエンドポイント作成
-                api_base_url = "https://f4n095fm2j.execute-api.ap-northeast-1.amazonaws.com/dev"
-                proxy_url = f"{api_base_url}/admin/image/proxy/{img['key']}"
-                image_thumbnail = proxy_url
-                logger.info(f"Generated proxy URL for {img['key']}: {proxy_url}")
-            except Exception as img_error:
-                logger.warning(f"Proxy URL generation failed for {img['key']}: {str(img_error)}")
-                image_thumbnail = None
+            # 分析タイプを判定
+            analysis_type = item.get('analysis_type', 'unknown')
             
             recent_analyses.append({
-                'log_id': f"IMG_{filename.split('_')[1]}_{filename.split('_')[2].split('.')[0]}",
-                'timestamp': img['last_modified'].strftime('%Y-%m-%dT%H:%M:%S+09:00'),
+                'log_id': item.get('log_id', 'unknown'),
+                'timestamp': item.get('created_at_jst', ''),
                 'user_id': anonymized_id,
-                'analysis_type': 'store',  # デフォルト
-                'language': 'ja',  # デフォルト
-                'location_name': f'画像ファイル: {filename}',
-                'image_thumbnail': image_thumbnail,
-                'image_size_kb': img['size'] // 1024,
-                'processing_time_ms': 0,
-                'ai_model': 'direct-s3',
-                'error_occurred': False,
-                'result_summary': f'S3から直接取得した画像ファイル: {img["key"]}'
+                'user_email': item.get('user_email', 'unknown'),
+                'analysis_type': analysis_type,
+                'kekka_summary': item.get('kekka_summary', '分析結果なし'),
+                'processing_time_ms': decimal_to_int(item.get('processing_time_ms', 0)),
+                'error_occurred': False
             })
+        
+        logger.info(f"Recent analysis loaded: {len(recent_analyses)} items from analyze-logs-dev")
         
         return {
             'statusCode': 200,
             'headers': headers,
             'body': json.dumps({
                 'recentAnalyses': recent_analyses,
-                'totalCount': len(images),
+                'totalCount': len(recent_analyses),
                 'timestamp': get_jst_isoformat()
             })
         }
@@ -698,6 +681,36 @@ def handle_recent_content(headers):
 def handle_image_proxy(event, headers):
     """画像プロキシエンドポイント - S3パブリックアクセスブロックを回避"""
     try:
+        # クエリパラメーター認証
+        query_params = event.get('queryStringParameters', {}) or {}
+        token = query_params.get('token')
+        
+        if token:
+            # クエリパラメーターからトークン検証
+            try:
+                payload = pyjwt.decode(token, ADMIN_SECRET, algorithms=['HS256'])
+                if payload.get('role') != 'admin':
+                    return {
+                        'statusCode': 401,
+                        'headers': headers,
+                        'body': json.dumps({'error': 'Unauthorized'})
+                    }
+            except (pyjwt.ExpiredSignatureError, pyjwt.InvalidTokenError):
+                return {
+                    'statusCode': 401,
+                    'headers': headers,
+                    'body': json.dumps({'error': 'Invalid token'})
+                }
+        else:
+            # ヘッダー認証にフォールバック
+            auth_result = verify_admin_token(event)
+            if not auth_result['authorized']:
+                return {
+                    'statusCode': 401,
+                    'headers': headers,
+                    'body': json.dumps({'error': 'Unauthorized'})
+                }
+        
         # パス取得（image/proxy/S3キー形式）
         path_parameters = event.get('pathParameters', {})
         proxy_path = path_parameters.get('proxy', '') if path_parameters else ''

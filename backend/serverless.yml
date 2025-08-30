@@ -106,6 +106,8 @@ functions:
     memorySize: 512
     environment:
       ADMIN_SECRET: ${env:ADMIN_SECRET, 'admin-secret-key-2024'}
+      ADMIN_USERNAME: ${env:ADMIN_USERNAME, 'admin'}
+      ADMIN_PASSWORD: ${env:ADMIN_PASSWORD, 'tourism2024'}
       USERS_TABLE: ${self:service}-users-${self:provider.stage}
       IMAGES_TABLE: ${self:service}-images-${self:provider.stage}
       ANALYZE_LOGS_TABLE: ${self:service}-analyze-logs-${self:provider.stage}

@@ -185,73 +185,66 @@
         }
 
         .recent-analysis-item {
-            display: flex;
-            gap: 1rem;
             padding: 1rem;
-            border-bottom: 1px solid #f0f0f0;
-            align-items: flex-start;
-            transition: background-color 0.3s ease;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: white;
+            transition: box-shadow 0.3s ease;
         }
 
         .recent-analysis-item:hover {
-            background-color: #f8f9fa;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .analysis-thumbnail {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 12px;
-            cursor: pointer;
-            flex-shrink: 0;
-            border: 2px solid #e0e0e0;
-            transition: transform 0.3s ease;
-        }
-
-        .analysis-thumbnail:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .image-placeholder {
-            width: 80px;
-            height: 80px;
-            background-color: #e9ecef;
-            border: 2px dashed #adb5bd;
-            border-radius: 8px;
+        .analysis-header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 24px;
-            color: #6c757d;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
         }
 
-        .image-placeholder:hover {
-            background-color: #dee2e6;
-            border-color: #868e96;
+        .analysis-header h4 {
+            margin: 0;
+            color: #333;
+            font-size: 1.1rem;
         }
 
-        .image-placeholder small {
-            font-size: 10px;
-            margin-top: 4px;
-            line-height: 1.2;
-        }
-
-        .no-image-placeholder {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+        .status-badge {
+            padding: 0.25rem 0.5rem;
             border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-badge.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .analysis-description {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .analysis-description p {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .analysis-meta {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: #999;
-            flex-shrink: 0;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: #666;
         }
 
         .analysis-info {
@@ -624,16 +617,7 @@
             <div id="contentTab" class="tab-content hidden">
                 <div class="dashboard-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3>📸 直近の分析結果（10件）</h3>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <small id="lastUpdate" style="color: #666;">※ 新規解析後は5秒待機推奨</small>
-                            <button onclick="refreshContent()" class="refresh-btn" style="padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                🔄 最新データを取得
-                            </button>
-                            <button id="autoRefreshBtn" onclick="toggleAutoRefresh()" style="padding: 0.5rem 1rem; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                ⏸️ 自動更新OFF
-                            </button>
-                        </div>
+                        <h3>📊 直近の分析ログ（最大5件）</h3>
                     </div>
                     <div id="recentAnalysis">
                         <div class="loading-spinner"></div>
@@ -818,132 +802,10 @@
                 loadSystemMonitoring();
             }
             
-            // コンテンツタブ以外では自動更新を停止
-            if (tabName !== 'content' && autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-                const autoBtn = document.getElementById('autoRefreshBtn');
-                if (autoBtn) {
-                    autoBtn.textContent = '⏸️ 自動更新OFF';
-                    autoBtn.style.background = '#6c757d';
-                }
-            }
         }
 
-        // 認証付きで画像を取得してBlob URLを作成
-        async function fetchImageWithAuth(imageUrl) {
-            console.log(`🖼️ Fetching image: ${imageUrl}`);
-            try {
-                const response = await fetch(imageUrl, {
-                    headers: {
-                        'Authorization': `Bearer ${adminToken}`
-                    }
-                });
-                
-                const contentType = response.headers.get('Content-Type') || '';
-                console.log(`🖼️ Response status: ${response.status}, Content-Type: ${contentType}`);
-                
-                if (!response.ok) {
-                    console.warn(`❌ Failed to fetch image: ${imageUrl} - Status: ${response.status}`);
-                    return null;
-                }
-                
-                // Content-Typeがapplication/jsonの場合、Base64データの可能性がある
-                if (contentType.includes('application/json')) {
-                    console.log(`🖼️ JSON response detected, parsing for Base64 data`);
-                    const jsonData = await response.json();
-                    
-                    // レスポンスがBase64文字列の場合
-                    if (typeof jsonData === 'string' && (jsonData.startsWith('/9j/') || jsonData.startsWith('iVBORw0KGgo') || jsonData.startsWith('UklGR'))) {
-                        console.log(`🖼️ Base64 string detected in JSON: ${jsonData.substring(0, 50)}...`);
-                        try {
-                            const binaryString = atob(jsonData);
-                            const bytes = new Uint8Array(binaryString.length);
-                            for (let i = 0; i < binaryString.length; i++) {
-                                bytes[i] = binaryString.charCodeAt(i);
-                            }
-                            const mimeType = jsonData.startsWith('/9j/') ? 'image/jpeg' : 
-                                           jsonData.startsWith('iVBORw0KGgo') ? 'image/png' : 'image/jpeg';
-                            const blob = new Blob([bytes], { type: mimeType });
-                            const blobUrl = URL.createObjectURL(blob);
-                            console.log(`✅ Created blob URL from Base64: ${blobUrl}`);
-                            return { blobUrl, blob };
-                        } catch (base64Error) {
-                            console.error('❌ Failed to decode Base64:', base64Error);
-                            return null;
-                        }
-                    }
-                    // JSONオブジェクトの場合、image_dataフィールドをチェック
-                    else if (jsonData.image_data) {
-                        console.log(`🖼️ Base64 data found in image_data field`);
-                        try {
-                            const binaryString = atob(jsonData.image_data);
-                            const bytes = new Uint8Array(binaryString.length);
-                            for (let i = 0; i < binaryString.length; i++) {
-                                bytes[i] = binaryString.charCodeAt(i);
-                            }
-                            const blob = new Blob([bytes], { type: 'image/jpeg' });
-                            const blobUrl = URL.createObjectURL(blob);
-                            console.log(`✅ Created blob URL from JSON image_data: ${blobUrl}`);
-                            return { blobUrl, blob };
-                        } catch (base64Error) {
-                            console.error('❌ Failed to decode image_data:', base64Error);
-                            return null;
-                        }
-                    } else {
-                        console.warn(`❌ Unexpected JSON structure:`, jsonData);
-                        return null;
-                    }
-                }
-                // Content-Typeが画像の場合、直接Blobとして処理
-                else if (contentType.includes('image/')) {
-                    console.log(`🖼️ Direct image response detected`);
-                    const blob = await response.blob();
-                    // Blobオブジェクトも一緒に返して参照を保持
-                    const blobUrl = URL.createObjectURL(blob);
-                    console.log(`✅ Created blob URL from direct image: ${blobUrl}`);
-                    return { blobUrl, blob };
-                }
-                // その他の場合、テキストとして読み取ってBase64かチェック
-                else {
-                    console.log(`🖼️ Unknown content type, checking as text`);
-                    const responseText = await response.text();
-                    console.log(`🖼️ Response preview: ${responseText.substring(0, 100)}...`);
-                    
-                    // Base64データかどうか確認
-                    if (responseText.startsWith('/9j/') || responseText.startsWith('iVBORw0KGgo') || responseText.startsWith('UklGR')) {
-                        console.log(`🖼️ Base64 image data detected in text response`);
-                        try {
-                            const binaryString = atob(responseText.trim());
-                            const bytes = new Uint8Array(binaryString.length);
-                            for (let i = 0; i < binaryString.length; i++) {
-                                bytes[i] = binaryString.charCodeAt(i);
-                            }
-                            const mimeType = responseText.startsWith('/9j/') ? 'image/jpeg' : 
-                                           responseText.startsWith('iVBORw0KGgo') ? 'image/png' : 'image/jpeg';
-                            const blob = new Blob([bytes], { type: mimeType });
-                            const blobUrl = URL.createObjectURL(blob);
-                            console.log(`✅ Created blob URL from text Base64: ${blobUrl}`);
-                            return { blobUrl, blob };
-                        } catch (base64Error) {
-                            console.error('❌ Failed to decode text Base64:', base64Error);
-                            return null;
-                        }
-                    } else {
-                        console.warn(`❌ Unrecognized response format for image URL: ${imageUrl}`);
-                        return null;
-                    }
-                }
-            } catch (error) {
-                console.error('❌ Error fetching image:', error);
-                return null;
-            }
-        }
 
-        // 分析データ保存用（リフレッシュ機能で使用）
-        let currentAnalysisData = [];
-
-        // 直近分析結果読み込み（画像なし）
+        // 直近分析結果読み込み
         async function loadRecentAnalysis() {
             const container = document.getElementById('recentAnalysis');
             container.innerHTML = '<div class="loading-spinner"></div>';
@@ -960,59 +822,37 @@
                 const data = await response.json();
                 
                 if (data.recentAnalyses && data.recentAnalyses.length > 0) {
-                    // データを保存（リフレッシュで使用）
-                    currentAnalysisData = data.recentAnalyses;
-                    
-                    console.log(`📋 Processing ${data.recentAnalyses.length} analysis items (no images)`);
+                    console.log(`📋 Processing ${data.recentAnalyses.length} analysis items from analyze-logs-dev`);
                     
                     container.innerHTML = data.recentAnalyses.map((item, index) => {
                         const timestamp = new Date(item.timestamp).toLocaleString('ja-JP');
-                        const type = item.analysis_type === 'store' ? '店舗観光' : '看板メニュー';
-                        const typeIcon = item.analysis_type === 'store' ? '🏪' : '📋';
-                        const languageFlag = getLanguageFlag(item.language);
+                        
+                        // 分析タイプを判定
+                        const type = item.analysis_type === 'store' ? '店舗観光' : 
+                                   item.analysis_type === 'menu' ? '看板メニュー' : '分析済み';
+                        const typeIcon = item.analysis_type === 'store' ? '🏪' : 
+                                       item.analysis_type === 'menu' ? '📋' : '📊';
+                        
                         const status = item.error_occurred ? 'error' : 'success';
                         const statusText = item.error_occurred ? 'エラー' : '成功';
                         
-                        // 初回は画像プレースホルダー表示
-                        const thumbnailHtml = item.image_thumbnail ? 
-                            `<div class="image-placeholder" data-image-url="${item.image_thumbnail}" data-item-index="${index}">
-                                📷<br><small>画像を再読み込み<br>ボタンで表示</small>
-                             </div>` :
-                            `<div class="no-image-placeholder">📷</div>`;
+                        // kekka_summaryを取得（全文表示）
+                        const kekka = item.kekka_summary || '分析結果なし';
                         
                         return `
-                            <div class="recent-analysis-item">
-                                ${thumbnailHtml}
-                                <div class="analysis-info">
-                                    <div class="analysis-title">${item.location_name}</div>
-                                    <div class="analysis-meta">
-                                        <div class="analysis-meta-item">
-                                            <span>📅</span>
-                                            <span>${timestamp}</span>
-                                        </div>
-                                        <div class="analysis-meta-item">
-                                            <span>👤</span>
-                                            <span>${item.user_id}</span>
-                                        </div>
-                                        <div class="analysis-meta-item">
-                                            <span>${typeIcon}</span>
-                                            <span>${type}</span>
-                                        </div>
-                                        <div class="analysis-meta-item">
-                                            <span>${languageFlag}</span>
-                                            <span>${item.language.toUpperCase()}</span>
-                                        </div>
-                                        <div class="analysis-meta-item">
-                                            <span class="status-badge status-${status}">${statusText}</span>
-                                        </div>
-                                    </div>
-                                    <div class="performance-info">
-                                        <span>📊 ${item.image_size_kb}KB</span>
-                                        <span>⏱️ ${item.processing_time_ms}ms</span>
-                                        <span>🤖 ${item.ai_model}</span>
-                                        <span>🏷️ ${item.log_id}</span>
-                                    </div>
-                                    ${item.result_summary ? `<div class="analysis-summary">${item.result_summary}</div>` : ''}
+                            <div class="recent-analysis-item" style="border-left: 4px solid ${status === 'success' ? '#28a745' : '#dc3545'};">
+                                <div class="analysis-header">
+                                    <h4>${typeIcon} ${type} - ${item.user_email} (${item.log_id})</h4>
+                                    <span class="status-badge ${status}">${statusText}</span>
+                                </div>
+                                <div class="analysis-description">
+                                    <p><strong>分析結果:</strong> ${kekka}</p>
+                                </div>
+                                <div class="analysis-meta">
+                                    <span>📅 ${timestamp}</span>
+                                    <span>👤 ${item.user_email}</span>
+                                    <span>🏷️ ${item.analysis_type}</span>
+                                    <span>⏱️ ${item.processing_time_ms}ms</span>
                                 </div>
                             </div>
                         `;
@@ -1028,143 +868,6 @@
             }
         }
 
-        // 自動リフレッシュタイマー
-        let autoRefreshInterval = null;
-        
-        // 自動リフレッシュの開始/停止
-        function toggleAutoRefresh() {
-            const autoBtn = document.getElementById('autoRefreshBtn');
-            
-            if (autoRefreshInterval) {
-                // 停止
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-                autoBtn.textContent = '⏸️ 自動更新OFF';
-                autoBtn.style.background = '#6c757d';
-                console.log('🛑 Auto refresh stopped');
-            } else {
-                // 開始（30秒ごと）
-                autoRefreshInterval = setInterval(() => {
-                    console.log('🔄 Auto refresh triggered');
-                    refreshContent();
-                }, 30000); // 30秒
-                autoBtn.textContent = '▶️ 自動更新ON';
-                autoBtn.style.background = '#28a745';
-                console.log('🚀 Auto refresh started (30s interval)');
-            }
-        }
-        
-        // コンテンツ全体をリフレッシュ（最新データ取得＋画像表示）
-        async function refreshContent() {
-            const button = document.querySelector('.refresh-btn');
-            const originalText = button.textContent;
-            button.textContent = '🔄 更新中...';
-            button.disabled = true;
-            
-            // 最終更新時刻を表示
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('ja-JP');
-            const updateInfo = document.getElementById('lastUpdate');
-            if (updateInfo) {
-                updateInfo.textContent = `最終更新: ${timeStr}`;
-            }
-            
-            try {
-                console.log('🔄 Refreshing content with latest data and images...');
-                
-                // Step 1: 最新データを取得（画像なし）
-                await loadRecentAnalysis();
-                
-                // Step 2: 少し待機してDOM更新を確実にする
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-                // Step 3: 画像を読み込む
-                const placeholders = document.querySelectorAll('.image-placeholder[data-image-url]');
-                console.log(`🔄 Loading ${placeholders.length} images for latest data`);
-                
-                // 並列処理を避けて順次処理でDOM競合を防ぐ
-                for (let i = 0; i < placeholders.length; i++) {
-                    const placeholder = placeholders[i];
-                    const imageUrl = placeholder.getAttribute('data-image-url');
-                    const itemIndex = placeholder.getAttribute('data-item-index');
-                    
-                    // 要素がまだ存在するかチェック（競合回避）
-                    if (!placeholder.parentNode) {
-                        console.warn(`⚠️ Placeholder for item ${itemIndex} already removed, skipping`);
-                        continue;
-                    }
-                    
-                    try {
-                        console.log(`📸 Fetching image ${i+1}/${placeholders.length}: ${imageUrl}`);
-                        const imageResult = await fetchImageWithAuth(imageUrl);
-                        
-                        // 再度要素の存在確認（非同期処理後）
-                        if (!placeholder.parentNode) {
-                            console.warn(`⚠️ Placeholder for item ${itemIndex} removed during fetch, skipping`);
-                            continue;
-                        }
-                        
-                        if (imageResult && (imageResult.blobUrl || imageResult.blob)) {
-                            // fetchImageWithAuth()で既に作成されたBlob URLを使用
-                            const blobUrl = imageResult.blobUrl || URL.createObjectURL(imageResult.blob);
-                            console.log(`🔗 Using blob URL: ${blobUrl} (from fetchImageWithAuth: ${!!imageResult.blobUrl})`);
-                            
-                            // img要素を作成
-                            const imgElement = document.createElement('img');
-                            imgElement.src = blobUrl;
-                            imgElement.className = 'analysis-thumbnail';
-                            imgElement.alt = '分析画像';
-                            imgElement.onclick = () => showImageModal(blobUrl);
-                            
-                            // Blobオブジェクトを要素に保持（GC防止）
-                            if (imageResult.blob) {
-                                imgElement._blobData = imageResult.blob;
-                                imgElement._blobUrl = blobUrl;
-                            }
-                            
-                            // エラーハンドリングの改善
-                            imgElement.onerror = () => {
-                                console.error(`❌ Image load error for item ${itemIndex}, blobUrl: ${blobUrl}`);
-                                if (imageResult.blob) {
-                                    console.error(`Blob size: ${imageResult.blob.size}, type: ${imageResult.blob.type}`);
-                                }
-                            };
-                            
-                            // 成功時の処理
-                            imgElement.onload = () => {
-                                console.log(`✅ Image successfully displayed for item ${itemIndex}`);
-                            };
-                            
-                            // 安全にplaceholderを画像に置き換え
-                            try {
-                                placeholder.parentNode.replaceChild(imgElement, placeholder);
-                                console.log(`✅ Image element created for item ${itemIndex}: ${blobUrl}`);
-                            } catch (domError) {
-                                console.error(`DOM error for item ${itemIndex}:`, domError);
-                            }
-                        } else {
-                            console.warn(`❌ Failed to fetch image for item ${itemIndex}`);
-                            if (placeholder.parentNode) {
-                                placeholder.innerHTML = '❌<br><small>読み込み失敗</small>';
-                            }
-                        }
-                    } catch (error) {
-                        console.error(`Error loading image for item ${itemIndex}:`, error);
-                        if (placeholder.parentNode) {
-                            placeholder.innerHTML = '❌<br><small>エラー</small>';
-                        }
-                    }
-                }
-                console.log('✅ All content refreshed successfully');
-                
-            } catch (error) {
-                console.error('Error during content refresh:', error);
-                alert('データの更新に失敗しました');
-            } finally {
-                button.textContent = originalText;
-                button.disabled = false;
-            }
-        }
 
         // 言語フラグ取得
         function getLanguageFlag(language) {
@@ -1246,7 +949,7 @@
                     if (logsData.recentLogs && logsData.recentLogs.length > 0) {
                         errorContainer.innerHTML = logsData.recentLogs.map(log => {
                             const icon = log.level === 'ERROR' ? '❌' : log.level === 'WARNING' ? '⚠️' : '✅';
-                            const timestamp = new Date(log.timestamp).toLocaleTimeString('ja-JP');
+                            const timestamp = new Date(log.timestamp).toLocaleString('ja-JP');
                             return `
                                 <div style="margin: 0.5rem 0;">
                                     ${icon} ${timestamp} - ${log.message}

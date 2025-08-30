@@ -1,13 +1,15 @@
 # Claude Code Configuration (機密情報含む)
 CLAUDE.md
 
-# History files (開発履歴)
+# History files (開発履歴) - phase7.1.md以外除外
 hisotory/
-history/
+history/*
+!history/phase7.1.md
 
 # Markdown files (開発履歴・計画書) - README以外除外
 *.md
 !README.md
+!history/phase7.1.md
 
 # API Keys and Secrets
 .env
@@ -65,3 +67,7 @@ htmlcov/
 # Serverless Framework
 .serverless/
 .requirements.zip
+
+# Playwright test results
+frontend/e2e/test-results/
+frontend/e2e/playwright-report/

@@ -3,9 +3,9 @@
 ## 🏔️ 概要
 観光アナライザーは、AI画像解析を活用した観光サービスです。Google Gemini 2.0 Flashを活用し、店舗・観光地・料理画像から詳細な地元情報と多言語説明を提供します。
 
-**🌐 稼働中サービス**: https://d22ztxm5q1c726.cloudfront.net/tourism-guide.html
+**🌐 稼働中サービス**: https://d22ztxm5q1c726.cloudfront.net/index.html
 
-## 🎯 主要機能（2025年8月11日現在）
+## 🎯 主要機能（2025年8月17日現在）
 
 ### ✅ 完全実装済み機能
 - **🤖 二重AI解析システム**: 店舗観光分析 + 看板メニュー翻訳
@@ -14,10 +14,13 @@
 - **💾 データ統合**: S3画像保存 + DynamoDB完全連携
 - **📱 モバイル最適化**: レスポンシブPWA設計
 - **🎨 美麗UI**: カスタムアニメーション・グラデーション
-
-### 🚧 実装中機能
-- **💳 課金システム**: Square決済（¥980/¥1,980プラン）
+- **📍 地域設定機能**: ユーザー国名・都市名設定（解析精度向上）
+- **💳 Stripe決済システム**: プレミアムプラン（¥980/¥1,980）
 - **🚫 使用制限**: 無料5回/月制限システム
+
+### 🔧 最近のバグ修正（2025年8月17日）
+- **地域設定表示バグ**: DynamoDBデータ取得・emergency-login認証処理修正
+- **フロントエンド認証処理**: サーバーバイパス問題解決
 
 ### 📍 対応機能
 - 各地の観光地・名所解析
@@ -38,9 +41,10 @@
 - **DynamoDB**: NoSQLデータベース（PAY_PER_REQUEST）
 - **S3**: 画像ストレージ・ライフサイクル管理
 
-### 認証・セキュリティ
+### 認証・セキュリティ・決済
 - **Amazon Cognito**: OAuth 2.0・JWT認証
 - **Google OAuth**: カスタムUI統合
+- **Stripe**: 決済システム（プレミアムプラン）
 - **IAM**: 最小権限アクセス制御
 
 ### AI・解析
@@ -52,9 +56,10 @@
 Multimodal_Japan/
 ├── backend/                    # ✅ サーバーレスバックエンド（本番稼働中）
 │   ├── functions/              # Lambda関数群
-│   │   ├── auth/              # ✅ 認証機能（Cognito + 3way認証）
+│   │   ├── auth/              # ✅ 認証機能（Cognito + 3way認証 + 地域設定）
 │   │   ├── image-analysis/    # ✅ AI画像解析（Gemini 2.0 Flash）
-│   │   ├── payment/           # 🚧 決済処理（Square統合準備中）
+│   │   ├── payment/           # ✅ Stripe決済処理（プレミアムプラン）
+│   │   ├── admin-dashboard/   # ✅ 管理ダッシュボード（独立システム）
 │   │   └── user-management/   # ✅ ユーザー管理（DynamoDB連携）
 │   ├── tests/                 # ✅ テストスイート（86テスト関数）
 │   └── serverless.yml         # ✅ AWS本番環境設定
@@ -67,7 +72,7 @@ Multimodal_Japan/
 └── history*.md               # 📝 開発履歴（Git除外）
 ```
 
-## 🚀 現在の開発フェーズ（Phase 6.2完了）
+## 🚀 現在の開発フェーズ（Phase 6.9.8完了）
 
 ### ✅ 完了済みPhase
 - **Phase 1-3**: AWS環境・GitHub連携完了
@@ -75,11 +80,14 @@ Multimodal_Japan/
 - **Phase 5.5**: MVP完全版（予定より早期完成）
 - **Phase 6.1**: CloudFront・3way認証システム完了
 - **Phase 6.2**: Google OAuth UI グラフィック強化完了
+- **Phase 6.5-6.8**: Stripe決済システム・プレミアムプラン実装完了
+- **Phase 6.9**: 地域設定機能・管理ダッシュボード実装完了
+- **Phase 6.9.8**: 地域設定バグ修正・認証処理最適化完了
 
-### 🚧 次期実装予定（Phase 6.5）
-- Square Developer Account作成
-- プレミアムプラン決済フロー（¥980/¥1,980）
-- 月5回制限システム実装
+### 🚧 次期実装予定（Phase 6.9.9）
+- 管理ダッシュボード機能拡張
+- ユーザー行動分析・収益分析機能
+- システム監視・アラート機能強化
 
 ## 🚀 開発環境セットアップ
 
@@ -146,13 +154,16 @@ cd backend
 serverless deploy --stage dev --aws-profile ai-tourism-poc
 
 # フロントエンドデプロイ（CloudFront）
-aws s3 cp frontend/tourism-guide.html s3://ai-tourism-poc-frontend-dev/ --profile ai-tourism-poc
+aws s3 cp frontend/index.html s3://ai-tourism-poc-frontend-dev/ --profile ai-tourism-poc
 aws s3 cp frontend/css/styles.css s3://ai-tourism-poc-frontend-dev/css/ --profile ai-tourism-poc
+aws s3 cp frontend/js/auth.js s3://ai-tourism-poc-frontend-dev/js/ --profile ai-tourism-poc
+aws s3 cp frontend/js/main.js s3://ai-tourism-poc-frontend-dev/js/ --profile ai-tourism-poc
 aws cloudfront create-invalidation --distribution-id E38DCQ985NYREA --paths "/*" --profile ai-tourism-poc
 ```
 
 ### 環境情報
-- **本番URL**: https://d22ztxm5q1c726.cloudfront.net/tourism-guide.html
+- **本番URL**: https://d22ztxm5q1c726.cloudfront.net/index.html
+- **管理ダッシュボード**: https://d22ztxm5q1c726.cloudfront.net/admin.html
 - **CloudFront Distribution**: E38DCQ985NYREA
 - **S3 Bucket**: ai-tourism-poc-frontend-dev
 - **API Gateway**: ap-northeast-1リージョン
@@ -174,10 +185,16 @@ aws cloudfront create-invalidation --distribution-id E38DCQ985NYREA --paths "/*"
 - **データ保護**: S3暗号化・DynamoDB暗号化
 
 ## 🎯 収益化ロードマップ
-### Phase 6.5（実装中）
-- Square決済統合
+### ✅ 完了済み（Phase 6.5-6.8）
+- Stripe決済統合
 - プレミアムプラン（¥980・¥1,980）
-- 使用制限システム
+- 使用制限システム（無料5回/月）
+- 地域設定機能（解析精度向上）
+
+### 🚧 現在実装中（Phase 6.9.9）
+- 管理ダッシュボード拡張
+- ユーザー行動分析
+- 収益・KPI監視
 
 ### 目標
 - **月1目標**: ¥13,800（50ユーザー・10人課金）
@@ -195,8 +212,8 @@ aws cloudfront create-invalidation --distribution-id E38DCQ985NYREA --paths "/*"
 ## 📞 サポート・連絡
 - **開発者**: Manabu Yoshida
 - **GitHub**: yoshidaagri
-- **現在状況**: Phase 6.2完了・Phase 6.5準備中
+- **現在状況**: Phase 6.9.8完了・Phase 6.9.9実装中
 
 ---
 *🏔️ AI観光ガイド「観光アナライザー」*  
-*Updated: 2025-08-11 - Phase 6.2 Google OAuth UI強化完了*
+*Updated: 2025-08-17 - Phase 6.9.8 地域設定バグ修正・認証処理最適化完了*
