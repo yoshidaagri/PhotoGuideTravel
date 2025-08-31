@@ -1018,8 +1018,8 @@ function createUpgradeModal() {
             <p style="color: #666; margin-bottom: 2rem;">無制限でAI解析をお楽しみください</p>
             
             <div class="plan-options">
-                <div class="plan-card" onclick="selectPlan('7days')" id="plan7days">
-                    <div class="plan-name">7日間プラン</div>
+                <div class="plan-card" onclick="selectPlan('3days')" id="plan3days">
+                    <div class="plan-name">3日間プラン</div>
                     <div class="plan-price">¥980</div>
                     <div class="plan-features">
                         • 無制限AI解析<br>
@@ -1028,9 +1028,9 @@ function createUpgradeModal() {
                     </div>
                 </div>
                 
-                <div class="plan-card popular" onclick="selectPlan('20days')" id="plan20days">
+                <div class="plan-card popular" onclick="selectPlan('7days')" id="plan7days">
                     <div class="plan-badge">人気プラン</div>
-                    <div class="plan-name">20日間プラン</div>
+                    <div class="plan-name">7日間プラン</div>
                     <div class="plan-price">¥1,980</div>
                     <div class="plan-features">
                         • 無制限AI解析<br>
@@ -1263,7 +1263,7 @@ async function refreshUserInfo() {
  * Resize image (元の実装を正確に移行)
  * 画像リサイズ
  */
-function resizeImage(file, maxSize = 1200) {
+function resizeImage(file, maxSize = 800) {
     return new Promise((resolve, reject) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -1307,7 +1307,7 @@ function resizeImage(file, maxSize = 1200) {
                 } else {
                     reject(new Error('Failed to resize image'));
                 }
-            }, file.type, 0.9);
+            }, file.type, 0.75);
         };
         
         img.onerror = () => reject(new Error('Failed to load image'));
@@ -1322,7 +1322,7 @@ function resizeImage(file, maxSize = 1200) {
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         // Resize image if needed
-        resizeImage(file, 1200).then(resizedFile => {
+        resizeImage(file, 800).then(resizedFile => {
             const reader = new FileReader();
             reader.onload = () => {
                 // Remove data:image/jpeg;base64, prefix
