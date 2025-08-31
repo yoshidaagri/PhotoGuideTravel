@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理ダッシュボード - 観光アナライザー</title>
+    <title>管理ダッシュボード - 観光アナライザー Anatri</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -457,7 +457,7 @@
         <div id="dashboardContainer" class="dashboard-container">
             <!-- ヘッダー -->
             <div class="admin-header">
-                <h1>🏔️ 観光アナライザー 管理ダッシュボード</h1>
+                <h1>🏔️ 観光アナライザー Anatri 管理ダッシュボード</h1>
                 <p>システム監視・分析・運用管理</p>
                 <button class="logout-button" onclick="logout()">🚪 ログアウト</button>
             </div>
@@ -711,8 +711,8 @@
                 
                 document.getElementById('premiumBreakdown').innerHTML = `
                     <div style="font-size: 0.9rem; margin-top: 1rem;">
+                        <div>3日間プラン: ${data.premiumUsers.plan3days}人</div>
                         <div>7日間プラン: ${data.premiumUsers.plan7days}人</div>
-                        <div>20日間プラン: ${data.premiumUsers.plan20days}人</div>
                     </div>
                 `;
                 

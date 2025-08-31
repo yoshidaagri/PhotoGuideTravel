@@ -281,7 +281,7 @@ function updateUserInfoDisplay() {
         
         // Update user plan
         if (userPlanElement) {
-            // Check for all premium plan types (premium_7days, premium_20days, premium)
+            // Check for all premium plan types (premium_3days, premium_7days, premium)
             const isPremium = currentUser.user_type && (
                 currentUser.user_type.includes('premium') || 
                 currentUser.user_type === 'premium'
@@ -289,10 +289,10 @@ function updateUserInfoDisplay() {
             
             let planText = 'Free (残り5回)';
             if (isPremium) {
-                if (currentUser.user_type === 'premium_7days') {
+                if (currentUser.user_type === 'premium_3days') {
+                    planText = 'Premium (3日間)';
+                } else if (currentUser.user_type === 'premium_7days') {
                     planText = 'Premium (7日間)';
-                } else if (currentUser.user_type === 'premium_20days') {
-                    planText = 'Premium (20日間)';
                 } else {
                     planText = 'Premium (無制限)';
                 }

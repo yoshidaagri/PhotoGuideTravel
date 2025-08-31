@@ -79,15 +79,15 @@ def create_checkout_session(event, headers):
     """Stripe Checkout Session作成"""
     try:
         body = json.loads(event.get('body', '{}'))
-        plan_type = body.get('planType')  # '7days' or '20days'
+        plan_type = body.get('planType')  # '3days' or '7days'
         user_id = body.get('userId')
         
         print(f"Creating checkout session: planType={plan_type}, userId={user_id}")
         
         # Price ID設定
         price_ids = {
-            '7days': os.environ['STRIPE_PRICE_7DAYS'],
-            '20days': os.environ['STRIPE_PRICE_20DAYS']
+            '3days': os.environ['STRIPE_PRICE_3DAYS'],
+            '7days': os.environ['STRIPE_PRICE_7DAYS']
         }
         
         price_id = price_ids.get(plan_type)
@@ -241,13 +241,13 @@ def grant_premium_access(user_id, plan_type):
         table = dynamodb.Table(f"ai-tourism-poc-users-{os.environ.get('STAGE', 'dev')}")
         
         # 有効期限設定
-        days = 7 if plan_type == '7days' else 20
+        days = 3 if plan_type == '3days' else 7
         now = get_jst_now()
         expiry = (now + timedelta(days=days)).isoformat()
         
         # プレミアム関連項目のみ更新（既存データを保護）
         # plan_typeから具体的なuser_typeを構築（期限チェック機能と整合性確保）
-        user_type_value = f'premium_{plan_type}'  # 'premium_7days' or 'premium_20days'
+        user_type_value = f'premium_{plan_type}'  # 'premium_3days' or 'premium_7days'
         
         table.update_item(
             Key={'user_id': user_id},

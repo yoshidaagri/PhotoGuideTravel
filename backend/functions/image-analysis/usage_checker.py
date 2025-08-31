@@ -20,7 +20,7 @@ def check_usage_limit(user_id, user_type='free'):
     
     Args:
         user_id (str): Cognito User ID
-        user_type (str): 'free', 'premium_7days', 'premium_20days'
+        user_type (str): 'free', 'premium_3days', 'premium_7days'
     
     Returns:
         dict: 使用可否と残り回数
@@ -60,7 +60,7 @@ def check_usage_limit(user_id, user_type='free'):
             return check_free_user_limit(user_id, user_data)
         
         # プレミアムユーザーの期限チェック
-        elif current_user_type in ['premium_7days', 'premium_20days']:
+        elif current_user_type in ['premium_3days', 'premium_7days']:
             return check_premium_user_validity(user_id, user_data)
         
         else:
@@ -139,7 +139,7 @@ def check_premium_user_validity(user_id, user_data):
         return {
             'allowed': True,
             'remaining': -1,  # -1 = unlimited
-            'user_type': user_data.get('user_type', 'premium_7days'),
+            'user_type': user_data.get('user_type', 'premium_3days'),
             'message': f'プレミアムプラン利用中（残り{days_remaining}日）',
             'days_remaining': days_remaining
         }

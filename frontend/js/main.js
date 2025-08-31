@@ -906,7 +906,7 @@ function handleNewAnalysisClick() {
  */
 function initializeStripe() {
     if (typeof Stripe !== 'undefined') {
-        window.stripe = Stripe('pk_test_51RvuaERVpc2gZJezUtU3m18rgEASCWugNUe9KJBxqCSmDHPzfYet6Z1yTpvF5VccUscOVm4AX4l5AwncEAELAYfX002TJVRaa6');
+        window.stripe = Stripe('pk_live_51Rvua8DBgr9iXlaH9i3mgCrJm5z4QcmPjYMhqo3ojLf7Za4ZprvBc2W7v44HZkW44dCh8YScmSJSWrwgiP7Lj4dw00xrliG0Ly');
         console.log('💳 Stripe initialized');
     }
 }
@@ -1264,6 +1264,14 @@ async function refreshUserInfo() {
  * 画像リサイズ
  */
 function resizeImage(file, maxSize = 800) {
+    // 🔍 デバッグ: 圧縮設定確認用ログ
+    console.log('🖼️ Image compression settings:', {
+        maxSize: maxSize,
+        originalFileName: file.name,
+        originalSize: (file.size / 1024).toFixed(1) + 'KB',
+        timestamp: new Date().toISOString()
+    });
+    
     return new Promise((resolve, reject) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -1291,7 +1299,9 @@ function resizeImage(file, maxSize = 800) {
             // Draw resized image
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Convert to blob
+            // Convert to blob with quality setting
+            const quality = 0.75;  // 最適化後の品質設定
+            console.log('🎨 Converting to blob with quality:', quality);
             canvas.toBlob((blob) => {
                 if (blob) {
                     // Create new File object
@@ -1307,7 +1317,7 @@ function resizeImage(file, maxSize = 800) {
                 } else {
                     reject(new Error('Failed to resize image'));
                 }
-            }, file.type, 0.75);
+            }, file.type, quality);
         };
         
         img.onerror = () => reject(new Error('Failed to load image'));

@@ -229,24 +229,24 @@ def handle_dashboard_summary(headers):
                 analysis_types[analysis_type] += 1
         
         # 有料会員数計算
-        premium_users = {'total': 0, 'plan7days': 0, 'plan20days': 0}
+        premium_users = {'total': 0, 'plan3days': 0, 'plan7days': 0}
         user_response = users_table.scan()
         
         for user in user_response.get('Items', []):
             user_type = user.get('user_type', 'free')
-            if user_type in ['premium_7days', 'premium_20days']:
+            if user_type in ['premium_3days', 'premium_7days']:
                 # 期限チェック
                 expiry = user.get('premium_expiry', '')
                 if expiry and expiry > get_jst_isoformat():
                     premium_users['total'] += 1
-                    if user_type == 'premium_7days':
-                        premium_users['plan7days'] += 1
+                    if user_type == 'premium_3days':
+                        premium_users['plan3days'] += 1
                     else:
-                        premium_users['plan20days'] += 1
+                        premium_users['plan7days'] += 1
         
         # 月間収益予測
-        monthly_revenue = (premium_users['plan7days'] * 980 + 
-                          premium_users['plan20days'] * 1980)
+        monthly_revenue = (premium_users['plan3days'] * 980 + 
+                          premium_users['plan7days'] * 1980)
         
         # 時間別使用量（簡易版）
         hourly_usage = [0] * 24
@@ -397,7 +397,7 @@ def handle_premium_users(headers):
         
         for user in response.get('Items', []):
             user_type = user.get('user_type', 'free')
-            if user_type in ['premium_7days', 'premium_20days']:
+            if user_type in ['premium_3days', 'premium_7days']:
                 expiry = user.get('premium_expiry', '')
                 user_info = {
                     'user_id': user.get('user_id', ''),
@@ -417,9 +417,9 @@ def handle_premium_users(headers):
                         expired_users.append(user_info)
         
         # 収益計算
-        revenue_7days = len([u for u in premium_users if u['plan'] == 'premium_7days']) * 980
-        revenue_20days = len([u for u in premium_users if u['plan'] == 'premium_20days']) * 1980
-        total_revenue = revenue_7days + revenue_20days
+        revenue_3days = len([u for u in premium_users if u['plan'] == 'premium_3days']) * 980
+        revenue_7days = len([u for u in premium_users if u['plan'] == 'premium_7days']) * 1980
+        total_revenue = revenue_3days + revenue_7days
         
         return {
             'statusCode': 200,
@@ -429,8 +429,8 @@ def handle_premium_users(headers):
                 'expiredUsers': expired_users[-10:],  # 直近10件
                 'expiringSoon': expiring_soon,
                 'revenue': {
+                    'plan3days': revenue_3days,
                     'plan7days': revenue_7days,
-                    'plan20days': revenue_20days,
                     'total': total_revenue
                 },
                 'timestamp': get_jst_isoformat()

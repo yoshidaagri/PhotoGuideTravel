@@ -754,14 +754,8 @@ def get_store_tourism_prompts():
 - 定休日：（判明している場合）
 - 周辺の見どころ：（徒歩圏内の観光スポット）
 
-**❄️ 季節別の準備**
-- 現在の気温と適切な服装
-- 路面状況と転倒防止対策
-- 季節特有の注意点
-
 **🌟 おすすめポイント**
 - この場所・料理の特徴的な魅力
-- 地元民からの評判
 - 観光客に人気の理由
 - 撮影スポットとしての価値
 
@@ -814,14 +808,8 @@ def get_store_tourism_prompts():
 - 정기휴일: (판명된 경우)
 - 주변 볼거리: (도보권 내 관광지)
 
-**❄️ 계절별 준비사항**
-- 현재 기온과 적절한 복장
-- 노면 상황과 낙상 방지 대책
-- 계절 특유의 주의점
-
 **🌟 추천 포인트**
 - 이 장소・요리의 특징적인 매력
-- 현지인들의 평판
 - 관광객에게 인기 있는 이유
 - 촬영 스팟으로서의 가치
 
@@ -875,14 +863,8 @@ def get_store_tourism_prompts():
 - 定休日：（如果能确定）
 - 周边景点：（步行范围内的观光景点）
 
-**❄️ 季节性准备**
-- 当前气温和适合的服装
-- 路面状况和防滑对策
-- 季节特有的注意事项
-
 **🌟 推荐要点**
 - 此地点・料理的特色魅力
-- 当地人的评价
 - 受游客欢迎的理由
 - 作为拍照地点的价值
 
@@ -936,14 +918,8 @@ def get_store_tourism_prompts():
 - 定休日：（如果能確定）
 - 周邊景點：（步行範圍內的觀光景點）
 
-**❄️ 季節性準備**
-- 當前氣溫和適合的服裝
-- 路面狀況和防滑對策
-- 季節特有的注意事項
-
 **🌟 推薦要點**
 - 此地點・料理的特色魅力
-- 當地人的評價
 - 受遊客歡迎的理由
 - 作為拍照地點的價值
 
@@ -997,14 +973,8 @@ def get_store_tourism_prompts():
 - Regular holidays: (if determinable)
 - Nearby attractions: (tourist spots within walking distance)
 
-**❄️ Seasonal Preparations**
-- Current temperature and appropriate clothing
-- Road conditions and slip prevention measures
-- Season-specific precautions
-
 **🌟 Recommended Points**
 - Distinctive attractions of this location/cuisine
-- Local reputation
 - Reasons for tourist popularity
 - Value as a photo spot
 
