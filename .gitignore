@@ -1,15 +1,17 @@
 # Claude Code Configuration (機密情報含む)
 CLAUDE.md
 
-# History files (開発履歴) - phase7.1.md以外除外
+# History files (開発履歴) - 重要なphaseファイルのみ管理
 hisotory/
 history/*
 !history/phase7.1.md
+!history/phase7.6_performance_optimization.md
 
 # Markdown files (開発履歴・計画書) - README以外除外
 *.md
 !README.md
 !history/phase7.1.md
+!history/phase7.6_performance_optimization.md
 
 # API Keys and Secrets
 .env
