@@ -6,12 +6,14 @@ hisotory/
 history/*
 !history/phase7.1.md
 !history/phase7.6_performance_optimization.md
+!history/phase7.5.5_SEO.md
 
 # Markdown files (開発履歴・計画書) - README以外除外
 *.md
 !README.md
 !history/phase7.1.md
 !history/phase7.6_performance_optimization.md
+!history/phase7.5.5_SEO.md
 
 # API Keys and Secrets
 .env
