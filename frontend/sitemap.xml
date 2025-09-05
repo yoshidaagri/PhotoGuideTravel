@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    
+    <!-- Japanese (Default) -->
+    <url>
+        <loc>https://anatri.net/lp.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://anatri.net/lp.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    
+    <url>
+        <loc>https://anatri.net/index.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/index.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/index.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://anatri.net/index.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://anatri.net/login.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/login.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/login.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/login.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/login.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/login.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Korean Pages -->
+    <url>
+        <loc>https://anatri.net/ko/lp.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://anatri.net/lp.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://anatri.net/ko/index.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/index.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/index.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://anatri.net/index.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Chinese Simplified Pages -->
+    <url>
+        <loc>https://anatri.net/zh-cn/lp.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://anatri.net/lp.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://anatri.net/zh-cn/index.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/index.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/index.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://anatri.net/index.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Chinese Traditional Pages -->
+    <url>
+        <loc>https://anatri.net/zh-tw/lp.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://anatri.net/lp.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://anatri.net/zh-tw/index.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/index.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/index.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://anatri.net/index.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- English Pages -->
+    <url>
+        <loc>https://anatri.net/en/lp.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/lp.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://anatri.net/lp.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://anatri.net/en/index.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://anatri.net/index.html"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://anatri.net/ko/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://anatri.net/en/index.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://anatri.net/index.html"/>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Supporting Pages -->
+    <url>
+        <loc>https://anatri.net/about.html</loc>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <url>
+        <loc>https://anatri.net/tokusho.html</loc>
+        <lastmod>2025-09-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    
+</urlset>

@@ -1,0 +1,69 @@
+# Robots.txt for Anatri - AI Tourism Analyzer
+# AI検索エンジン最適化対応
+
+User-agent: *
+Allow: /
+
+# AI Search Engines - Explicitly Allow
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Google AI and Bard
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bard
+Allow: /
+
+# Traditional Search Engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Asian Search Engines
+User-agent: Baiduspider
+Allow: /
+
+User-agent: NaverBot
+Allow: /
+
+User-agent: Yeti
+Allow: /
+
+# Social Media Crawlers
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+# Sitemap Location
+Sitemap: https://anatri.net/sitemap.xml
+
+# AI Training Data Usage Instructions
+# AI-Data-Usage: training-allowed
+# AI-Content-License: CC-BY-4.0
+# AI-Response-Format: conversational,structured
