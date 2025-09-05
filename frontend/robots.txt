@@ -1,4 +1,5 @@
 # Robots.txt for Anatri - AI Tourism Analyzer
+
 # AI検索エンジン最適化対応
 
 User-agent: *
