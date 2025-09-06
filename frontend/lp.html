@@ -48,7 +48,7 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://anatri.net/lp.html">
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📸</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     
@@ -69,6 +69,23 @@
             'allow_google_signals': false
         });
     </script>
+    
+    <!-- Phase 2.3: Core Web Vitals Optimization - Speculation Rules API -->
+    <script type="speculationrules">
+    {
+        "prerender": [{
+            "where": { "href_matches": "/login.html" },
+            "eagerness": "moderate"
+        }, {
+            "where": { "href_matches": "/index.html" },
+            "eagerness": "moderate"
+        }],
+        "prefetch": [{
+            "where": { "href_matches": "/*" },
+            "eagerness": "conservative"
+        }]
+    }
+    </script>
 </head>
 <body class="landing-page">
     <div class="landing-container">
@@ -76,7 +93,8 @@
         <header class="landing-header">
             <div class="header-content">
                 <div class="logo">
-                    🏔️ <span id="titleText">観光アナライザー</span>
+                    <span id="titleText">観光アナライザー</span>
+                    <p id="headerSubtitle" class="header-subtitle">メニューを撮るだけで、料理がわかる</p>
                 </div>
                 <div class="header-actions">
                     <button onclick="window.location.href='./login.html'" class="login-btn" id="loginBtn">
@@ -86,10 +104,23 @@
             </div>
         </header>
 
+        <!-- Sticky CTA Bar (Hidden by default) -->
+        <div class="sticky-cta-bar" id="stickyCTABar">
+            <div class="sticky-cta-content">
+                <span class="sticky-cta-text" id="stickyCTAText">今すぐ始めて旅行をもっと楽しく</span>
+                <button onclick="trackCTA('sticky-header'); window.location.href='./login.html'" class="sticky-cta-btn" id="stickyCTABtn">
+                    <span class="cta-text">無料で始める</span>
+                </button>
+                <button class="sticky-cta-close" id="stickyCTAClose" onclick="closeStickyBar()" aria-label="Close">
+                    ✕
+                </button>
+            </div>
+        </div>
+
         <!-- Hero Section -->
         <section class="hero-section">
             <div class="hero-content">
-                <h1 id="heroTitle">AI画像解析で観光をもっと楽しく</h1>
+                <h1 id="heroTitle">AIで観光をもっと楽しく</h1>
                 <p id="heroDescription">写真を撮るだけで観光地や料理の詳しい情報がわかる、画期的なサービスです</p>
                 
                 <!-- Language Selection -->
@@ -114,8 +145,9 @@
                     </div>
                 </div>
 
-                <button onclick="window.location.href='./login.html'" class="cta-btn" id="ctaBtn">
-                    今すぐ始める
+                <button onclick="trackCTA('hero-main'); window.location.href='./login.html'" class="cta-btn enhanced" id="ctaBtn">
+                    <span class="cta-text">今すぐ無料で始める</span>
+                    <span class="cta-subtext">※クレジットカード不要</span>
                 </button>
             </div>
         </section>
@@ -124,21 +156,48 @@
         <section class="features-section">
             <h2 id="featuresTitle">サービスの特徴</h2>
             <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">📸</div>
-                    <h3 id="feature1Title">画像解析</h3>
-                    <p id="feature1Desc">最新の技術で観光地や料理を瞬時に識別</p>
+                <div class="feature-card feature-card-01" 
+                     data-image-name="AI画像解析アイコン" 
+                     data-image-context="写真から観光地や料理を識別する最新AI技術" 
+                     data-image-keywords="AI,画像認識,観光,技術">
+                    <div class="feature-content">
+                        <div class="feature-icon">📸</div>
+                        <h3 id="feature1Title">画像解析</h3>
+                        <p id="feature1Desc">最新の技術で観光地や料理を瞬時に識別</p>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🌐</div>
-                    <h3 id="feature2Title">多言語対応</h3>
-                    <p id="feature2Desc">日本語・韓国語・中国語・英語に対応</p>
+                <div class="feature-card feature-card-02" 
+                     data-image-name="多言語対応地球アイコン" 
+                     data-image-context="世界中の旅行者に対応する多言語AI翻訳サービス" 
+                     data-image-keywords="多言語,翻訳,国際化,グローバル">
+                    <div class="feature-content">
+                        <div class="feature-icon">🌐</div>
+                        <h3 id="feature2Title">多言語対応</h3>
+                        <p id="feature2Desc">日本語・韓国語・中国語・英語に対応</p>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🗾</div>
-                    <h3 id="feature3Title">地域特化</h3>
-                    <p id="feature3Desc">札幌・北海道の観光情報に特化した精度の高い解析</p>
+                <div class="feature-card feature-card-03" 
+                     data-image-name="日本地図特化アイコン" 
+                     data-image-context="札幌・北海道地域に特化した精密な観光情報データベース" 
+                     data-image-keywords="日本,札幌,北海道,地域特化,観光">
+                    <div class="feature-content">
+                        <div class="feature-icon">🗾</div>
+                        <h3 id="feature3Title">地域特化</h3>
+                        <p id="feature3Desc">札幌・北海道の観光情報に特化した精度の高い解析</p>
+                    </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Post-Features CTA Section -->
+        <section class="post-features-cta">
+            <div class="post-features-cta-content">
+                <h3 id="postFeaturesCTATitle">機能を理解したら、今すぐ始めてみましょう</h3>
+                <p id="postFeaturesCTADesc">無料で5回お試し可能。クレジットカードは不要です。</p>
+                <button onclick="trackCTA('post-features'); window.location.href='./login.html'" class="cta-btn enhanced" id="postFeaturesCTABtn">
+                    <span class="cta-text">今すぐ無料で始める</span>
+                    <span class="cta-subtext">※登録は30秒で完了</span>
+                </button>
             </div>
         </section>
 
@@ -216,6 +275,17 @@
                     </div>
                 </div>
 
+                <!-- FAQ CTA -->
+                <div class="faq-cta">
+                    <div class="faq-cta-content">
+                        <h3 id="faqCTATitle">疑問が解決しましたか？</h3>
+                        <p id="faqCTADesc">まだ不明な点があれば、実際に使って確認してみましょう</p>
+                        <button onclick="trackCTA('faq-section'); window.location.href='./login.html'" class="cta-btn enhanced" id="faqCTABtn">
+                            <span class="cta-text">今すぐ無料で試す</span>
+                            <span class="cta-subtext">※実際に使えばすぐわかります</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -237,10 +307,11 @@
             ja: {
                 title: "観光アナライザー",
                 loginBtn: "ログイン / 新規登録",
-                heroTitle: "AI画像解析で観光をもっと楽しく",
+                headerSubtitle: "メニューを撮るだけで、料理がわかる",
+                heroTitle: "AIで観光をもっと楽しく",
                 heroDescription: "写真を撮るだけで観光地や料理の詳しい情報がわかる、画期的なサービスです",
                 selectLanguage: "言語を選択してください / Select Language",
-                ctaBtn: "今すぐ始める",
+                ctaBtn: "今すぐ無料で始める",
                 featuresTitle: "サービスの特徴",
                 feature1Title: "画像解析",
                 feature1Desc: "最新の技術で観光地や料理を瞬時に識別",
@@ -271,6 +342,15 @@
                 faq3Answer: "日本語、韓国語、中国語（簡体字・繁体字）、英語の5言語に完全対応。ネイティブレベルの自然な翻訳を提供します。",
                 faq4Question: "無料でどこまで使えますか？",
                 faq4Answer: "月5回まで全機能を無料でお試しいただけます。より多くご利用の場合は、7日間プラン（¥980）または20日間プラン（¥1,980）をご用意しています。",
+                // Additional CTAs
+                postFeaturesCTATitle: "機能を理解したら、今すぐ始めてみましょう",
+                postFeaturesCTADesc: "無料で5回お試し可能。クレジットカードは不要です。",
+                postFeaturesCTABtn: "今すぐ無料で始める",
+                faqCTATitle: "疑問が解決しましたか？",
+                faqCTADesc: "まだ不明な点があれば、実際に使って確認してみましょう",
+                faqCTABtn: "今すぐ無料で試す",
+                stickyCTAText: "今すぐ始めて旅行をもっと楽しく",
+                stickyCTABtn: "無料で始める",
                 // OG Tags and Social Media
                 ogTitle: "観光アナライザー Anatri - AI画像解析で観光をもっと楽しく",
                 ogDescription: "写真を撮るだけで観光地や料理の詳しい情報がわかる、AIを活用した画期的な観光サービス。日本語・韓国語・中国語・英語に対応。無料で始められます。",
@@ -281,10 +361,11 @@
             ko: {
                 title: "관광 애널라이저",
                 loginBtn: "로그인 / 신규 가입",
-                heroTitle: "AI 이미지 분석으로 관광을 더욱 즐겁게",
+                headerSubtitle: "메뉴를 찍으면 요리가 이해됩니다",
+                heroTitle: "AI로 관광을 더욱 즐겁게",
                 heroDescription: "사진 한 장으로 관광지나 요리의 자세한 정보를 알 수 있는 혁신적인 서비스입니다",
                 selectLanguage: "언어를 선택해주세요 / Select Language",
-                ctaBtn: "지금 시작하기",
+                ctaBtn: "지금 무료로 시작하기",
                 featuresTitle: "서비스 특징",
                 feature1Title: "이미지 분석",
                 feature1Desc: "최신 기술로 관광지나 요리를 즉시 식별",
@@ -315,6 +396,15 @@
                 faq3Answer: "메뉴 사진을 찍으면 주요 알레르기 유발 요소(글루텐, 견과류, 해산물 등)를 한국어로 상세히 표시해드립니다.",
                 faq4Question: "현지에서 김치찌개나 한국 음식이 그리우면?",
                 faq4Answer: "일본 내 한국 레스토랑과 한국 식재료를 구입할 수 있는 마트 정보도 제공합니다. 향수를 달래는 맛집을 찾아드려요.",
+                // Additional CTAs
+                postFeaturesCTATitle: "기능을 이해했다면, 지금 시작해보세요",
+                postFeaturesCTADesc: "무료로 5회 체험 가능. 신용카드는 불필요합니다.",
+                postFeaturesCTABtn: "지금 무료로 시작하기",
+                faqCTATitle: "궁금증이 해결되었나요?",
+                faqCTADesc: "아직 궁금한 점이 있다면, 실제로 사용해서 확인해보세요",
+                faqCTABtn: "지금 무료로 체험하기",
+                stickyCTAText: "지금 시작해서 여행을 더욱 즐겁게",
+                stickyCTABtn: "무료로 시작하기",
                 // OG Tags and Social Media
                 ogTitle: "관광 애널라이저 Anatri - AI 이미지 분석으로 관광을 더욱 즐겁게",
                 ogDescription: "사진 한 장으로 관광지나 요리의 자세한 정보를 알 수 있는 혁신적인 서비스입니다. 일본어・한국어・중국어・영어를 지원하며 무료로 시작할 수 있습니다.",
@@ -325,10 +415,11 @@
             zh: {
                 title: "旅游分析器",
                 loginBtn: "登录 / 注册",
-                heroTitle: "AI图像分析让旅游更有趣",
+                headerSubtitle: "拍下菜单，了解料理",
+                heroTitle: "AI让旅游更有趣",
                 heroDescription: "只需拍一张照片就能了解观光地和料理的详细信息，这是一项划时代的服务",
                 selectLanguage: "请选择语言 / Select Language",
-                ctaBtn: "立即开始",
+                ctaBtn: "立即免费开始",
                 featuresTitle: "服务特色",
                 feature1Title: "图像分析",
                 feature1Desc: "采用最新技术即时识别观光地和料理",
@@ -359,6 +450,15 @@
                 faq3Answer: "根据您的预算和喜好，AI推荐最受中国游客欢迎的北海道特产，包括购买地点、价格参考和保存方法。",
                 faq4Question: "冬天去北海道需要注意什么？",
                 faq4Answer: "AI会根据天气情况推荐合适的观光路线，提供防寒建议和雪地安全提示，确保您的冬季北海道之旅安全愉快。",
+                // Additional CTAs
+                postFeaturesCTATitle: "了解功能后，立即开始使用吧",
+                postFeaturesCTADesc: "免费体验5次。无需信用卡。",
+                postFeaturesCTABtn: "立即免费开始",
+                faqCTATitle: "疑问解决了吗？",
+                faqCTADesc: "如果还有疑问，不如实际使用来确认一下",
+                faqCTABtn: "立即免费试用",
+                stickyCTAText: "立即开始，让旅行更加愉快",
+                stickyCTABtn: "免费开始",
                 // OG Tags and Social Media
                 ogTitle: "旅游分析器 Anatri - AI图像分析让旅游更有趣",
                 ogDescription: "只需拍一张照片就能了解观光地和料理的详细信息，这是一项划时代的服务。支持日语・韩语・中文・英语，免费开始使用。",
@@ -369,10 +469,11 @@
             "zh-tw": {
                 title: "旅遊分析器",
                 loginBtn: "登入 / 註冊",
-                heroTitle: "AI圖像分析讓旅遊更有趣",
+                headerSubtitle: "拍下菜單，了解料理",
+                heroTitle: "AI讓旅遊更有趣",
                 heroDescription: "只需拍一張照片就能了解觀光地和料理的詳細資訊，這是一項劃時代的服務",
                 selectLanguage: "請選擇語言 / Select Language",
-                ctaBtn: "立即開始",
+                ctaBtn: "立即免費開始",
                 featuresTitle: "服務特色",
                 feature1Title: "圖像分析",
                 feature1Desc: "採用最新技術即時識別觀光地和料理",
@@ -403,6 +504,15 @@
                 faq3Answer: "根據您的預算和喜好，AI推薦最受台灣遊客歡迎的北海道特產，包括購買地點、價格參考和保存方法。",
                 faq4Question: "什麼季節去北海道最美？",
                 faq4Answer: "AI會根據不同季節的特色推薦最佳旅遊時間，春櫻、夏花、秋楓、冬雪，每個季節都有獨特的美景和體驗。",
+                // Additional CTAs
+                postFeaturesCTATitle: "了解功能後，立即開始使用吧",
+                postFeaturesCTADesc: "免費體驗5次。無需信用卡。",
+                postFeaturesCTABtn: "立即免費開始",
+                faqCTATitle: "疑問解決了嗎？",
+                faqCTADesc: "如果還有疑問，不如實際使用來確認一下",
+                faqCTABtn: "立即免費試用",
+                stickyCTAText: "立即開始，讓旅行更加愉快",
+                stickyCTABtn: "免費開始",
                 // OG Tags and Social Media
                 ogTitle: "旅遊分析器 Anatri - AI圖像分析讓旅遊更有趣",
                 ogDescription: "只需拍一張照片就能了解觀光地和料理的詳細資訊，這是一項劃時代的服務。支援日語・韓語・中文・英語，免費開始使用。",
@@ -413,10 +523,11 @@
             en: {
                 title: "Tourism Analyzer",
                 loginBtn: "Login / Sign Up",
-                heroTitle: "Make tourism more fun with AI image analysis",
+                headerSubtitle: "Snap the menu, understand the food",
+                heroTitle: "Make tourism more fun with AI",
                 heroDescription: "A revolutionary service that provides detailed information about tourist spots and cuisine just by taking a photo",
                 selectLanguage: "Please select language",
-                ctaBtn: "Get Started Now",
+                ctaBtn: "Start Free Now",
                 featuresTitle: "Service Features",
                 feature1Title: "Image Analysis",
                 feature1Desc: "Instantly identify tourist spots and cuisine with cutting-edge technology",
@@ -447,6 +558,15 @@
                 faq3Answer: "Photograph menus to get detailed English explanations of ingredients and allergen information (gluten, nuts, seafood, etc.), ensuring safe dining experiences.",
                 faq4Question: "What are the best ways to experience authentic Japanese culture?",
                 faq4Answer: "AI identifies cultural sites and traditional experiences, providing background information and etiquette tips to help you respectfully engage with Japanese culture.",
+                // Additional CTAs
+                postFeaturesCTATitle: "Ready to get started after understanding the features?",
+                postFeaturesCTADesc: "Try 5 times for free. No credit card required.",
+                postFeaturesCTABtn: "Start Free Now",
+                faqCTATitle: "Questions answered?",
+                faqCTADesc: "If you still have questions, try it yourself to see how it works",
+                faqCTABtn: "Try Free Now",
+                stickyCTAText: "Start now to make your travels more enjoyable",
+                stickyCTABtn: "Start Free",
                 // OG Tags and Social Media
                 ogTitle: "Tourism Analyzer Anatri - Make tourism more fun with AI image analysis",
                 ogDescription: "A revolutionary service that provides detailed information about tourist spots and cuisine just by taking a photo. Supports Japanese, Korean, Chinese, and English. Start free now.",
@@ -489,6 +609,7 @@
             // Update all text elements
             document.getElementById('titleText').textContent = t.title;
             document.getElementById('loginBtn').textContent = t.loginBtn;
+            document.getElementById('headerSubtitle').textContent = t.headerSubtitle;
             document.getElementById('heroTitle').textContent = t.heroTitle;
             document.getElementById('heroDescription').textContent = t.heroDescription;
             document.getElementById('selectLanguageText').textContent = t.selectLanguage;
@@ -528,6 +649,25 @@
                 document.getElementById('faq4Answer').textContent = t.faq4Answer;
             }
             
+            // Update Additional CTAs
+            if (document.getElementById('postFeaturesCTATitle')) {
+                document.getElementById('postFeaturesCTATitle').textContent = t.postFeaturesCTATitle;
+                document.getElementById('postFeaturesCTADesc').textContent = t.postFeaturesCTADesc;
+                document.getElementById('postFeaturesCTABtn').querySelector('.cta-text').textContent = t.postFeaturesCTABtn;
+            }
+            
+            if (document.getElementById('faqCTATitle')) {
+                document.getElementById('faqCTATitle').textContent = t.faqCTATitle;
+                document.getElementById('faqCTADesc').textContent = t.faqCTADesc;
+                document.getElementById('faqCTABtn').querySelector('.cta-text').textContent = t.faqCTABtn;
+            }
+            
+            if (document.getElementById('stickyCTAText')) {
+                document.getElementById('stickyCTAText').textContent = t.stickyCTAText;
+                document.getElementById('stickyCTABtn').querySelector('.cta-text').textContent = t.stickyCTABtn;
+            }
+            
+            
             // Update OG tags and social media metadata for better sharing
             if (t.ogTitle) {
                 document.getElementById('ogTitle').setAttribute('content', t.ogTitle);
@@ -558,7 +698,420 @@
             // Get saved language or default to Japanese
             const savedLanguage = localStorage.getItem('selectedLanguage') || 'ja';
             setLanguage(savedLanguage);
+            
+            // Phase 2.3: Initialize Core Web Vitals optimizations
+            initializeCoreWebVitalsOptimizations();
+            
+            // FAQ インタラクティブ機能を初期化
+            initializeFAQInteractivity();
+            
+            // ランダム背景画像システムを初期化
+            initializeRandomBackground();
+            
+            // スティッキーCTAバーを初期化
+            initializeStickyCtaBar();
         });
+        
+        // Phase 2.3: Core Web Vitals Optimization Functions
+        function initializeCoreWebVitalsOptimizations() {
+            // Speculation Rules 動的制御
+            initializeSpeculationRules();
+            
+            // 画像遅延読み込み最適化
+            optimizeImageLoading();
+            
+            // 重要なリソースのプリロード
+            preloadCriticalResources();
+            
+            console.log('✅ Core Web Vitals optimizations initialized');
+        }
+        
+        function initializeSpeculationRules() {
+            // Speculation Rules API サポート確認
+            if (!HTMLScriptElement.supports || !HTMLScriptElement.supports('speculationrules')) {
+                console.log('⚠️ Speculation Rules API not supported, using fallback');
+                initializeManualPreloading();
+                return;
+            }
+            
+            // ユーザーのホバー行動に基づく動的プリロード
+            let hoverTimeout;
+            const preloadOnHover = (element, url) => {
+                element.addEventListener('mouseenter', () => {
+                    hoverTimeout = setTimeout(() => {
+                        addSpeculationRule('prefetch', url);
+                    }, 100); // 100ms のホバー遅延
+                });
+                
+                element.addEventListener('mouseleave', () => {
+                    clearTimeout(hoverTimeout);
+                });
+            };
+            
+            // 重要なリンクにホバープリロードを設定
+            const criticalLinks = document.querySelectorAll('a[href="/login.html"], a[href="./login.html"], .login-btn, .cta-btn');
+            criticalLinks.forEach(link => {
+                const url = link.getAttribute('href');
+                if (url) {
+                    preloadOnHover(link, url);
+                }
+            });
+            
+            // スクロール位置に基づくプリロード
+            let scrollPreloadExecuted = false;
+            window.addEventListener('scroll', () => {
+                if (!scrollPreloadExecuted && window.scrollY > window.innerHeight * 0.5) {
+                    addSpeculationRule('prefetch', '/index.html');
+                    addSpeculationRule('prefetch', './index.html');
+                    scrollPreloadExecuted = true;
+                }
+            });
+        }
+        
+        function addSpeculationRule(action, url) {
+            try {
+                const ruleScript = document.createElement('script');
+                ruleScript.type = 'speculationrules';
+                ruleScript.textContent = JSON.stringify({
+                    [action]: [{
+                        'where': { 'href_matches': url },
+                        'eagerness': 'moderate'
+                    }]
+                });
+                document.head.appendChild(ruleScript);
+                console.log(`✅ Speculation rule added: ${action} ${url}`);
+            } catch (error) {
+                console.warn('Failed to add speculation rule:', error);
+            }
+        }
+        
+        function initializeManualPreloading() {
+            // Speculation Rules API がサポートされていない場合のフォールバック
+            const preloadLink = (url, as = 'document') => {
+                const link = document.createElement('link');
+                link.rel = 'prefetch';
+                link.href = url;
+                link.as = as;
+                document.head.appendChild(link);
+            };
+            
+            // 重要なページの手動プリロード
+            setTimeout(() => {
+                preloadLink('./login.html');
+                preloadLink('./index.html');
+            }, 2000); // 2秒後にプリロード開始
+        }
+        
+        function optimizeImageLoading() {
+            // 既存の loading="lazy" 属性を持つ画像の最適化
+            const images = document.querySelectorAll('img[loading="lazy"]');
+            
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            
+                            // data-full-src属性がある場合（ギャラリー画像）は高解像度版を読み込み
+                            if (img.hasAttribute('data-full-src')) {
+                                const fullSrc = img.getAttribute('data-full-src');
+                                const fullImg = new Image();
+                                fullImg.onload = () => {
+                                    img.src = fullSrc;
+                                    img.classList.add('high-res-loaded');
+                                };
+                                fullImg.src = fullSrc;
+                            }
+                            
+                            observer.unobserve(img);
+                        }
+                    });
+                }, {
+                    rootMargin: '50px' // 画像が表示される50px前からロード開始
+                });
+                
+                images.forEach(img => imageObserver.observe(img));
+            }
+        }
+        
+        function preloadCriticalResources() {
+            // 重要なスタイルシートとスクリプトのプリロード
+            const criticalResources = [
+                { href: 'css/styles.css', as: 'style' },
+                { href: 'js/seo-structured-data.js', as: 'script' }
+            ];
+            
+            criticalResources.forEach(resource => {
+                const existingLink = document.querySelector(`link[href="${resource.href}"]`);
+                if (!existingLink) {
+                    const link = document.createElement('link');
+                    link.rel = 'preload';
+                    link.href = resource.href;
+                    link.as = resource.as;
+                    if (resource.as === 'style') {
+                        link.onload = function() {
+                            this.onload = null;
+                            this.rel = 'stylesheet';
+                        };
+                    }
+                    document.head.appendChild(link);
+                }
+            });
+            
+            // Google Fonts のフォント表示最適化
+            const googleFontLink = document.querySelector('link[href*="fonts.googleapis.com"]');
+            if (googleFontLink) {
+                googleFontLink.setAttribute('crossorigin', 'anonymous');
+                googleFontLink.setAttribute('rel', 'preconnect');
+            }
+        }
+        
+        // Core Web Vitals メトリクス計測（開発時のパフォーマンス確認用）
+        function measureCoreWebVitals() {
+            try {
+                // LCP (Largest Contentful Paint) 計測
+                new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        if (entry.startTime < performance.now()) {
+                            console.log('📊 LCP:', entry.startTime.toFixed(2), 'ms');
+                        }
+                    }
+                }).observe({type: 'largest-contentful-paint', buffered: true});
+                
+                // CLS (Cumulative Layout Shift) 計測
+                let clsValue = 0;
+                new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        if (!entry.hadRecentInput) {
+                            clsValue += entry.value;
+                        }
+                    }
+                    console.log('📊 CLS:', clsValue.toFixed(4));
+                }).observe({type: 'layout-shift', buffered: true});
+                
+                // FID (First Input Delay) 計測
+                new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        console.log('📊 FID:', entry.processingStart - entry.startTime, 'ms');
+                    }
+                }).observe({type: 'first-input', buffered: true});
+                
+            } catch (error) {
+                console.warn('Core Web Vitals measurement failed:', error);
+            }
+        }
+        
+        // CTA クリック追跡関数
+        function trackCTA(location) {
+            // Google Analytics 4 イベント送信
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'click_cta', {
+                    'event_category': 'engagement',
+                    'event_label': location,
+                    'cta_location': location,
+                    'page_title': document.title,
+                    'page_location': window.location.href
+                });
+            }
+            
+            // コンソールログでデバッグ情報
+            console.log(`📊 CTA Clicked: ${location} at ${new Date().toISOString()}`);
+            
+            // 将来的な拡張のために追加データを保存
+            try {
+                const ctaData = {
+                    location: location,
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent,
+                    language: localStorage.getItem('selectedLanguage') || 'ja'
+                };
+                
+                // LocalStorageに追跡データを保存（分析用）
+                let ctaHistory = JSON.parse(localStorage.getItem('ctaHistory') || '[]');
+                ctaHistory.push(ctaData);
+                
+                // 最新50件のみ保持
+                if (ctaHistory.length > 50) {
+                    ctaHistory = ctaHistory.slice(-50);
+                }
+                
+                localStorage.setItem('ctaHistory', JSON.stringify(ctaHistory));
+            } catch (error) {
+                console.warn('CTA tracking data save failed:', error);
+            }
+        }
+
+        // ランダム背景画像システム
+        function initializeRandomBackground() {
+            const backgroundImages = [
+                'images/backgrounds/1.hakodate_optimized.jpg',
+                'images/backgrounds/2.hakodate_optimized.jpg', 
+                'images/backgrounds/3.biei01_optimized.jpg',
+                'images/backgrounds/4.tokyo_optimized.jpg',
+                'images/backgrounds/5.Fuji_optimized.jpg'
+            ];
+            
+            // ランダムに背景画像を選択
+            const randomIndex = Math.floor(Math.random() * backgroundImages.length);
+            const selectedImage = backgroundImages[randomIndex];
+            
+            // ヒーローセクションの背景画像を設定
+            const heroSection = document.querySelector('.hero-section');
+            if (heroSection) {
+                // 既存の背景画像クラスを削除
+                heroSection.classList.remove('hero-bg-1', 'hero-bg-2', 'hero-bg-3', 'hero-bg-4', 'hero-bg-5');
+                
+                // 新しい背景画像クラスを追加
+                heroSection.classList.add(`hero-bg-${randomIndex + 1}`);
+                
+                // CSS カスタムプロパティとして設定（フォールバック）
+                heroSection.style.setProperty('--hero-bg-image', `url('${selectedImage}')`);
+                
+                console.log(`🎨 Hero background set to: ${selectedImage} (index: ${randomIndex + 1})`);
+                
+                // 背景画像のプリロード（パフォーマンス向上）
+                const img = new Image();
+                img.onload = () => {
+                    heroSection.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('${selectedImage}')`;
+                    heroSection.classList.add('background-loaded');
+                };
+                img.src = selectedImage;
+            }
+        }
+        
+        // FAQ インタラクティブ機能
+        function initializeFAQInteractivity() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                if (question) {
+                    question.addEventListener('click', () => {
+                        // 他のFAQアイテムを閉じる（アコーディオン形式）
+                        faqItems.forEach(otherItem => {
+                            if (otherItem !== item && otherItem.classList.contains('active')) {
+                                otherItem.classList.remove('active');
+                            }
+                        });
+                        
+                        // 現在のアイテムをトグル
+                        item.classList.toggle('active');
+                        
+                        // スムーズスクロール（必要に応じて）
+                        if (item.classList.contains('active')) {
+                            setTimeout(() => {
+                                item.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'nearest'
+                                });
+                            }, 300);
+                        }
+                    });
+                    
+                    // キーボードアクセシビリティ対応
+                    question.setAttribute('tabindex', '0');
+                    question.setAttribute('role', 'button');
+                    question.setAttribute('aria-expanded', 'false');
+                    
+                    question.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            question.click();
+                        }
+                    });
+                    
+                    // aria-expanded属性の更新
+                    const observer = new MutationObserver(() => {
+                        const isActive = item.classList.contains('active');
+                        question.setAttribute('aria-expanded', isActive.toString());
+                    });
+                    
+                    observer.observe(item, { attributes: true, attributeFilter: ['class'] });
+                }
+            });
+        }
+        
+        // スティッキーCTAバーの制御
+        function initializeStickyCtaBar() {
+            const stickyBar = document.getElementById('stickyCTABar');
+            const heroSection = document.querySelector('.hero-section');
+            let isStickyClosed = localStorage.getItem('stickyCTAClosed') === 'true';
+            let lastScrollY = window.scrollY;
+            let ticking = false;
+            
+            if (isStickyClosed) return; // ユーザーが既に閉じている場合は表示しない
+            
+            function updateStickyBar() {
+                const heroHeight = heroSection.offsetHeight;
+                const scrollY = window.scrollY;
+                const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
+                
+                // ヒーローセクションを過ぎたら表示
+                if (scrollY > heroHeight * 0.7 && !isStickyClosed) {
+                    stickyBar.classList.add('visible');
+                    
+                    // スクロール方向に応じてアニメーション調整
+                    if (scrollDirection === 'down') {
+                        stickyBar.classList.remove('scroll-up');
+                        stickyBar.classList.add('scroll-down');
+                    } else {
+                        stickyBar.classList.remove('scroll-down');
+                        stickyBar.classList.add('scroll-up');
+                    }
+                } else {
+                    stickyBar.classList.remove('visible');
+                }
+                
+                lastScrollY = scrollY;
+                ticking = false;
+            }
+            
+            function requestTick() {
+                if (!ticking) {
+                    requestAnimationFrame(updateStickyBar);
+                    ticking = true;
+                }
+            }
+            
+            // スクロールイベントリスナー
+            window.addEventListener('scroll', requestTick, { passive: true });
+            
+            // リサイズ時の再計算
+            window.addEventListener('resize', requestTick, { passive: true });
+            
+            console.log('✅ Sticky CTA bar initialized');
+        }
+        
+        function closeStickyBar() {
+            const stickyBar = document.getElementById('stickyCTABar');
+            
+            // フェードアウトアニメーション
+            stickyBar.classList.add('closing');
+            
+            setTimeout(() => {
+                stickyBar.classList.remove('visible');
+                stickyBar.classList.remove('closing');
+                
+                // ユーザーの選択を記憶
+                localStorage.setItem('stickyCTAClosed', 'true');
+                
+                // Google Analytics イベント送信
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'sticky_cta_closed', {
+                        'event_category': 'user_interaction',
+                        'event_label': 'user_dismissed_sticky_cta'
+                    });
+                }
+                
+                console.log('📊 Sticky CTA bar closed by user');
+            }, 300);
+        }
+        
+        // 開発時のパフォーマンス計測を有効化
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            measureCoreWebVitals();
+        }
     </script>
 </body>
 </html>
