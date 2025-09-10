@@ -25,138 +25,132 @@
 
 ### 1️⃣ Gemini API呼び出し最適化
 
-#### A. 並列処理実装（処理時間 -30%）
 
+#### A. アウトプット制限によるパフォーマンス最適化（レスポンス時間 -40%）
+
+**現状分析**:
 ```python
-# backend/functions/image-analysis/handler_gemini_optimized.py
+# 現在のプロンプト（handler_gemini.py）
+current_prompt = """あなたは地元の観光ガイドです。この画像を詳しく分析し、その地域の魅力を最大限に伝える観光ガイドとして800文字以内で回答してください。
+**重要: 回答は必ずMarkdown形式で出力してください。見出しは##、太字は**、リストは-を使用してください。**
+🏔️ **観光AI解析** 🏔️
+[... 詳細な分析指示 ...]"""
 
-import asyncio
-import aiohttp
-from concurrent.futures import ThreadPoolExecutor
-
-async def analyze_parallel(image_data, language, user_id):
-    """店舗解析とメニュー解析を並列実行"""
-    
-    async with aiohttp.ClientSession() as session:
-        # 両方のAPIを同時に呼び出し
-        tasks = [
-            analyze_store_async(session, image_data, language, user_id),
-            analyze_menu_async(session, image_data, language, user_id)
-        ]
-        
-        # 並列実行（最長の処理時間のみ）
-        results = await asyncio.gather(*tasks)
-        
-        return {
-            'store_analysis': results[0],
-            'menu_translation': results[1],
-            'processing_time': max(results[0]['time'], results[1]['time'])
-        }
-
-async def analyze_store_async(session, image_data, language, user_id):
-    """非同期店舗解析"""
-    url = f"https://generativelanguage.googleapis.com/v1alpha/models/gemini-2.0-flash-exp:generateContent"
-    
-    # 地域情報取得
-    user_context = await get_user_context_async(user_id)
-    
-    payload = {
-        "contents": [{
-            "parts": [
-                {
-                    "text": build_optimized_prompt(language, 'store', user_context)
-                },
-                {
-                    "inline_data": {
-                        "mime_type": "image/jpeg",
-                        "data": image_data
-                    }
-                }
-            ]
-        }],
-        "generationConfig": {
-            "temperature": 0.7,
-            "maxOutputTokens": 1024,  # 削減
-            "topP": 0.8
-        }
-    }
-    
-    start_time = time.time()
-    async with session.post(url, json=payload) as response:
-        result = await response.json()
-        
-    return {
-        'result': parse_gemini_response(result),
-        'time': time.time() - start_time
-    }
+# 現在の設定
+current_config = {
+    "maxOutputTokens": 2048,  # ← ボトルネック
+    "temperature": 0.7,
+    "topP": 0.8,
+    "topK": 40
+}
 ```
 
-#### B. プロンプト最適化（トークン数 -40%）
+**❌ 問題点**:
+- プロンプトで「800文字以内」と指示しているが、実際は2048トークン（約1500-2000文字）まで生成可能
+- 出力トークン数が多いほどGemini APIレスポンス時間が長くなる
+- プロンプト簡略化は解析精度劣化のリスクが高い
 
+**✅ 改善案**:
 ```python
-def build_optimized_prompt(language, analysis_type, user_context):
-    """最適化されたプロンプト（トークン削減）"""
-    
-    # 言語別の最小限プロンプト
-    prompts = {
-        'ja': {
-            'store': f"""画像解析:
-地域: {user_context['country']}, {user_context['city']}
-必須項目:
-1. 店名/場所名
-2. 特徴（50字以内）
-3. おすすめ度（5段階）
-4. 営業時間（推定）
-JSON形式で回答""",
-            'menu': """メニュー翻訳:
-言語: 日本語
-形式: {"items": [{"name": "品名", "price": "価格", "description": "説明"}]}"""
-        },
-        'en': {
-            'store': f"""Image analysis:
-Location: {user_context['country']}, {user_context['city']}
-Required:
-1. Name
-2. Features (50 words)
-3. Rating (1-5)
-4. Hours (estimate)
-JSON format""",
-            'menu': """Menu translation:
-Language: English
-Format: {"items": [{"name": "dish", "price": "cost", "description": "details"}]}"""
-        }
-    }
-    
-    return prompts.get(language, prompts['ja']).get(analysis_type, '')
-```
-
-#### C. モデル選択の最適化
-
-```python
-def select_optimal_model(analysis_type, image_size):
-    """用途とサイズに応じた最適モデル選択"""
+def build_output_optimized_config(analysis_type, language):
+    """出力制限による高速化設定"""
     
     if analysis_type == 'menu':
-        # メニュー翻訳は軽量・高速モデル
+        # メニュー翻訳: 構造化データ重視
         return {
-            'model': 'gemini-1.5-flash',
-            'timeout': 15,
-            'max_tokens': 512
-        }
-    elif image_size < 500 * 1024:  # 500KB以下
-        # 小さい画像は標準モデル
-        return {
-            'model': 'gemini-2.0-flash-exp',
-            'timeout': 30,
-            'max_tokens': 1024
+            "maxOutputTokens": 1024,  # 半減
+            "temperature": 0.3,      # 精度重視
+            "topP": 0.9,
+            "topK": 40,
+            "stopSequences": ["---", "参考:", "URL:"]  # 不要情報停止
         }
     else:
-        # 大きい画像は高精度モデル（検索機能付き）
+        # 観光地解析: 簡潔な情報提供
         return {
-            'model': 'gemini-2.0-flash-exp-with-search',
-            'timeout': 45,
-            'max_tokens': 2048
+            "maxOutputTokens": 1024,  # 半分に削減
+            "temperature": 0.7,
+            "topP": 0.8, 
+            "topK": 40,
+            "stopSequences": ["URL:", "参考文献", "詳細は公式"]
         }
+
+```
+
+**期待効果**:
+```yaml
+パフォーマンス改善:
+  - メニュー翻訳: 3-5秒 → 1.5-2.5秒 (50%短縮)
+  - 観光地解析: 4-8秒 → 2-4秒 (50%短縮)
+  - Token使用量: 70%削減
+  - API課金: 70%削減
+
+品質保持:
+  - プロンプトの分析指示は100%保持
+  - 出力の簡潔性向上（ユーザー体験改善）
+  - 必要な情報は確実に含む
+```
+
+#### B. 高速化重視のモデル・タイムアウト設定
+
+```python
+def select_performance_optimized_model(analysis_type):
+    """パフォーマンス最適化されたモデル選択（精度は維持）"""
+    
+    # 現在の実装: gemini-2.0-flash-exp を統一使用
+    base_model = 'gemini-2.0-flash-exp'
+    
+    if analysis_type == 'menu':
+        # メニュー翻訳: 最高速化設定
+        return {
+            'model': base_model,
+            'timeout': 15,  # 短縮（現在30秒）
+            'maxOutputTokens': 256,  # 大幅削減
+            'temperature': 0.3,  # 安定性重視
+            'stopSequences': ["---", "参考:", "URL:", "※"]
+        }
+    else:
+        # 観光地解析: 高速・高精度バランス
+        return {
+            'model': base_model,
+            'timeout': 25,  # 短縮（現在30秒）
+            'maxOutputTokens': 512,  # 半分に削減
+            'temperature': 0.7,  # 創造性維持
+            'stopSequences': ["URL:", "参考文献", "詳細は公式", "※"]
+        }
+
+def implement_timeout_optimization():
+    """段階的タイムアウト実装"""
+    
+    # 段階的レスポンス
+    timeouts = {
+        'quick_response': 10,    # 基本情報のみ
+        'standard_response': 20, # 通常の詳細情報
+        'detailed_response': 30  # 最大情報（フォールバック）
+    }
+    
+    return {
+        'strategy': 'progressive_timeout',
+        'fallback_enabled': True,
+        'user_notification': True  # 処理状況をユーザーに通知
+    }
+```
+
+**改善効果**:
+```yaml
+モデル統一の利点:
+  - Gemini 2.0 Flash: 最新・高性能を維持
+  - 複雑な分岐ロジック不要
+  - 予測可能なレスポンス時間
+
+タイムアウト短縮:
+  - メニュー翻訳: 30秒 → 15秒
+  - 観光地解析: 30秒 → 25秒
+  - エラー率低下（早期タイムアウト検出）
+
+出力トークン削減:
+  - API応答時間: 50%短縮
+  - 課金コスト: 70%削減
+  - ユーザビリティ向上（簡潔な回答）
 ```
 
 ### 2️⃣ 画像前処理最適化
@@ -672,6 +666,22 @@ ROI: 3ヶ月で実装コスト回収
 - [ ] CloudWatchダッシュボード作成
 - [ ] A/Bテスト設定
 - [ ] ドキュメント更新
+
+---
+
+## 📄 文書修正履歴
+
+**2025年9月7日 - A. プロンプト最適化の改善**
+- ❌ **修正前**: 「プロンプト最適化（トークン数 -40%）」
+  - プロンプト簡略化による精度劣化リスク
+  - 現状プロンプトとの比較なし
+- ✅ **修正後**: 「アウトプット制限によるパフォーマンス最適化」
+  - プロンプト品質100%維持
+  - maxOutputTokens大幅削減（2048 → 256/512）
+  - 実装コードベースの現状分析追加
+  - stopSequences活用で不要出力停止
+
+**修正理由**: ユーザー指摘により、プロンプト簡略化は性能劣化リスクが高く、アウトプット制限の方が効果的であることが判明。実装に基づく正確な改善案に修正。
 
 ---
 

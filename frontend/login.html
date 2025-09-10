@@ -51,22 +51,6 @@
                 <button id="emailLoginBtn" class="email-login-btn">
                     📧 メールでログイン
                 </button>
-                
-                <!-- 緊急ログインボタン（目立たないように配置） -->
-                <button id="emergencyLoginBtn" class="emergency-login-btn" style="
-                    width: 100%; 
-                    padding: 0.6rem; 
-                    margin-top: 0.5rem; 
-                    background: #f0f0f0; 
-                    color: #666; 
-                    border: 1px solid #ddd; 
-                    border-radius: 8px; 
-                    font-size: 0.8rem; 
-                    cursor: pointer;
-                    opacity: 0.7;
-                ">
-                    🛠️ 緊急ログイン
-                </button>
             </section>
             
             <!-- メール認証フォーム（初期非表示） -->
@@ -97,7 +81,6 @@
                 googleLoginReady: "Googleアカウントでログイン",
                 divider: "または",
                 emailLoginBtn: "📧 メールでログイン",
-                emergencyLoginBtn: "🛠️ 緊急ログイン",
                 backLink: "← 戻る"
             },
             ko: {
@@ -108,7 +91,6 @@
                 googleLoginReady: "Google 계정으로 로그인",
                 divider: "또는",
                 emailLoginBtn: "📧 이메일로 로그인",
-                emergencyLoginBtn: "🛠️ 긴급 로그인",
                 backLink: "← 돌아가기"
             },
             zh: {
@@ -119,7 +101,6 @@
                 googleLoginReady: "使用Google账户登录",
                 divider: "或者",
                 emailLoginBtn: "📧 使用邮箱登录",
-                emergencyLoginBtn: "🛠️ 紧急登录",
                 backLink: "← 返回"
             },
             tw: {
@@ -130,7 +111,6 @@
                 googleLoginReady: "使用Google帳戶登入",
                 divider: "或者",
                 emailLoginBtn: "📧 使用電子郵件登入",
-                emergencyLoginBtn: "🛠️ 緊急登入",
                 backLink: "← 返回"
             },
             en: {
@@ -141,7 +121,6 @@
                 googleLoginReady: "Sign in with Google Account",
                 divider: "or",
                 emailLoginBtn: "📧 Sign in with Email",
-                emergencyLoginBtn: "🛠️ Emergency Login",
                 backLink: "← Back"
             }
         };
@@ -652,89 +631,6 @@
             }, 5000);
         }
         
-        // Emergency Login Functions
-        function showEmergencyLogin() {
-            const emailAuthForm = document.getElementById('emailAuthForm');
-            emailAuthForm.style.display = 'block';
-            
-            // Show back link when emergency form is displayed
-            const backLink = document.querySelector('.back-link');
-            if (backLink) {
-                backLink.style.display = 'block';
-            }
-            emailAuthForm.innerHTML = `
-                <h2 class="emergency-login-title" style="font-size: 1.2rem; margin-bottom: 1rem; color: #666;">🛠️ 緊急ログイン</h2>
-                <p style="color: #666; margin-bottom: 1.5rem; font-size: 0.9rem;">開発テスト用の簡易ログインです</p>
-                
-                <form id="emergencyLoginForm">
-                    <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; font-size: 0.9rem;">ユーザーID:</label>
-                        <input type="text" id="emergencyUsername" value="sapporo-guide" 
-                               style="width: 100%; padding: 0.8rem; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
-                    </div>
-                    <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; font-size: 0.9rem;">パスワード:</label>
-                        <input type="password" id="emergencyPassword" value="hokkaido2024"
-                               style="width: 100%; padding: 0.8rem; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
-                    </div>
-                    <button type="submit" style="width: 100%; padding: 0.8rem; background: #ff9800; color: white; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;">緊急ログイン</button>
-                </form>
-                
-                <button onclick="hideEmergencyLogin()" style="width: 100%; padding: 0.6rem; background: transparent; color: #666; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; cursor: pointer;">戻る</button>
-            `;
-            
-            setupEmergencyLoginListeners();
-        }
-        
-        function hideEmergencyLogin() {
-            const emailAuthForm = document.getElementById('emailAuthForm');
-            emailAuthForm.style.display = 'none';
-            
-            // Hide back link when emergency form is hidden
-            const backLink = document.querySelector('.back-link');
-            if (backLink) {
-                backLink.style.display = 'none';
-            }
-        }
-        
-        function setupEmergencyLoginListeners() {
-            const emergencyLoginForm = document.getElementById('emergencyLoginForm');
-            if (emergencyLoginForm) {
-                emergencyLoginForm.addEventListener('submit', handleEmergencyLogin);
-            }
-        }
-        
-        function handleEmergencyLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('emergencyUsername').value;
-            const password = document.getElementById('emergencyPassword').value;
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'ログイン中...';
-            
-            setTimeout(() => {
-                if (username === 'sapporo-guide' && password === 'hokkaido2024') {
-                    // 成功時のログイン状態設定
-                    localStorage.setItem('tourismAuth', 'true');
-                    localStorage.setItem('accessToken', 'emergency-login-token-dev');
-                    localStorage.setItem('userInfo', JSON.stringify({
-                        email: 'emergency@example.com',
-                        name: 'Emergency User',
-                        auth_provider: 'emergency'
-                    }));
-                    
-                    showMessage('緊急ログインに成功しました', 'success');
-                    setTimeout(() => {
-                        window.location.href = './index.html';
-                    }, 1500);
-                } else {
-                    showMessage('ユーザーIDまたはパスワードが正しくありません', 'error');
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '緊急ログイン';
-                }
-            }, 1000);
-        }
         
         // Language switching functions
         function updatePageLanguage(language) {
@@ -757,9 +653,6 @@
                 // Update button texts
                 const emailLoginBtn = document.getElementById('emailLoginBtn');
                 if (emailLoginBtn) emailLoginBtn.textContent = translations.emailLoginBtn;
-                
-                const emergencyLoginBtn = document.getElementById('emergencyLoginBtn');
-                if (emergencyLoginBtn) emergencyLoginBtn.textContent = translations.emergencyLoginBtn;
                 
                 // Update back link
                 const backLink = document.querySelector('.back-link a');
@@ -836,15 +729,6 @@
                 emailLoginBtn.addEventListener('click', function() {
                     console.log('📧 Email login button clicked');
                     showEmailAuthForm();
-                });
-            }
-            
-            // Setup Emergency Login Button Event Listener
-            const emergencyLoginBtn = document.getElementById('emergencyLoginBtn');
-            if (emergencyLoginBtn) {
-                emergencyLoginBtn.addEventListener('click', function() {
-                    console.log('🛠️ Emergency login button clicked');
-                    showEmergencyLogin();
                 });
             }
         });

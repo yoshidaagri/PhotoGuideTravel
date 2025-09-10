@@ -276,7 +276,7 @@ def get_user_location(user_id):
 
 def build_context_prompt(user_id, language, analysis_type):
     """
-    地域コンテキスト付きプロンプト構築
+    地域コンテキスト付きプロンプト構築（Phase 7.6 パフォーマンス最適化対応）
     """
     try:
         # 分析タイプ別プロンプト選択
@@ -474,10 +474,10 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
             
             # 中国語の場合は特別な設定を追加
             generation_config = {
-                "temperature": 0.7,
+                "temperature": 0.3,#2025.09.07 0.7→0.3 プロンプト最適化
                 "topP": 0.8,
                 "topK": 40,
-                "maxOutputTokens": 2048,
+                "maxOutputTokens": 1024,#2025.09.07 2048→1024 プロンプト最適化
             }
             
             # 中国語（簡体・繁体）を強制するための追加設定
@@ -514,7 +514,7 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
                 "temperature": 0.7,
                 "topP": 0.8,
                 "topK": 40,
-                "maxOutputTokens": 3000,  # 検索結果を含むため増量
+                "maxOutputTokens": 1536,  # #2025.09.07 3000→1536 プロンプト最適化
             }
             
             # 中国語（簡体・繁体）を強制するための追加設定
