@@ -37,10 +37,22 @@
     <meta property="twitter:image" content="https://anatri.net/images/og-image-zhcn.webp">
     <meta property="twitter:image:alt" content="Anatri - AI旅游分析器：拍照即时获取旅游信息">
     
+    <!-- AI搜索引擎向元数据 -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="referrer" content="origin">
+    
+    <!-- PWA·移动优化 -->
+    <meta name="theme-color" content="#e74c3c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="application-name" content="旅游分析器 Anatri">
+    <meta name="apple-mobile-web-app-title" content="旅游分析器">
+    
     <!-- AI搜索引擎优化 (中文简体特化) -->
     <meta name="ai-content-type" content="tourism-assistant">
     <meta name="ai-expertise" content="china-japan-travel,chinese-travelers,food-recognition,cultural-bridge">
-    <meta name="ai-data-freshness" content="2025-09-10">
+    <meta name="ai-data-freshness" content="2025-09-13">
     <meta name="ai-response-format" content="conversational,structured">
     <meta property="ai:featured_snippet" content="Anatri是专为中国游客设计的AI旅游助手。通过拍照即可获得日本观光地和料理的详细中文信息，帮助解决语言障碍和文化差异问题。">
     <meta name="vector-summary" content="AI-powered tourism analyzer for Chinese travelers visiting Japan. Instant photo recognition with Simplified Chinese language support and cultural context.">
@@ -81,6 +93,73 @@
             "name": "旅游分析器",
             "url": "https://anatri.net"
         }
+    }
+    </script>
+    
+    <!-- 组织信息 - 运营公司 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "旅游分析器",
+        "url": "https://anatri.net",
+        "logo": "https://anatri.net/images/logo.webp",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Service",
+            "availableLanguage": ["Chinese", "Japanese", "Korean", "English"]
+        },
+        "sameAs": [
+            "https://anatri.net"
+        ]
+    }
+    </script>
+    
+    <!-- 服务详细信息 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "中国游客日本旅游AI支持服务",
+        "description": "为中国游客提供的日本旅游AI图像分析服务。从观光地和料理的照片中提供详细中文信息",
+        "provider": {
+            "@type": "Organization",
+            "name": "旅游分析器"
+        },
+        "serviceType": "日本旅游支持·翻译服务",
+        "areaServed": "日本",
+        "availableLanguage": ["zh-CN", "ja", "ko", "zh-TW", "en"]
+    }
+    </script>
+    
+    <!-- HowTo: 应用使用方法 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "旅游分析器使用方法",
+        "description": "在日本旅游中轻松获取观光地和料理信息的方法",
+        "image": "https://anatri.net/images/how-to-use-zhcn.webp",
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "拍摄照片",
+                "text": "使用智能手机拍摄观光地或料理的照片",
+                "image": "https://anatri.net/images/step1-photo.webp"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "上传到应用",
+                "text": "将拍摄的照片上传到Anatri应用程序",
+                "image": "https://anatri.net/images/step2-upload.webp"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "查看详细信息",
+                "text": "AI分析后可以查看观光地或料理的中文详细信息",
+                "image": "https://anatri.net/images/step3-result.webp"
+            }
+        ]
     }
     </script>
     

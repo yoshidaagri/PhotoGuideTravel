@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero画像表示テスト</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        .test-section {
+            margin: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .hero-test {
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .hero-content {
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1;
+        }
+        h2 { margin: 10px 0; }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">多言語版ランディングページ Hero画像表示テスト</h1>
+    
+    <div class="test-section">
+        <div class="hero-test" style="background-image: url('https://d22ztxm5q1c726.cloudfront.net/images/backgrounds/5.Fuji_optimized.jpg');">
+            <div class="overlay"></div>
+            <div class="hero-content">
+                <h2>🇯🇵 日本語版</h2>
+                <p>富士山 - 日本の象徴的な風景</p>
+                <a href="https://d22ztxm5q1c726.cloudfront.net/ja/index.html" target="_blank">実際のページを見る</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <div class="hero-test" style="background-image: url('https://d22ztxm5q1c726.cloudfront.net/images/backgrounds/1.hakodate_optimized.jpg');">
+            <div class="overlay"></div>
+            <div class="hero-content">
+                <h2>🇰🇷 韓国語版</h2>
+                <p>函館夜景 - ロマンチックな夜の風景</p>
+                <a href="https://d22ztxm5q1c726.cloudfront.net/ko/index.html" target="_blank">実際のページを見る</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <div class="hero-test" style="background-image: url('https://d22ztxm5q1c726.cloudfront.net/images/backgrounds/3.biei01_optimized.jpg');">
+            <div class="overlay"></div>
+            <div class="hero-content">
+                <h2>🇨🇳 中国語簡体版</h2>
+                <p>美瑛 - 北海道の美しい田園風景</p>
+                <a href="https://d22ztxm5q1c726.cloudfront.net/zh-cn/index.html" target="_blank">実際のページを見る</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <div class="hero-test" style="background-image: url('https://d22ztxm5q1c726.cloudfront.net/images/backgrounds/4.tokyo_optimized.jpg');">
+            <div class="overlay"></div>
+            <div class="hero-content">
+                <h2>🇹🇼 中国語繁体版</h2>
+                <p>東京 - 現代的な都市風景</p>
+                <a href="https://d22ztxm5q1c726.cloudfront.net/zh-tw/index.html" target="_blank">実際のページを見る</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <div class="hero-test" style="background-image: url('https://d22ztxm5q1c726.cloudfront.net/images/backgrounds/2.hakodate_optimized.jpg');">
+            <div class="overlay"></div>
+            <div class="hero-content">
+                <h2>🌍 英語版</h2>
+                <p>函館 - 日本の隠れた宝石</p>
+                <a href="https://d22ztxm5q1c726.cloudfront.net/en/index.html" target="_blank">実際のページを見る</a>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; padding: 20px; background: #f5f5f5; margin-top: 20px;">
+        <h3>✅ 画像表示確認結果</h3>
+        <p>上記の画像が全て表示されていれば、新しいLPの背景画像は正常に動作しています！</p>
+        <p>もし画像が表示されない場合は、ブラウザのキャッシュをクリアしてお試しください。</p>
+    </div>
+</body>
+</html>

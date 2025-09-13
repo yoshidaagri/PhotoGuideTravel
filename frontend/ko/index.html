@@ -37,10 +37,22 @@
     <meta property="twitter:image" content="https://anatri.net/images/og-image-ko.webp">
     <meta property="twitter:image:alt" content="Anatri - AI 관광 분석기: 사진으로 즉시 관광 정보 획득">
     
+    <!-- AI검색엔진 향한 메타데이터 -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="referrer" content="origin">
+    
+    <!-- PWA·모바일 최적화 -->
+    <meta name="theme-color" content="#e74c3c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="application-name" content="관광 분석기 Anatri">
+    <meta name="apple-mobile-web-app-title" content="관광 분석기">
+    
     <!-- AI 검색엔진 최적화 (한국어 특화) -->
     <meta name="ai-content-type" content="tourism-assistant">
     <meta name="ai-expertise" content="korea-japan-travel,korean-travelers,food-recognition,cultural-differences">
-    <meta name="ai-data-freshness" content="2025-09-10">
+    <meta name="ai-data-freshness" content="2025-09-13">
     <meta name="ai-response-format" content="conversational,structured">
     <meta property="ai:featured_snippet" content="Anatri는 한국인의 일본 여행을 지원하는 AI 관광 가이드. 사진을 찍으면 관광지나 음식 정보를 한국어로 상세히 제공하여 언어 장벽과 문화 차이를 해결합니다.">
     <meta name="vector-summary" content="AI-powered tourism analyzer for Korean travelers visiting Japan. Instant photo recognition with Korean language support and cultural context.">
@@ -81,6 +93,73 @@
             "name": "관광 분석기",
             "url": "https://anatri.net"
         }
+    }
+    </script>
+    
+    <!-- 조직 정보 - 운영 회사 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "관광 분석기",
+        "url": "https://anatri.net",
+        "logo": "https://anatri.net/images/logo.webp",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Service",
+            "availableLanguage": ["Korean", "Japanese", "Chinese", "English"]
+        },
+        "sameAs": [
+            "https://anatri.net"
+        ]
+    }
+    </script>
+    
+    <!-- 서비스 상세 정보 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "한국인 일본여행 AI 지원 서비스",
+        "description": "한국인의 일본 여행을 지원하는 AI 이미지 분석 서비스. 관광지와 음식의 사진에서 상세 정보를 한국어로 제공",
+        "provider": {
+            "@type": "Organization",
+            "name": "관광 분석기"
+        },
+        "serviceType": "일본여행 지원・번역 서비스",
+        "areaServed": "일본",
+        "availableLanguage": ["ko", "ja", "zh-CN", "zh-TW", "en"]
+    }
+    </script>
+    
+    <!-- HowTo: 앱 사용법 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "관광 분석기 사용법",
+        "description": "일본 여행에서 관광지나 음식 정보를 간단하게 얻는 방법",
+        "image": "https://anatri.net/images/how-to-use-ko.webp",
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "사진 촬영",
+                "text": "관광지나 음식의 사진을 스마트폰으로 촬영합니다",
+                "image": "https://anatri.net/images/step1-photo.webp"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "앱에 업로드",
+                "text": "촬영한 사진을 Anatri 앱에 업로드합니다",
+                "image": "https://anatri.net/images/step2-upload.webp"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "상세 정보 확인",
+                "text": "AI가 분석한 관광지나 음식의 상세 정보를 한국어로 확인할 수 있습니다",
+                "image": "https://anatri.net/images/step3-result.webp"
+            }
+        ]
     }
     </script>
     
