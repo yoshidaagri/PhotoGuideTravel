@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 한국어 특화 SEO 최적화 Title & Description -->
+    <title>관광 분석기 Anatri - AI 이미지 분석으로 일본 여행을 더욱 즐겁게 | 한국인 전용 여행 가이드</title>
+    <meta name="description" content="한국인을 위한 AI 관광 가이드. 사진 한 장으로 일본 관광지나 요리의 자세한 정보를 한국어로 제공. 일본 여행 중 언어 장벽 해결과 문화 차이 이해를 도와드립니다.">
+    <meta name="keywords" content="일본여행,AI,이미지분석,관광,음식,다국어,관광지,요리,사진,무료,한국어,메뉴번역,일본관광,여행앱,언어장벽,문화차이">
+    
+    <!-- 다국어 hreflang 링크 -->
+    <link rel="alternate" hreflang="ja" href="https://anatri.net/ja/" />
+    <link rel="alternate" hreflang="ko" href="https://anatri.net/ko/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/" />
+    <link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/" />
+    <link rel="alternate" hreflang="en" href="https://anatri.net/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://anatri.net/" />
+    
+    <!-- Open Graph / Facebook (한국어 특화) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://anatri.net/ko/">
+    <meta property="og:title" content="관광 분석기 Anatri - AI 이미지 분석으로 일본 여행을 더욱 즐겁게">
+    <meta property="og:description" content="한국인을 위한 AI 관광 가이드. 사진 한 장으로 일본 관광지나 요리의 자세한 정보를 한국어로 제공. 일본 여행 중 언어 장벽을 해결해드립니다.">
+    <meta property="og:image" content="https://anatri.net/images/og-image-ko.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Anatri - AI 관광 분석기: 사진으로 즉시 관광 정보 획득">
+    <meta property="og:site_name" content="관광 분석기 Anatri">
+    <meta property="og:locale" content="ko_KR">
+    
+    <!-- Twitter (한국어 특화) -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://anatri.net/ko/">
+    <meta property="twitter:title" content="관광 분석기 Anatri - AI 이미지 분석으로 일본 여행을 더욱 즐겁게">
+    <meta property="twitter:description" content="한국인을 위한 AI 관광 가이드. 사진 한 장으로 일본 관광지나 요리의 자세한 정보를 한국어로 제공. 일본 여행 중 언어 장벽 해결.">
+    <meta property="twitter:image" content="https://anatri.net/images/og-image-ko.webp">
+    <meta property="twitter:image:alt" content="Anatri - AI 관광 분석기: 사진으로 즉시 관광 정보 획득">
+    
+    <!-- AI 검색엔진 최적화 (한국어 특화) -->
+    <meta name="ai-content-type" content="tourism-assistant">
+    <meta name="ai-expertise" content="korea-japan-travel,korean-travelers,food-recognition,cultural-differences">
+    <meta name="ai-data-freshness" content="2025-09-10">
+    <meta name="ai-response-format" content="conversational,structured">
+    <meta property="ai:featured_snippet" content="Anatri는 한국인의 일본 여행을 지원하는 AI 관광 가이드. 사진을 찍으면 관광지나 음식 정보를 한국어로 상세히 제공하여 언어 장벽과 문화 차이를 해결합니다.">
+    <meta name="vector-summary" content="AI-powered tourism analyzer for Korean travelers visiting Japan. Instant photo recognition with Korean language support and cultural context.">
+    
+    <!-- 한국어 구조화 데이터 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "관광 분석기 Anatri",
+        "url": "https://anatri.net/ko/",
+        "description": "한국인을 위한 AI 관광 가이드. 사진 한 장으로 일본 관광지나 요리의 자세한 정보를 한국어로 제공하는 혁신적인 서비스",
+        "applicationCategory": "TravelApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW",
+            "availability": "https://schema.org/InStock"
+        },
+        "featureList": [
+            "AI 이미지 분석을 통한 관광지 식별",
+            "다국어 메뉴 번역 (한국어 중심)",
+            "실시간 관광 정보 제공",
+            "5개 언어 지원 (한국어・일본어・중국어・영어)"
+        ],
+        "targetAudience": {
+            "@type": "Audience",
+            "geographicArea": {
+                "@type": "Country",
+                "name": "대한민국"
+            }
+        },
+        "inLanguage": "ko",
+        "availableLanguage": ["ko", "ja", "zh-CN", "zh-TW", "en"],
+        "creator": {
+            "@type": "Organization",
+            "name": "관광 분석기",
+            "url": "https://anatri.net"
+        }
+    }
+    </script>
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://anatri.net/ko/">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📸</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PN77BF2HGP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-PN77BF2HGP', {
+            'page_title': '관광 분석기 Anatri - 한국어판 랜딩페이지',
+            'content_group1': 'Landing Page Korean',
+            'custom_map': {
+                'custom_parameter_1': 'language_ko'
+            },
+            'send_page_view': true,
+            'anonymize_ip': true,
+            'allow_google_signals': false
+        });
+    </script>
+    
+    <!-- Core Web Vitals 최적화 - Speculation Rules API -->
+    <script type="speculationrules">
+    {
+        "prerender": [{
+            "where": { "href_matches": "/login.html" },
+            "eagerness": "moderate"
+        }, {
+            "where": { "href_matches": "/index.html" },
+            "eagerness": "moderate"
+        }],
+        "prefetch": [{
+            "where": { "href_matches": "/*" },
+            "eagerness": "conservative"
+        }]
+    }
+    </script>
+</head>
+<body class="landing-page">
+    <div class="landing-container">
+        <!-- Header -->
+        <header class="landing-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span>관광 분석기</span>
+                    <p class="header-subtitle">메뉴를 찍으면 요리가 이해됩니다</p>
+                </div>
+                <div class="header-actions">
+                    <button onclick="window.location.href='../login.html'" class="login-btn">
+                        로그인 / 신규 가입
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sticky CTA Bar (Hidden by default) -->
+        <div class="sticky-cta-bar" id="stickyCTABar">
+            <div class="sticky-cta-content">
+                <span class="sticky-cta-text">지금 시작해서 여행을 더욱 즐겁게</span>
+                <button onclick="trackCTA('sticky-header'); window.location.href='../login.html'" class="sticky-cta-btn">
+                    <span class="cta-text">무료로 시작하기</span>
+                </button>
+                <button class="sticky-cta-close" id="stickyCTAClose" onclick="closeStickyBar()" aria-label="Close">
+                    ✕
+                </button>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="hero-section" style="background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('../images/backgrounds/1.hakodate_optimized.jpg'); background-size: cover; background-position: center; min-height: 80vh; display: flex; align-items: center; color: white;">
+            <div class="hero-content" style="max-width: 1200px; margin: 0 auto; padding: 2rem; text-align: center;">
+                <div style="background: rgba(255,255,255,0.3); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; color: #fff; backdrop-filter: blur(10px);">
+                    <h1 style="font-size: 3rem; margin-bottom: 1rem; color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">AI로 관광을 더욱 즐겁게</h1>
+                    <p style="font-size: 1.3rem; margin-bottom: 2rem; color: #f8f9fa; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">사진 한 장으로 관광지나 요리의 자세한 정보를 알 수 있는 혁신적인 서비스입니다</p>
+                    
+                    <!-- Language Selection (다른 언어로 보기) -->
+                    <div class="language-selection" style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">다른 언어로 보기 / Other Languages</h3>
+                        <div class="language-buttons" style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                            <button class="lang-btn" onclick="window.location.href='/ja/'" data-lang="ja" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🇯🇵 日本語
+                            </button>
+                            <button class="lang-btn active" onclick="window.location.href='/ko/'" data-lang="ko" style="background: #e74c3c; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                🇰🇷 한국어
+                            </button>
+                            <button class="lang-btn" onclick="window.location.href='/zh-cn/'" data-lang="zh" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🇨🇳 简体中文
+                            </button>
+                            <button class="lang-btn" onclick="window.location.href='/zh-tw/'" data-lang="zh-tw" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🇹🇼 繁體中文
+                            </button>
+                            <button class="lang-btn" onclick="window.location.href='/en/'" data-lang="en" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🌍 English
+                            </button>
+                        </div>
+                    </div>
+
+                    <button onclick="trackCTA('hero-main'); window.location.href='../login.html'" class="cta-btn enhanced" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; padding: 1.2rem 2.5rem; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(231,76,60,0.3); transition: all 0.3s ease;">
+                        <span class="cta-text" style="display: block;">지금 무료로 시작하기</span>
+                        <span class="cta-subtext" style="font-size: 0.9rem; opacity: 0.9;">※신용카드는 불필요합니다</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Testimonials Section -->
+        <section class="testimonials-section">
+            <div class="testimonials-container">
+                <h2>이용자의 목소리</h2>
+                
+                <div class="testimonials-grid">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-item left">
+                        <div class="testimonial-avatar">
+                            <div class="avatar-circle avatar-female">
+                                <img src="../images/interview/icon_women01.png" alt="20대 여성" class="avatar-image">
+                            </div>
+                            <div class="avatar-info">
+                                <span class="avatar-detail">20대 여성</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-bubble">
+                            <p>메뉴를 읽을 수 없어서 곤란했는데, 사진만 찍으면 요리 내용을 바로 알 수 있어서 정말 도움이 되었어요! 일본 여행이 더욱 즐거워졌습니다.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-item left">
+                        <div class="testimonial-avatar">
+                            <div class="avatar-circle avatar-male">
+                                <img src="../images/interview/icon_men01.png" alt="50대 남성" class="avatar-image">
+                            </div>
+                            <div class="avatar-info">
+                                <span class="avatar-detail">50대 남성</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-bubble">
+                            <p>관광지에서 사진을 찍으니까 그 장소의 역사나 볼거리를 자세히 알려줘서 감동했어요. 마치 전용 가이드가 있는 것 같아요!</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-item left">
+                        <div class="testimonial-avatar">
+                            <div class="avatar-circle avatar-male">
+                                <img src="../images/interview/icon_men02.png" alt="40대 남성" class="avatar-image">
+                            </div>
+                            <div class="avatar-info">
+                                <span class="avatar-detail">40대 남성</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-bubble">
+                            <p>우즈베키스탄에서 언어를 몰라 힘들었는데, 앱으로 요리를 알 수 있어서 정말 도움이 되었습니다. 해외여행에서 정말 유용해요!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2>서비스 특징</h2>
+            <div class="features-grid">
+                <div class="feature-card feature-card-01" 
+                     data-image-name="AI이미지분석아이콘" 
+                     data-image-context="사진으로부터 관광지나 요리를 식별하는 최신 AI 기술" 
+                     data-image-keywords="AI,이미지인식,관광,기술">
+                    <div class="feature-content">
+                        <div class="feature-icon">📸</div>
+                        <h3>이미지 분석</h3>
+                        <p>최신 기술로 관광지나 요리를 즉시 식별</p>
+                    </div>
+                </div>
+                <div class="feature-card feature-card-02" 
+                     data-image-name="다국어지원지구아이콘" 
+                     data-image-context="전 세계 여행자에게 대응하는 다국어 AI 번역 서비스" 
+                     data-image-keywords="다국어,번역,국제화,글로벌">
+                    <div class="feature-content">
+                        <div class="feature-icon">🌐</div>
+                        <h3>다국어 지원</h3>
+                        <p>일본어・한국어・중국어・영어 지원</p>
+                    </div>
+                </div>
+                <div class="feature-card feature-card-03" 
+                     data-image-name="일본지도특화아이콘" 
+                     data-image-context="삿포로・홋카이도 지역에 특화된 정밀한 관광 정보 데이터베이스" 
+                     data-image-keywords="일본,삿포로,홋카이도,지역특화,관광">
+                    <div class="feature-content">
+                        <div class="feature-icon">🗾</div>
+                        <h3>지역 특화</h3>
+                        <p>삿포로・홋카이도 관광 정보에 특화된 고정밀 분석</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Post-Features CTA Section -->
+        <section class="post-features-cta">
+            <div class="post-features-cta-content">
+                <h3>기능을 이해했다면, 지금 시작해보세요</h3>
+                <p>무료로 5회 체험 가능. 신용카드는 불필요합니다.</p>
+                <button onclick="trackCTA('post-features'); window.location.href='../login.html'" class="cta-btn enhanced">
+                    <span class="cta-text">지금 무료로 시작하기</span>
+                    <span class="cta-subtext">※가입은 30초로 완료</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="pricing-section">
+            <h2>요금 플랜</h2>
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <h3>무료 플랜</h3>
+                    <div class="price">¥0</div>
+                    <ul class="features-list">
+                        <li>월 5회까지 분석 가능</li>
+                        <li>기본 기능 모두 이용 가능</li>
+                    </ul>
+                    <button onclick="window.location.href='../login.html'" class="plan-btn">
+                        무료로 시작하기
+                    </button>
+                </div>
+                <div class="price-card featured">
+                    <div class="popular-badge">인기 플랜</div>
+                    <h3>3일 플랜</h3>
+                    <div class="price">¥980</div>
+                    <ul class="features-list">
+                        <li>3일간 무제한 분석</li>
+                        <li>모든 기능 이용 가능</li>
+                    </ul>
+                    <button onclick="window.location.href='../login.html'" class="plan-btn premium">
+                        3일 플랜 선택
+                    </button>
+                </div>
+                <div class="price-card">
+                    <h3>7일 플랜</h3>
+                    <div class="price">¥1,980</div>
+                    <ul class="features-list">
+                        <li>7일간 무제한 분석</li>
+                        <li>장기 이용으로 저렴</li>
+                    </ul>
+                    <button onclick="window.location.href='../login.html'" class="plan-btn">
+                        7일 플랜 선택
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Voice Search Optimized FAQ Section -->
+        <section class="faq-section voice-search-optimized" itemscope itemtype="https://schema.org/FAQPage">
+            <h2>자주 묻는 질문</h2>
+            <div class="faq-container">
+                
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question" data-voice-query="한국어">
+                    <h3 class="faq-question" itemprop="name">일본 여행 중 언어 장벽을 어떻게 해결하나요?</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">Anatri는 한국어로 모든 관광 정보를 제공하며, 사진만 찍으면 즉시 번역된 설명을 볼 수 있습니다. 메뉴, 관광지, 교통정보까지 완벽 지원합니다.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">홋카이도에서 꼭 가봐야 할 숨은 명소는?</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">AI가 현지인만 아는 숨은 명소를 추천합니다. 계절별, 취향별 맞춤 추천이 가능하며, 최적의 방문 시간과 교통편도 안내합니다.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">음식 알레르기가 있는데 안전하게 식사할 수 있나요?</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">메뉴 사진을 찍으면 주요 알레르기 유발 요소(글루텐, 견과류, 해산물 등)를 한국어로 상세히 표시해드립니다.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">현지에서 김치찌개나 한국 음식이 그리우면?</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">일본 내 한국 레스토랑과 한국 식재료를 구입할 수 있는 마트 정보도 제공합니다. 향수를 달래는 맛집을 찾아드려요.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ CTA -->
+                <div class="faq-cta">
+                    <div class="faq-cta-content">
+                        <h3>궁금증이 해결되었나요?</h3>
+                        <p>아직 궁금한 점이 있다면, 실제로 사용해서 확인해보세요</p>
+                        <button onclick="trackCTA('faq-section'); window.location.href='../login.html'" class="cta-btn enhanced">
+                            <span class="cta-text">지금 무료로 체험하기</span>
+                            <span class="cta-subtext">※직접 써보면 바로 이해됩니다</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <div class="footer-content">
+                <p>&copy; 2025 관광 분석기. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="../tokusho.html">특정상거래법에 관한 표기</a>
+                    <a href="../about.html">운영회사 소개</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // CTA 클릭 추적 함수
+        function trackCTA(location) {
+            // Google Analytics 4 이벤트 전송
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'click_cta', {
+                    'event_category': 'engagement',
+                    'event_label': location + '_ko',
+                    'cta_location': location,
+                    'page_title': document.title,
+                    'page_location': window.location.href,
+                    'language': 'ko'
+                });
+            }
+            
+            // 콘솔 로그로 디버그 정보
+            console.log(`📊 CTA Clicked: ${location} (Korean) at ${new Date().toISOString()}`);
+            
+            // 미래 확장을 위한 추가 데이터 저장
+            try {
+                const ctaData = {
+                    location: location,
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent,
+                    language: 'ko'
+                };
+                
+                // LocalStorage에 추적 데이터 저장 (분석용)
+                let ctaHistory = JSON.parse(localStorage.getItem('ctaHistory') || '[]');
+                ctaHistory.push(ctaData);
+                
+                // 최신 50건만 보관
+                if (ctaHistory.length > 50) {
+                    ctaHistory = ctaHistory.slice(-50);
+                }
+                
+                localStorage.setItem('ctaHistory', JSON.stringify(ctaHistory));
+            } catch (error) {
+                console.warn('CTA tracking data save failed:', error);
+            }
+        }
+
+        // FAQ 인터랙티브 기능
+        function initializeFAQInteractivity() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                if (question) {
+                    question.addEventListener('click', () => {
+                        // 다른 FAQ 아이템 닫기 (아코디언 형식)
+                        faqItems.forEach(otherItem => {
+                            if (otherItem !== item && otherItem.classList.contains('active')) {
+                                otherItem.classList.remove('active');
+                            }
+                        });
+                        
+                        // 현재 아이템 토글
+                        item.classList.toggle('active');
+                        
+                        // 부드러운 스크롤 (필요시)
+                        if (item.classList.contains('active')) {
+                            setTimeout(() => {
+                                item.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'nearest'
+                                });
+                            }, 300);
+                        }
+                    });
+                    
+                    // 키보드 접근성 대응
+                    question.setAttribute('tabindex', '0');
+                    question.setAttribute('role', 'button');
+                    question.setAttribute('aria-expanded', 'false');
+                    
+                    question.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            question.click();
+                        }
+                    });
+                    
+                    // aria-expanded 속성 업데이트
+                    const observer = new MutationObserver(() => {
+                        const isActive = item.classList.contains('active');
+                        question.setAttribute('aria-expanded', isActive.toString());
+                    });
+                    
+                    observer.observe(item, { attributes: true, attributeFilter: ['class'] });
+                }
+            });
+        }
+        
+        // 스티키 CTA 바 제어
+        function initializeStickyCtaBar() {
+            const stickyBar = document.getElementById('stickyCTABar');
+            const heroSection = document.querySelector('.hero-section');
+            let isStickyClosed = localStorage.getItem('stickyCTAClosed') === 'true';
+            let lastScrollY = window.scrollY;
+            let ticking = false;
+            
+            if (isStickyClosed) return; // 사용자가 이미 닫은 경우 표시하지 않음
+            
+            function updateStickyBar() {
+                const heroHeight = heroSection.offsetHeight;
+                const scrollY = window.scrollY;
+                const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
+                
+                // 히어로 섹션을 지나면 표시
+                if (scrollY > heroHeight * 0.7 && !isStickyClosed) {
+                    stickyBar.classList.add('visible');
+                    
+                    // 스크롤 방향에 따른 애니메이션 조정
+                    if (scrollDirection === 'down') {
+                        stickyBar.classList.remove('scroll-up');
+                        stickyBar.classList.add('scroll-down');
+                    } else {
+                        stickyBar.classList.remove('scroll-down');
+                        stickyBar.classList.add('scroll-up');
+                    }
+                } else {
+                    stickyBar.classList.remove('visible');
+                }
+                
+                lastScrollY = scrollY;
+                ticking = false;
+            }
+            
+            function requestTick() {
+                if (!ticking) {
+                    requestAnimationFrame(updateStickyBar);
+                    ticking = true;
+                }
+            }
+            
+            // 스크롤 이벤트 리스너
+            window.addEventListener('scroll', requestTick, { passive: true });
+            
+            // 리사이즈 시 재계산
+            window.addEventListener('resize', requestTick, { passive: true });
+            
+            console.log('✅ Sticky CTA bar initialized (Korean)');
+        }
+        
+        function closeStickyBar() {
+            const stickyBar = document.getElementById('stickyCTABar');
+            
+            // 페이드아웃 애니메이션
+            stickyBar.classList.add('closing');
+            
+            setTimeout(() => {
+                stickyBar.classList.remove('visible');
+                stickyBar.classList.remove('closing');
+                
+                // 사용자 선택 기억
+                localStorage.setItem('stickyCTAClosed', 'true');
+                
+                // Google Analytics 이벤트 전송
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'sticky_cta_closed', {
+                        'event_category': 'user_interaction',
+                        'event_label': 'user_dismissed_sticky_cta_ko',
+                        'language': 'ko'
+                    });
+                }
+                
+                console.log('📊 Sticky CTA bar closed by user (Korean)');
+            }, 300);
+        }
+
+        // 페이지 로드시 초기화
+        window.addEventListener('load', function() {
+            console.log('📄 Korean landing page loaded');
+            
+            // FAQ 인터랙티브 기능 초기화
+            initializeFAQInteractivity();
+            
+            // 스티키 CTA 바 초기화
+            initializeStickyCtaBar();
+        });
+    </script>
+</body>
+</html>
