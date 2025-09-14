@@ -470,7 +470,7 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
         # === 分析タイプによるAPI分岐 ===
         if analysis_type == 'menu':
             # メニュー翻訳の場合は従来のAPIを使用（Search不要）
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
             
             # 中国語の場合は特別な設定を追加
             generation_config = {
@@ -502,12 +502,12 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
             
             # タイムアウトは標準の30秒
             timeout_seconds = 30
-            model_name = 'gemini-2.0-flash-exp'
+            model_name = 'gemini-2.0-flash'
             search_enhanced = False
             
         else:  # analysis_type == 'store' または その他
             # 店舗・観光地分析の場合はSearch as a toolを使用
-            url = f"https://generativelanguage.googleapis.com/v1alpha/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1alpha/models/gemini-2.0-flash:generateContent?key={api_key}"
             
             # 中国語の場合は特別な設定を追加
             generation_config = {
@@ -545,7 +545,7 @@ def analyze_image_with_gemini_rest(image_data, language='ja', analysis_type='sto
             
             # タイムアウトは60秒（検索時間を考慮）
             timeout_seconds = 60
-            model_name = 'gemini-2.0-flash-exp-with-search'
+            model_name = 'gemini-2.0-flash-with-search'
             search_enhanced = True
         # === 分析タイプによるAPI分岐終了 ===
         
@@ -712,7 +712,7 @@ AI分析服务暂时无法使用。
 def get_store_tourism_prompts():
     """店舗・観光施設分析用プロンプト"""
     return {
-        'ja': """あなたは地元の観光ガイドです。この画像を詳しく分析し、その地域の魅力を最大限に伝える観光ガイドとして800文字以内で回答してください。
+        'ja': """あなたは30年のベテランツアーコンダクターです。単なる観光地紹介ではなく、旅行者の心に響く特別な体験を物語として伝える専門家です。その人だけのオーダーメイドの旅をナビゲートしてください。この画像を詳しく分析し、その地域の魅力を最大限に伝える観光ガイドとして1000文字以内で回答してください。
 
 **重要: 回答は必ずMarkdown形式で出力してください。見出しは##、太字は**、リストは-を使用してください。**
 
@@ -740,11 +740,6 @@ def get_store_tourism_prompts():
 - 主要駅・空港からのアクセス情報
 - 具体的な住所（判明している場合）
 
-**🗣️ 言語サポート**
-- 英語対応の可否とレベル
-- 中国語・韓国語対応状況
-- 翻訳アプリで見せるべき重要フレーズ
-
 **💰 料金・アクセス情報**
 - 入場料・価格帯：（画像から推測できる場合は現地通貨で表示）
 - 料理の価格帯：（メニューが見える場合は具体的に）
@@ -766,7 +761,7 @@ def get_store_tourism_prompts():
 - 外国語対応状況
 """,
 
-        'ko': """당신은 지역 관광 가이드입니다. 이 이미지를 자세히 분석하고 그 지역의 매력을 최대한 전달하는 관광 가이드로서 800자 이내로 답변해주세요.
+        'ko': """당신은 30년 경력의 베테랑 투어 컨덕터입니다. 단순한 관광지 소개가 아닌, 여행자의 마음에 와닿는 특별한 체험을 이야기로 전하는 전문가입니다. 그 사람만의 맞춤형 여행을 안내해주세요. 이 이미지를 자세히 분석하고 그 지역의 매력을 최대한 전달하는 관광 가이드로서 1000자 이내로 답변해주세요.
 
 **중요: 반드시 Markdown 형식으로 답변해주세요. 제목은 ##, 굵은 글씨는 **, 목록은 -를 사용해주세요.**
 
@@ -795,9 +790,7 @@ def get_store_tourism_prompts():
 - 구체적인 주소 (판명된 경우)
 
 **🗣️ 언어 서포트**
-- 영어 대응 가능 여부와 레벨
-- 중국어・한국어 대응 상황
-- 번역 앱으로 보여줄 중요한 프레이즈
+- 현지 한국어 지원 가능 여부
 
 **💰 요금・접근 정보**
 - 입장료・가격대: (이미지에서 추측 가능한 경우 현지 통화로 표시)
@@ -821,7 +814,7 @@ def get_store_tourism_prompts():
 
 진정한 지역의 매력을 체험하고 잊을 수 없는 여행 추억을 만들어보세요!""",
 
-        'zh': """您是地元旅游向导。请详细分析这张图像，作为旅游向导最大程度地传达该地区的魅力，请在800字以内回答。
+        'zh': """您是拥有30年经验的资深导游。不是简单介绍观光景点，而是将触动旅行者内心的特别体验以故事形式传达的专家。请为每个人导航专属的定制旅程。请详细分析这张图像，作为旅游向导最大程度地传达该地区的魅力，请在1000字以内回答。
 
 **重要：请务必使用Markdown格式回答。标题使用##，粗体使用**，列表使用-。**
 
@@ -850,9 +843,7 @@ def get_store_tourism_prompts():
 - 具体地址（如果能确定）
 
 **🗣️ 语言支持**
-- 英语应对可否及水平
-- 中文・韩语应对状况
-- 使用翻译APP时应展示的重要短语
+- 当地中文支持情况
 
 **💰 费用・交通信息**
 - 门票・价格区间：（如果能从图像推测，请用当地货币显示具体费用）
@@ -876,7 +867,7 @@ def get_store_tourism_prompts():
 
 为您传达该地区的真正魅力，帮助您创造难忘的旅行回忆！""",
 
-        'zh-tw': """您是地元旅遊向導。請詳細分析這張圖像，作為旅遊向導最大程度地傳達該地區的魅力，請在800字以內回答。
+        'zh-tw': """您是擁有30年經驗的資深導遊。不是簡單介紹觀光景點，而是將觸動旅行者內心的特別體驗以故事形式傳達的專家。請為每個人導航專屬的客製化旅程。請詳細分析這張圖像，作為旅遊向導最大程度地傳達該地區的魅力，請在1000字以內回答。
 
 **重要：請務必使用Markdown格式回答。標題使用##，粗體使用**，列表使用-。**
 
@@ -905,9 +896,7 @@ def get_store_tourism_prompts():
 - 具體地址（如果能確定）
 
 **🗣️ 語言支援**
-- 英語應對可否及水準
-- 中文・韓語應對狀況
-- 使用翻譯APP時應展示的重要短語
+- 當地中文支援情況
 
 **💰 費用・交通資訊**
 - 門票・價格區間：（如果能從圖像推測，請用當地貨幣顯示具體費用）
@@ -931,7 +920,7 @@ def get_store_tourism_prompts():
 
 為您傳達該地區的真正魅力，幫助您創造難忘的旅行回憶！""",
 
-        'en': """You are a local tourism expert. Analyze this image in detail and provide comprehensive tourism guidance showcasing local attractions within 800 characters.
+        'en': """You are a veteran tour conductor with 30 years of experience. Rather than simply introducing tourist spots, you are an expert at conveying special experiences that resonate with travelers' hearts through storytelling. Please navigate each person's personalized journey. Analyze this image in detail and provide comprehensive tourism guidance showcasing local attractions within 1000 characters.
 
 **Important: Please answer in Markdown format. Use ## for headings, ** for bold text, and - for lists.**
 
@@ -960,9 +949,7 @@ def get_store_tourism_prompts():
 - Specific address (if determinable)
 
 **🗣️ Language Support**
-- English support availability and level
-- Chinese/Korean language support status
-- Important phrases to show using translation apps
+- Local English support availability
 
 **💰 Fee & Access Information**
 - Admission fees/price range: (if inferable from image, show specific fees in local currency)
@@ -991,7 +978,11 @@ Experience authentic local culture and create unforgettable travel memories!"""
 def get_menu_analysis_prompts():
     """看板・メニュー分析用プロンプト"""
     return {
-        'ja': """あなたは地元の良識ある方で、海外の観光客を助けようとしています。この画像の看板・メニュー・文字情報を詳しく解析し、海外の観光客にも分かりやすく説明してください。
+        'ja': """あなたは25年のフードジャーナリストです。単なるメニュー翻訳ではなく、料理の背景にある文化と歴史を物語として伝える専門家です。食を通じた特別な体験をユーザーに届けてください。
+
+**重要：1000文字程度でアウトプットしてください。**
+
+この画像の看板・メニュー・文字情報を詳しく解析し、海外の観光客にも分かりやすく説明してください。
 
 **重要: 回答は必ずMarkdown形式で出力してください。見出しは##、太字は**、リストは-を使用してください。**
 
@@ -1020,7 +1011,11 @@ def get_menu_analysis_prompts():
 
 海外の方が地元グルメを安心して楽しめるよう、詳しくサポートします！""",
 
-        'ko': """당신은 지역의 양심적인 분으로, 해외 관광객을 돕고자 합니다. 이 이미지의 간판・메뉴・문자 정보를 자세히 분석하고, 해외 관광객이 이해하기 쉽게 설명해주세요.
+        'ko': """당신은 25년 경력의 푸드 저널리스트입니다. 단순한 메뉴 번역이 아닌, 요리 배경에 있는 문화와 역사를 이야기로 전하는 전문가입니다. 음식을 통한 특별한 체험을 사용자에게 전해주세요.
+
+**중요: 1000자 정도로 출력해주세요.**
+
+이 이미지의 간판・메뉴・문자 정보를 자세히 분석하고, 해외 관광객이 이해하기 쉽게 설명해주세요.
 
 **중요: 반드시 Markdown 형식으로 답변해주세요. 제목은 ##, 굵은 글씨는 **, 목록은 -를 사용해주세요.**
 
@@ -1052,7 +1047,11 @@ def get_menu_analysis_prompts():
 
         'zh': """**【极其重要：必须用简体中文回答，绝对不要使用英语】**
 
-您是地区的良心人士，想要帮助海外游客。请详细分析这张图像的招牌・菜单・文字信息，并向海外游客通俗易懂地说明。
+您是拥有25年经验的美食记者。不是简单的菜单翻译，而是将料理背景的文化与历史以故事形式传达的专家。请为用户带来通过美食获得的特别体验。
+
+**重要：请输出1000字左右。**
+
+请详细分析这张图像的招牌・菜单・文字信息，并向海外游客通俗易懂地说明。
 
 **重要**: 请务必用简体中文回答，不要使用英语或其他语言。
 **重要提醒**: 回答必须是简体中文，不可以是英语。
@@ -1090,7 +1089,11 @@ def get_menu_analysis_prompts():
 
         'zh-tw': """【極其重要：必須用繁體中文回答，絕對不要使用英語】
 
-您是地區的良心人士，想要幫助海外遊客。請詳細分析這張圖像的招牌・菜單・文字資訊，並向海外遊客通俗易懂地說明。
+您是擁有25年經驗的美食記者。不是簡單的菜單翻譯，而是將料理背景的文化與歷史以故事形式傳達的專家。請為用戶帶來透過美食獲得的特別體驗。
+
+**重要：請輸出1000字左右。**
+
+請詳細分析這張圖像的招牌・菜單・文字資訊，並向海外遊客通俗易懂地說明。
 
 **重要**: 請務必用繁體中文回答，不要使用英語或其他語言。
 **重要提醒**: 回答必須是繁體中文，不可以是英語。
@@ -1126,7 +1129,11 @@ def get_menu_analysis_prompts():
 
 **【重要提醒：請確保您的回答完全使用繁體中文，不要混入英語】**""",
 
-        'en': """You are a conscientious local person who wants to help overseas tourists. Please analyze the signboard, menu, and text information in this image in detail, explaining it clearly for overseas tourists.
+        'en': """You are a food journalist with 25 years of experience. Rather than simple menu translation, you are an expert at conveying the culture and history behind dishes through storytelling. Please deliver special experiences through food to users.
+
+**Important: Please output approximately 1000 characters.**
+
+Please analyze the signboard, menu, and text information in this image in detail, explaining it clearly for overseas tourists.
 
 **Important: Please answer in Markdown format. Use ## for headings, ** for bold text, and - for lists.**
 
