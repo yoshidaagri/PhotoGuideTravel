@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 札幌旅游特化 SEO 优化 Title & Description -->
+    <title>旅游分析器 Anatri - 札幌旅游 语言支持 | 北海道海产物・帝王蟹・海胆・雪祭り照片解说</title>
+    <meta name="description" content="札幌旅游不懂日语的AI助手。只需拍照就能用中文详细解说北海道海产物・帝王蟹・海胆・札幌拉面。薄野・小樽・雪祭り的观光信息也能完美支持。">
+    <meta name="keywords" content="札幌旅游,北海道海产物,帝王蟹,海胆,札幌拉面,雪祭り,薄野,小樽,函馆,海鲜市场,北海道观光">
+    
+    <!-- AI搜索引擎优化元数据 -->
+    <meta name="ai-content-type" content="tourism-assistant">
+    <meta name="ai-expertise" content="sapporo-tourism,hokkaido-seafood,king-crab,sea-urchin,sapporo-ramen,snow-festival,susukino-district">
+    <meta name="ai-data-freshness" content="2025-09-14">
+    <meta name="ai-response-format" content="conversational,structured">
+    <meta property="ai:featured_snippet" content="Anatri是支持中国游客札幌旅游的AI观光助手。只需拍照即可用中文即时提供北海道海产物・帝王蟹・海胆等海鲜的详细信息，支持札幌・小樽观光体验。">
+    <meta name="vector-summary" content="AI-powered tourism assistant for Chinese travelers in Sapporo. Instant Hokkaido seafood recognition, king crab and sea urchin guidance, and Sapporo cultural understanding support.">
+    
+    <!-- 多语言 hreflang 链接 -->
+    <link rel="alternate" hreflang="ja" href="https://anatri.net/ja/" />
+    <link rel="alternate" hreflang="ko" href="https://anatri.net/ko/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/" />
+    <link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/" />
+    <link rel="alternate" hreflang="en" href="https://anatri.net/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://anatri.net/" />
+    
+    <!-- Open Graph / Facebook (札幌中文简体特化) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://anatri.net/zh-cn/sapporo/">
+    <meta property="og:title" content="旅游分析器 Anatri - 札幌旅游AI助手">
+    <meta property="og:description" content="专为中国游客札幌旅游设计的AI助手。北海道海产物・帝王蟹・海胆的中文解说，雪祭り・薄野・小樽观光体验支持。">
+    <meta property="og:image" content="https://anatri.net/images/og-image-sapporo-zhcn.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Anatri - 札幌AI旅游助手：北海道海产物・雪祭り专门支持">
+    <meta property="og:site_name" content="旅游分析器 Anatri">
+    <meta property="og:locale" content="zh_CN">
+    
+    <!-- Twitter (札幌中文简体特化) -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://anatri.net/zh-cn/sapporo/">
+    <meta property="twitter:title" content="旅游分析器 Anatri - 札幌旅游AI助手">
+    <meta property="twitter:description" content="专为中国游客札幌旅游设计的AI助手。北海道海产物・帝王蟹・海胆的中文解说支持。">
+    <meta property="twitter:image" content="https://anatri.net/images/og-image-sapporo-zhcn.webp">
+    <meta property="twitter:image:alt" content="Anatri - 札幌AI旅游助手">
+    
+    <!-- AI搜索引擎向元数据 -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="referrer" content="origin">
+    
+    <!-- PWA·移动优化 -->
+    <meta name="theme-color" content="#e74c3c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="application-name" content="旅游分析器 Anatri">
+    <meta name="apple-mobile-web-app-title" content="旅游分析器">
+    
+    <!-- AI搜索引擎优化 (札幌中文简体特化) -->
+    <meta name="ai-content-type" content="tourism-assistant">
+    <meta name="ai-expertise" content="sapporo-japan-travel,chinese-travelers,hokkaido-seafood,king-crab-sea-urchin,snow-festival">
+    <meta name="ai-data-freshness" content="2025-09-14">
+    <meta name="ai-response-format" content="conversational,structured">
+    <meta property="ai:featured_snippet" content="Anatri是专为中国游客札幌旅游设计的AI助手。通过拍照即可获得北海道海产物・帝王蟹・海胆的详细中文信息，支持札幌雪祭り・薄野・小樽观光体验。">
+    <meta name="vector-summary" content="AI-powered Sapporo tourism assistant for Chinese travelers. Instant Hokkaido seafood recognition, king crab and sea urchin explanation, snow festival guidance, and Susukino district support.">
+    
+    <!-- 札幌特化中文简体结构化数据 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TouristAttraction",
+        "name": "札幌AI旅游助手服务",
+        "description": "为中国游客量身定制的札幌旅游AI支持服务。从北海道海产物・帝王蟹・海胆等海鲜到雪祭り・薄野・小樽观光信息，提供全面的中文支持",
+        "url": "https://anatri.net/zh-cn/sapporo/",
+        "image": "https://anatri.net/images/backgrounds/3.biei01_optimized.jpg",
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 43.0642,
+            "longitude": 141.3469
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "札幌",
+            "addressRegion": "北海道",
+            "addressCountry": "日本"
+        },
+        "touristType": ["中国游客", "海外游客", "美食爱好者", "海鲜爱好者", "冬季观光者"],
+        "availableLanguage": ["zh-CN", "ja", "ko", "zh-TW", "en"],
+        "keywords": "札幌旅游,北海道海产物,帝王蟹,海胆,札幌拉面,雪祭り,薄野,小樽",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "CNY",
+            "availability": "https://schema.org/InStock",
+            "description": "免费体验5次札幌观光・北海道海产物信息分析"
+        }
+    }
+    </script>
+    
+    <!-- 组织信息 - 运营公司 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "旅游分析器",
+        "url": "https://anatri.net",
+        "logo": "https://anatri.net/images/logo.webp",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Service",
+            "availableLanguage": ["Chinese", "Japanese", "Korean", "English"]
+        },
+        "sameAs": [
+            "https://anatri.net"
+        ]
+    }
+    </script>
+    
+    <!-- 札幌旅游服务详细信息 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "中国游客札幌旅游AI支持服务",
+        "description": "为中国游客提供的札幌旅游AI图像分析服务。从北海道海产物和观光地的照片中提供详细中文信息，包括海鲜新鲜度判断和最佳品尝方法",
+        "provider": {
+            "@type": "Organization",
+            "name": "旅游分析器"
+        },
+        "serviceType": "札幌旅游支持·北海道海产物翻译服务",
+        "areaServed": "札幌·北海道地区",
+        "availableLanguage": ["zh-CN", "ja", "ko", "zh-TW", "en"]
+    }
+    </script>
+    
+    <!-- HowTo: 札幌旅游应用使用方法 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "札幌旅游分析器使用方法",
+        "description": "在札幌旅游中轻松获取北海道海产物・帝王蟹・海胆信息的方法",
+        "image": "https://anatri.net/images/how-to-use-sapporo-zhcn.webp",
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "拍摄北海道海产物",
+                "text": "在二条市场・薄野等地拍摄帝王蟹・海胆等北海道海产物的照片",
+                "image": "https://anatri.net/images/step1-sapporo-seafood.webp"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "上传到应用",
+                "text": "将拍摄的海产物照片上传到Anatri应用程序",
+                "image": "https://anatri.net/images/step2-upload.webp"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "查看详细解说",
+                "text": "AI分析后可以查看北海道海产物的中文详细信息和新鲜度判断",
+                "image": "https://anatri.net/images/step3-sapporo-result.webp"
+            }
+        ]
+    }
+    </script>
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://anatri.net/zh-cn/sapporo/">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦀</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PN77BF2HGP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-PN77BF2HGP', {
+            'page_title': '旅游分析器 Anatri - 札幌版中文简体登录页',
+            'content_group1': 'Landing Page Chinese Simplified Sapporo',
+            'custom_map': {
+                'custom_parameter_1': 'language_zh_cn_sapporo'
+            },
+            'send_page_view': true,
+            'anonymize_ip': true,
+            'allow_google_signals': false
+        });
+    </script>
+    
+    <!-- Core Web Vitals优化 - Speculation Rules API -->
+    <script type="speculationrules">
+    {
+        "prerender": [{
+            "where": { "href_matches": "/login.html" },
+            "eagerness": "moderate"
+        }, {
+            "where": { "href_matches": "/index.html" },
+            "eagerness": "moderate"
+        }],
+        "prefetch": [{
+            "where": { "href_matches": "/*" },
+            "eagerness": "conservative"
+        }]
+    }
+    </script>
+    
+    <style>
+        /* 札幌特化样式 */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(173, 216, 230, 0.1), rgba(255, 255, 255, 0.1));
+            pointer-events: none;
+        }
+        
+        /* 雪花动画效果 */
+        @keyframes snowfall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        .snow-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .snow-effect::before,
+        .snow-effect::after {
+            content: '❄';
+            position: absolute;
+            color: rgba(255, 255, 255, 0.8);
+            animation: snowfall 10s linear infinite;
+            font-size: 1rem;
+        }
+        
+        .snow-effect::before {
+            left: 10%;
+            animation-delay: -2s;
+        }
+        
+        .snow-effect::after {
+            left: 80%;
+            animation-delay: -5s;
+            font-size: 0.8rem;
+        }
+        
+        /* 海产物特化カード */
+        .feature-card-01 { border-left: 4px solid #ff6b6b; }
+        .feature-card-02 { border-left: 4px solid #4ecdc4; }
+        .feature-card-03 { border-left: 4px solid #45b7d1; }
+        
+        .testimonial-bubble {
+            position: relative;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-left: 4px solid #17a2b8;
+        }
+        
+        /* 冬季主题色彩 */
+        .price-card.featured {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .cta-btn.enhanced:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231,76,60,0.4);
+        }
+        
+        /* 札幌特化アイコン */
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* レスポンシブ最適化 */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2rem !important;
+            }
+            
+            .language-buttons {
+                justify-content: center;
+                gap: 0.3rem;
+            }
+            
+            .lang-btn {
+                padding: 0.5rem 0.8rem !important;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* 高解像度画面対応 */
+        @media (min-width: 1400px) {
+            .hero-content {
+                max-width: 1400px;
+            }
+            
+            .hero-content h1 {
+                font-size: 3.5rem !important;
+            }
+        }
+    </style>
+</head>
+<body class="landing-page">
+    <div class="landing-container">
+        <!-- Header -->
+        <header class="landing-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span>旅游分析器</span>
+                    <p class="header-subtitle">拍下海鲜，了解北海道</p>
+                </div>
+                <div class="header-actions">
+                    <button onclick="window.location.href='../login.html'" class="login-btn">
+                        登录 / 注册
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sticky CTA Bar (Hidden by default) -->
+        <div class="sticky-cta-bar" id="stickyCTABar">
+            <div class="sticky-cta-content">
+                <span class="sticky-cta-text">体验北海道海产物的极致美味</span>
+                <button onclick="trackCTA('sticky-header'); window.location.href='../login.html'" class="sticky-cta-btn">
+                    <span class="cta-text">免费开始</span>
+                </button>
+                <button class="sticky-cta-close" id="stickyCTAClose" onclick="closeStickyBar()" aria-label="Close">
+                    ✕
+                </button>
+            </div>
+        </div>
+
+        <!-- Hero Section with Snow Effect -->
+        <section class="hero-section" style="background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('../images/backgrounds/3.biei01_optimized.jpg'); background-size: cover; background-position: center; min-height: 80vh; display: flex; align-items: center; color: white;">
+            <div class="snow-effect"></div>
+            <div class="hero-content" style="max-width: 1200px; margin: 0 auto; padding: 2rem; text-align: center; position: relative; z-index: 2;">
+                <div style="background: rgba(255,255,255,0.3); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; color: #fff; backdrop-filter: blur(10px);">
+                    <h1 style="font-size: 3rem; margin-bottom: 1rem; color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">北海道札幌海产物之旅</h1>
+                    <p style="font-size: 1.3rem; margin-bottom: 2rem; color: #f8f9fa; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">拍张帝王蟹・海胆・札幌拉面的照片，品味北国最新鲜的美味！</p>
+                    
+                    <!-- Language Selection (其他语言查看) -->
+                    <div class="language-selection" style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">用其他语言查看 / Other Languages</h3>
+                        <div class="language-buttons" style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                            <button class="lang-btn" onclick="window.location.href='/ja/'" data-lang="ja" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🇯🇵 日本語
+                            </button>
+                            <button class="lang-btn" onclick="window.location.href='/ko/'" data-lang="ko" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🇰🇷 한국어
+                            </button>
+                            <button class="lang-btn active" onclick="window.location.href='/zh-cn/'" data-lang="zh" style="background: #e74c3c; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                🇨🇳 简体中文
+                            </button>
+                            <button class="lang-btn" onclick="window.location.href='/zh-tw/'" data-lang="zh-tw" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🇹🇼 繁體中文
+                            </button>
+                            <button class="lang-btn" onclick="window.location.href='/en/'" data-lang="en" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🌍 English
+                            </button>
+                        </div>
+                    </div>
+
+                    <button onclick="trackCTA('hero-main'); window.location.href='../login.html'" class="cta-btn enhanced" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; padding: 1.2rem 2.5rem; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(231,76,60,0.3); transition: all 0.3s ease;">
+                        <span class="cta-text" style="display: block;">立即免费体验札幌</span>
+                        <span class="cta-subtext" style="font-size: 0.9rem; opacity: 0.9;">※无需信用卡</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Testimonials Section -->
+        <section class="testimonials-section">
+            <div class="testimonials-container">
+                <h2>札幌旅游用户心声</h2>
+                
+                <div class="testimonials-grid">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-item left">
+                        <div class="testimonial-avatar">
+                            <div class="avatar-circle avatar-female">
+                                <img src="../images/interview/icon_women01.png" alt="20多岁女性" class="avatar-image">
+                            </div>
+                            <div class="avatar-info">
+                                <span class="avatar-detail">20多岁女性</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-bubble">
+                            <p>在二条市场看到帝王蟹，但不知道新鲜度如何判断。拍张照片就能了解海鲜的新鲜度和最佳烹饪方法，还学到了如何挑选最好的部位！</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-item left">
+                        <div class="testimonial-avatar">
+                            <div class="avatar-circle avatar-male">
+                                <img src="../images/interview/icon_men01.png" alt="50多岁男性" class="avatar-image">
+                            </div>
+                            <div class="avatar-info">
+                                <span class="avatar-detail">50多岁男性</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-bubble">
+                            <p>参观札幌啤酒园时对札幌拉面很感兴趣，拍照后了解了味噌拉面的特色和与其他地区拉面的区别。感觉像有专业美食导游在身边！</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-item left">
+                        <div class="testimonial-avatar">
+                            <div class="avatar-circle avatar-male">
+                                <img src="../images/interview/icon_men02.png" alt="40多岁男性" class="avatar-image">
+                            </div>
+                            <div class="avatar-info">
+                                <span class="avatar-detail">40多岁男性</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-bubble">
+                            <p>在薄野享受夜生活时发现很多海胆料理，通过应用了解了海胆的种类和品质差异。还知道了小樽一日游的最佳路线，收获太多了！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2>札幌旅游专业支持</h2>
+            <div class="features-grid">
+                <div class="feature-card feature-card-01" 
+                     data-image-name="北海道海产物分析图标" 
+                     data-image-context="专门识别帝王蟹・海胆等北海道海产物的AI技术" 
+                     data-image-keywords="北海道海产物,帝王蟹,海胆,AI识别,新鲜度判断">
+                    <div class="feature-content">
+                        <div class="feature-icon">🦀</div>
+                        <h3>北海道海产物分析</h3>
+                        <p>专门识别帝王蟹・海胆等海鲜的新鲜度和品质</p>
+                    </div>
+                </div>
+                <div class="feature-card feature-card-02" 
+                     data-image-name="札幌拉面解说图标" 
+                     data-image-context="支持札幌味噌拉面文化理解的专门翻译服务" 
+                     data-image-keywords="札幌拉面,味噌拉面,拉面文化,北海道美食">
+                    <div class="feature-content">
+                        <div class="feature-icon">🍜</div>
+                        <h3>札幌拉面解说</h3>
+                        <p>理解札幌味噌拉面文化，支持地道北海道体验</p>
+                    </div>
+                </div>
+                <div class="feature-card feature-card-03" 
+                     data-image-name="薄野・小樽观光特化图标" 
+                     data-image-context="专门针对薄野・小樽・雪祭り的精密观光信息数据库" 
+                     data-image-keywords="薄野,小樽,雪祭り,札幌观光,北海道旅游">
+                    <div class="feature-content">
+                        <div class="feature-icon">🏔️</div>
+                        <h3>薄野・小樽观光特化</h3>
+                        <p>薄野・小樽・雪祭り观光信息的高精度分析</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Post-Features CTA Section -->
+        <section class="post-features-cta">
+            <div class="post-features-cta-content">
+                <h3>了解札幌旅游功能后，立即开始使用吧</h3>
+                <p>免费体验5次。发现北海道海产物的极致美味。</p>
+                <button onclick="trackCTA('post-features'); window.location.href='../login.html'" class="cta-btn enhanced">
+                    <span class="cta-text">立即免费体验札幌</span>
+                    <span class="cta-subtext">※注册30秒完成</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="pricing-section">
+            <h2>价格方案</h2>
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <h3>免费方案</h3>
+                    <div class="price">¥0</div>
+                    <ul class="features-list">
+                        <li>每月可分析5次</li>
+                        <li>所有基本功能均可使用</li>
+                    </ul>
+                    <button onclick="window.location.href='../login.html'" class="plan-btn">
+                        免费开始
+                    </button>
+                </div>
+                <div class="price-card featured">
+                    <div class="popular-badge">热门方案</div>
+                    <h3>3天方案</h3>
+                    <div class="price">¥980</div>
+                    <ul class="features-list">
+                        <li>3天无限制分析</li>
+                        <li>所有功能均可使用</li>
+                    </ul>
+                    <button onclick="window.location.href='../login.html'" class="plan-btn premium">
+                        选择3天方案
+                    </button>
+                </div>
+                <div class="price-card">
+                    <h3>7天方案</h3>
+                    <div class="price">¥1,980</div>
+                    <ul class="features-list">
+                        <li>7天无限制分析</li>
+                        <li>长期使用更优惠</li>
+                    </ul>
+                    <button onclick="window.location.href='../login.html'" class="plan-btn">
+                        选择7天方案
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Voice Search Optimized FAQ Section -->
+        <section class="faq-section voice-search-optimized" itemscope itemtype="https://schema.org/FAQPage">
+            <h2>札幌旅游常见问题</h2>
+            <div class="faq-container">
+                
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question" data-voice-query="北海道海产物新鲜度">
+                    <h3 class="faq-question" itemprop="name">如何判断北海道海产物的新鲜度？</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">Anatri的AI可以识别帝王蟹・海胆・扇贝等海产物的新鲜度，详细解说外观・气味・触感的判断标准，推荐二条市场・薄野等地的优质海鲜店。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">札幌拉面和其他地区拉面有什么区别？</h3>
+                    <div class="faq-answer" itemscope itemType="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">拍摄札幌拉面照片，AI会详细解说味噌拉面的特色・汤头制作方法和与博多・东京拉面的区别，推荐味之三平等名店和最佳品尝方法。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">薄野夜生活和安全注意事项？</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">AI详细介绍薄野的夜生活文化、推荐的居酒屋和安全注意事项，包括深夜交通・消费水平・文化礼仪等实用信息。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">雪祭り期间的最佳观赏路线？</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">根据雪祭り期间的特殊情况，AI推荐大通公园・薄野・TSUDOME的最佳观赏路线和时间，提供防寒建议和拍照技巧。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">小樽一日游的推荐路线和交通？</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">AI提供小樽运河・玻璃工艺品店・音乐盒堂的最佳游览路线，包括从札幌的交通方式・用时・推荐美食和购物信息。</p>
+                    </div>
+                </div>
+
+                <!-- FAQ CTA -->
+                <div class="faq-cta">
+                    <div class="faq-cta-content">
+                        <h3>疑问解决了吗？</h3>
+                        <p>如果还有疑问，不如实际体验札幌功能来确认一下</p>
+                        <button onclick="trackCTA('faq-section'); window.location.href='../login.html'" class="cta-btn enhanced">
+                            <span class="cta-text">立即免费体验札幌</span>
+                            <span class="cta-subtext">※实际使用后立即明白</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <div class="footer-content">
+                <p>&copy; 2025 旅游分析器. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="../tokusho.html">特定商取引法相关表记</a>
+                    <a href="../about.html">运营公司介绍</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // CTA点击追踪函数
+        function trackCTA(location) {
+            // Google Analytics 4 事件发送
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'click_cta', {
+                    'event_category': 'engagement',
+                    'event_label': location + '_zh_cn_sapporo',
+                    'cta_location': location,
+                    'page_title': document.title,
+                    'page_location': window.location.href,
+                    'language': 'zh-CN',
+                    'city': 'sapporo'
+                });
+            }
+            
+            // 控制台日志调试信息
+            console.log(`📊 CTA Clicked: ${location} (Chinese Simplified Sapporo) at ${new Date().toISOString()}`);
+            
+            // 为未来扩展保存额外数据
+            try {
+                const ctaData = {
+                    location: location,
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent,
+                    language: 'zh-CN',
+                    city: 'sapporo'
+                };
+                
+                // 在LocalStorage中保存追踪数据（用于分析）
+                let ctaHistory = JSON.parse(localStorage.getItem('ctaHistory') || '[]');
+                ctaHistory.push(ctaData);
+                
+                // 只保留最新50条
+                if (ctaHistory.length > 50) {
+                    ctaHistory = ctaHistory.slice(-50);
+                }
+                
+                localStorage.setItem('ctaHistory', JSON.stringify(ctaHistory));
+            } catch (error) {
+                console.warn('CTA tracking data save failed:', error);
+            }
+        }
+
+        // FAQ交互功能
+        function initializeFAQInteractivity() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                if (question) {
+                    question.addEventListener('click', () => {
+                        // 关闭其他FAQ项（手风琴样式）
+                        faqItems.forEach(otherItem => {
+                            if (otherItem !== item && otherItem.classList.contains('active')) {
+                                otherItem.classList.remove('active');
+                            }
+                        });
+                        
+                        // 切换当前项
+                        item.classList.toggle('active');
+                        
+                        // 平滑滚动（如需要）
+                        if (item.classList.contains('active')) {
+                            setTimeout(() => {
+                                item.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'nearest'
+                                });
+                            }, 300);
+                        }
+                    });
+                    
+                    // 键盘可访问性支持
+                    question.setAttribute('tabindex', '0');
+                    question.setAttribute('role', 'button');
+                    question.setAttribute('aria-expanded', 'false');
+                    
+                    question.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            question.click();
+                        }
+                    });
+                    
+                    // aria-expanded属性更新
+                    const observer = new MutationObserver(() => {
+                        const isActive = item.classList.contains('active');
+                        question.setAttribute('aria-expanded', isActive.toString());
+                    });
+                    
+                    observer.observe(item, { attributes: true, attributeFilter: ['class'] });
+                }
+            });
+        }
+        
+        // 粘性CTA栏控制
+        function initializeStickyCtaBar() {
+            const stickyBar = document.getElementById('stickyCTABar');
+            const heroSection = document.querySelector('.hero-section');
+            let isStickyClosed = localStorage.getItem('stickyCTAClosed') === 'true';
+            let lastScrollY = window.scrollY;
+            let ticking = false;
+            
+            if (isStickyClosed) return; // 用户已关闭的情况下不显示
+            
+            function updateStickyBar() {
+                const heroHeight = heroSection.offsetHeight;
+                const scrollY = window.scrollY;
+                const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
+                
+                // 超过英雄区域后显示
+                if (scrollY > heroHeight * 0.7 && !isStickyClosed) {
+                    stickyBar.classList.add('visible');
+                    
+                    // 根据滚动方向调整动画
+                    if (scrollDirection === 'down') {
+                        stickyBar.classList.remove('scroll-up');
+                        stickyBar.classList.add('scroll-down');
+                    } else {
+                        stickyBar.classList.remove('scroll-down');
+                        stickyBar.classList.add('scroll-up');
+                    }
+                } else {
+                    stickyBar.classList.remove('visible');
+                }
+                
+                lastScrollY = scrollY;
+                ticking = false;
+            }
+            
+            function requestTick() {
+                if (!ticking) {
+                    requestAnimationFrame(updateStickyBar);
+                    ticking = true;
+                }
+            }
+            
+            // 滚动事件监听器
+            window.addEventListener('scroll', requestTick, { passive: true });
+            
+            // 调整大小时重新计算
+            window.addEventListener('resize', requestTick, { passive: true });
+            
+            console.log('✅ Sticky CTA bar initialized (Chinese Simplified Sapporo)');
+        }
+        
+        function closeStickyBar() {
+            const stickyBar = document.getElementById('stickyCTABar');
+            
+            // 淡出动画
+            stickyBar.classList.add('closing');
+            
+            setTimeout(() => {
+                stickyBar.classList.remove('visible');
+                stickyBar.classList.remove('closing');
+                
+                // 记住用户选择
+                localStorage.setItem('stickyCTAClosed', 'true');
+                
+                // Google Analytics 事件发送
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'sticky_cta_closed', {
+                        'event_category': 'user_interaction',
+                        'event_label': 'user_dismissed_sticky_cta_zh_cn_sapporo',
+                        'language': 'zh-CN',
+                        'city': 'sapporo'
+                    });
+                }
+                
+                console.log('📊 Sticky CTA bar closed by user (Chinese Simplified Sapporo)');
+            }, 300);
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('load', function() {
+            console.log('📄 Chinese Simplified Sapporo landing page loaded');
+            
+            // FAQ交互功能初始化
+            initializeFAQInteractivity();
+            
+            // 粘性CTA栏初始化
+            initializeStickyCtaBar();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 京都旅遊特化 SEO 優化 Title & Description -->
+    <title>旅遊分析器 Anatri - 京都旅遊 語言支援 | 懷石料理・抹茶用照片解說</title>
+    <meta name="description" content="京都旅遊不懂日語的AI助手。只需拍照就能用繁體中文詳細解說懷石料理和傳統文化。清水寺・金閣寺的日本傳統和茶道文化也能完美支援。">
+    <meta name="keywords" content="京都旅遊,日語翻譯,懷石料理,抹茶,傳統文化,清水寺,金閣寺,嵐山,祇園,茶道,日本文化,京都觀光">
+    
+    <!-- AI 搜尋引擎優化元數據 -->
+    <meta name="ai-content-type" content="tourism-assistant">
+    <meta name="ai-expertise" content="kyoto-tourism,traditional-japanese-culture,kaiseki-matcha,temple-shrine-visits,kyoto-traditions,food-recognition,language-support">
+    <meta name="ai-data-freshness" content="2025-09-14">
+    <meta name="ai-response-format" content="conversational,structured">
+    <meta property="ai:featured_snippet" content="Anatri是支援台灣遊客京都旅遊的AI觀光助手。只需拍照即可用繁體中文即時提供懷石料理和傳統文化的詳細資訊，支援日本傳統文化理解。">
+    <meta name="vector-summary" content="AI-powered tourism assistant for Taiwanese travelers in Kyoto. Instant kaiseki cuisine and matcha recognition, traditional Japanese culture support, and temple visit guidance.">
+    
+    <!-- 多語言 hreflang 連結 -->
+    <link rel="alternate" hreflang="ja" href="https://anatri.net/ja/kyoto/" />
+    <link rel="alternate" hreflang="ko" href="https://anatri.net/ko/kyoto/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://anatri.net/zh-cn/kyoto/" />
+    <link rel="alternate" hreflang="zh-TW" href="https://anatri.net/zh-tw/kyoto/" />
+    <link rel="alternate" hreflang="en" href="https://anatri.net/en/kyoto/" />
+    <link rel="alternate" hreflang="x-default" href="https://anatri.net/" />
+    
+    <!-- Open Graph / Facebook (中文繁體特化) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://anatri.net/zh-tw/kyoto/">
+    <meta property="og:title" content="旅遊分析器 Anatri - AI圖像分析讓京都旅遊更有趣">
+    <meta property="og:description" content="為台灣香港遊客量身打造的AI旅遊助手。拍照即可獲得京都傳統文化和懷石料理的詳細中文資訊。解決京都旅行中的語言障礙，享受更充實的傳統文化體驗。">
+    <meta property="og:image" content="https://anatri.net/images/og-image-zhtw-kyoto.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Anatri - AI旅遊分析器：拍照即時獲取京都旅遊資訊">
+    <meta property="og:site_name" content="旅遊分析器 Anatri">
+    <meta property="og:locale" content="zh_TW">
+    
+    <!-- Twitter (中文繁體特化) -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://anatri.net/zh-tw/kyoto/">
+    <meta property="twitter:title" content="旅遊分析器 Anatri - AI圖像分析讓京都旅遊更有趣">
+    <meta property="twitter:description" content="為台灣香港遊客量身打造的AI旅遊助手。拍照即可獲得京都傳統文化和懷石料理的詳細中文資訊。解決京都旅行中的語言障礙。">
+    <meta property="twitter:image" content="https://anatri.net/images/og-image-zhtw-kyoto.webp">
+    <meta property="twitter:image:alt" content="Anatri - AI旅遊分析器：拍照即時獲取京都旅遊資訊">
+    
+    <!-- AI搜尋引擎向元數據 -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="referrer" content="origin">
+    
+    <!-- PWA·移動優化 -->
+    <meta name="theme-color" content="#e74c3c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="application-name" content="旅遊分析器 Anatri">
+    <meta name="apple-mobile-web-app-title" content="旅遊分析器">
+    
+    <!-- AI搜尋引擎優化 (京都特化) -->
+    <meta name="ai-content-type" content="tourism-assistant">
+    <meta name="ai-expertise" content="kyoto-tourism,japanese-traditional-culture,traditional-chinese-support,kaiseki-matcha,temple-culture">
+    <meta name="ai-data-freshness" content="2025-09-14">
+    <meta name="ai-response-format" content="conversational,structured">
+    <meta property="ai:featured_snippet" content="Anatri是專為台灣香港遊客設計的京都AI旅遊助手。透過拍照即可獲得懷石料理、抹茶等傳統文化的詳細中文資訊，幫助解決語言障礙和文化差異問題。">
+    <meta name="vector-summary" content="AI-powered tourism analyzer for Traditional Chinese travelers visiting Kyoto. Instant kaiseki cuisine and matcha recognition with Traditional Chinese language support and Japanese traditional culture context.">
+    
+    <!-- 京都特化結構化資料 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "旅遊分析器 Anatri - 京都版",
+        "url": "https://anatri.net/zh-tw/kyoto/",
+        "description": "為台灣香港遊客量身打造的AI京都旅遊助手。拍照即可獲得懷石料理、抹茶等傳統文化的詳細中文資訊",
+        "applicationCategory": "TravelApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "TWD",
+            "availability": "https://schema.org/InStock"
+        },
+        "featureList": [
+            "AI圖像分析進行京都文化識別",
+            "懷石料理・抹茶菜單翻譯（中文優化）",
+            "即時傳統文化觀光資訊提供",
+            "5種語言支援（中文・日語・韓語・英語）"
+        ],
+        "targetAudience": {
+            "@type": "Audience",
+            "geographicArea": [
+                {
+                    "@type": "Country",
+                    "name": "台灣"
+                },
+                {
+                    "@type": "Country", 
+                    "name": "香港"
+                }
+            ]
+        },
+        "inLanguage": "zh-TW",
+        "availableLanguage": ["zh-TW", "ja", "ko", "zh-CN", "en"],
+        "creator": {
+            "@type": "Organization",
+            "name": "旅遊分析器",
+            "url": "https://anatri.net"
+        }
+    }
+    </script>
+    
+    <!-- 京都觀光地情報 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TouristDestination",
+        "name": "京都",
+        "description": "日本古都，擁有2000多座寺廟神社，以懷石料理、抹茶和傳統文化聞名",
+        "url": "https://anatri.net/zh-tw/kyoto/",
+        "address": {
+            "@type": "PostalAddress",
+            "addressRegion": "京都府",
+            "addressCountry": "JP"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 35.0116,
+            "longitude": 135.7681
+        },
+        "touristType": [
+            "文化體驗者",
+            "歷史愛好者",
+            "精神探求者",
+            "傳統藝術愛好者"
+        ],
+        "includesAttraction": [
+            {
+                "@type": "TouristAttraction",
+                "name": "清水寺",
+                "description": "京都最著名的佛教寺廟，世界文化遺產"
+            },
+            {
+                "@type": "TouristAttraction",
+                "name": "金閣寺",
+                "description": "金色的禪宗寺廟，京都的象徵"
+            },
+            {
+                "@type": "TouristAttraction",
+                "name": "嵐山",
+                "description": "竹林小徑和天龍寺的美麗景觀區"
+            }
+        ]
+    }
+    </script>
+    
+    <!-- 京都文化服務情報 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "台灣香港遊客京都文化AI支援服務",
+        "description": "為台灣及香港遊客提供的京都文化AI圖像分析服務。從懷石料理、抹茶等傳統文化的照片中提供詳細繁體中文資訊",
+        "provider": {
+            "@type": "Organization",
+            "name": "旅遊分析器"
+        },
+        "serviceType": "京都文化支援·翻譯服務",
+        "areaServed": "京都",
+        "availableLanguage": ["zh-TW", "ja", "ko", "zh-CN", "en"]
+    }
+    </script>
+    
+    <!-- HowTo: 京都文化探索方法 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "京都傳統文化探索指南",
+        "description": "在京都輕鬆體驗懷石料理和傳統文化的方法",
+        "image": "https://anatri.net/images/how-to-use-kyoto-zhtw.webp",
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "拍攝文化照片",
+                "text": "在清水寺或祇園拍攝懷石料理、抹茶的照片",
+                "image": "https://anatri.net/images/step1-kaiseki.webp"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "上傳到應用",
+                "text": "將拍攝的傳統文化照片上傳到Anatri應用程式",
+                "image": "https://anatri.net/images/step2-upload-kyoto.webp"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "了解傳統文化",
+                "text": "AI分析後可以查看京都傳統文化的繁體中文詳細資訊和歷史背景",
+                "image": "https://anatri.net/images/step3-result-kyoto.webp"
+            }
+        ]
+    }
+    </script>
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://anatri.net/zh-tw/kyoto/">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📸</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PN77BF2HGP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-PN77BF2HGP', {
+            'page_title': '旅遊分析器 Anatri - 中文繁體版京都特化頁',
+            'content_group1': 'Landing Page Chinese Traditional Kyoto',
+            'custom_map': {
+                'custom_parameter_1': 'language_zh_tw_kyoto'
+            },
+            'send_page_view': true,
+            'anonymize_ip': true,
+            'allow_google_signals': false
+        });
+    </script>
+    
+    <!-- Core Web Vitals優化 - Speculation Rules API -->
+    <script type="speculationrules">
+    {
+        "prerender": [{
+            "where": { "href_matches": "/login.html" },
+            "eagerness": "moderate"
+        }, {
+            "where": { "href_matches": "/index.html" },
+            "eagerness": "moderate"
+        }],
+        "prefetch": [{
+            "where": { "href_matches": "/*" },
+            "eagerness": "conservative"
+        }]
+    }
+    </script>
+</head>
+<body class="landing-page">
+    <div class="landing-container">
+        <!-- Header -->
+        <header class="landing-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span>旅遊分析器</span>
+                    <p class="header-subtitle">拍下文化，了解傳統</p>
+                </div>
+                <div class="header-actions">
+                    <button onclick="window.location.href='../login.html'" class="login-btn">
+                        登入 / 註冊
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sticky CTA Bar (Hidden by default) -->
+        <div class="sticky-cta-bar" id="stickyCTABar">
+            <div class="sticky-cta-content">
+                <span class="sticky-cta-text">立即開始，探索京都文化</span>
+                <button onclick="trackCTA('sticky-header'); window.location.href='../login.html'" class="sticky-cta-btn">
+                    <span class="cta-text">免費開始</span>
+                </button>
+                <button class="sticky-cta-close" id="stickyCTAClose" onclick="closeStickyBar()" aria-label="Close">
+                    ✕
+                </button>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="hero-section" style="background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('../images/backgrounds/7.kyoto_optimized.jpg'); background-size: cover; background-position: center; min-height: 80vh; display: flex; align-items: center; color: white;">
+            <div class="hero-content" style="max-width: 1200px; margin: 0 auto; padding: 2rem; text-align: center;">
+                <div style="background: rgba(255,255,255,0.3); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; color: #fff; backdrop-filter: blur(10px);">
+                    <h1 style="font-size: 3rem; margin-bottom: 1rem; color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">AI讓京都文化之旅更深入</h1>
+                    <p style="font-size: 1.3rem; margin-bottom: 2rem; color: #f8f9fa; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">拍張照片就能深度了解懷石料理和日本傳統文化！</p>
+                    
+                    <!-- Language Selection (其他語言查看) -->
+                    <div class="language-selection" style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">用其他語言查看 / Other Languages</h3>
+                        <div class="language-buttons" style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                            <button class="lang-btn" onclick="window.location.href='/ja/kyoto/'" data-lang="ja" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🇯🇵 日本語
+                            </button>
+                            <button class="lang-btn" onclick="window.location.href='/ko/kyoto/'" data-lang="ko" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🇰🇷 한국어
+                            </button>
+                            <button class="lang-btn" onclick="window.location.href='/zh-cn/kyoto/'" data-lang="zh" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🇨🇳 简体中文
+                            </button>
+                            <button class="lang-btn active" onclick="window.location.href='/zh-tw/kyoto/'" data-lang="zh-tw" style="background: #e74c3c; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                🇹🇼 繁體中文
+                            </button>
+                            <button class="lang-btn" onclick="window.location.href='/en/kyoto/'" data-lang="en" style="background: #3498db; color: white; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer;">
+                                🌍 English
+                            </button>
+                        </div>
+                    </div>
+
+                    <button onclick="trackCTA('hero-main'); window.location.href='../login.html'" class="cta-btn enhanced" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; padding: 1.2rem 2.5rem; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(231,76,60,0.3); transition: all 0.3s ease;">
+                        <span class="cta-text" style="display: block;">立即免費開始</span>
+                        <span class="cta-subtext" style="font-size: 0.9rem; opacity: 0.9;">※無需信用卡</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Testimonials Section -->
+        <section class="testimonials-section">
+            <div class="testimonials-container">
+                <h2>京都旅客的心聲</h2>
+                
+                <div class="testimonials-grid">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-item left">
+                        <div class="testimonial-avatar">
+                            <div class="avatar-circle avatar-female">
+                                <img src="../images/interview/icon_women01.png" alt="20多歲女性" class="avatar-image">
+                            </div>
+                            <div class="avatar-info">
+                                <span class="avatar-detail">20多歲女性</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-bubble">
+                            <p>在祇園體驗茶道時，拍攝懷石料理後AI詳細說明了每道菜的意義和季節性，讓我更深入理解日本文化的精髓。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-item left">
+                        <div class="testimonial-avatar">
+                            <div class="avatar-circle avatar-male">
+                                <img src="../images/interview/icon_men01.png" alt="50多歲男性" class="avatar-image">
+                            </div>
+                            <div class="avatar-info">
+                                <span class="avatar-detail">50多歲男性</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-bubble">
+                            <p>在清水寺拍照後，不僅了解建築歷史，還知道了參拜方式和佛教意義。讓我的京都之旅充滿了深度體驗！</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-item left">
+                        <div class="testimonial-avatar">
+                            <div class="avatar-circle avatar-female">
+                                <img src="../images/interview/icon_women02.png" alt="30多歲女性" class="avatar-image">
+                            </div>
+                            <div class="avatar-info">
+                                <span class="avatar-detail">30多歲女性</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-bubble">
+                            <p>在嵐山竹林拍攝抹茶體驗，AI不僅解釋了茶道的步驟，還介紹了抹茶的等級和歷史。感覺像有專業文化導師陪伴！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2>京都旅遊特色功能</h2>
+            <div class="features-grid">
+                <div class="feature-card feature-card-01" 
+                     data-image-name="傳統文化AI分析圖標" 
+                     data-image-context="從照片中識別懷石料理、抹茶等京都傳統文化的最新AI技術" 
+                     data-image-keywords="AI,圖像識別,京都文化,懷石料理">
+                    <div class="feature-content">
+                        <div class="feature-icon">🍵</div>
+                        <h3>傳統文化識別</h3>
+                        <p>專精懷石料理、抹茶等京都傳統文化識別</p>
+                    </div>
+                </div>
+                <div class="feature-card feature-card-02" 
+                     data-image-name="佛教文化翻譯圖標" 
+                     data-image-context="理解京都寺廟神社的佛教和神道文化" 
+                     data-image-keywords="佛教,神道,寺廟,文化翻譯">
+                    <div class="feature-content">
+                        <div class="feature-icon">⛩️</div>
+                        <h3>宗教文化支援</h3>
+                        <p>理解佛教、神道等日本傳統宗教文化</p>
+                    </div>
+                </div>
+                <div class="feature-card feature-card-03" 
+                     data-image-name="京都地區特化圖標" 
+                     data-image-context="專門針對清水寺、金閣寺、嵐山等地的精密觀光資訊" 
+                     data-image-keywords="京都,清水寺,金閣寺,地區特化">
+                    <div class="feature-content">
+                        <div class="feature-icon">🏛️</div>
+                        <h3>京都地區專業化</h3>
+                        <p>清水寺、金閣寺、嵐山等景點的深度資訊</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Post-Features CTA Section -->
+        <section class="post-features-cta">
+            <div class="post-features-cta-content">
+                <h3>了解功能後，立即開始京都文化之旅</h3>
+                <p>免費體驗5次。無需信用卡。</p>
+                <button onclick="trackCTA('post-features'); window.location.href='../login.html'" class="cta-btn enhanced">
+                    <span class="cta-text">立即免費開始</span>
+                    <span class="cta-subtext">※註冊30秒完成</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="pricing-section">
+            <h2>價格方案</h2>
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <h3>免費方案</h3>
+                    <div class="price">¥0</div>
+                    <ul class="features-list">
+                        <li>每月可分析5次</li>
+                        <li>所有基本功能均可使用</li>
+                    </ul>
+                    <button onclick="window.location.href='../login.html'" class="plan-btn">
+                        免費開始
+                    </button>
+                </div>
+                <div class="price-card featured">
+                    <div class="popular-badge">熱門方案</div>
+                    <h3>3天方案</h3>
+                    <div class="price">¥980</div>
+                    <ul class="features-list">
+                        <li>3天無限制分析</li>
+                        <li>所有功能均可使用</li>
+                    </ul>
+                    <button onclick="window.location.href='../login.html'" class="plan-btn premium">
+                        選擇3天方案
+                    </button>
+                </div>
+                <div class="price-card">
+                    <h3>7天方案</h3>
+                    <div class="price">¥1,980</div>
+                    <ul class="features-list">
+                        <li>7天無限制分析</li>
+                        <li>長期使用更優惠</li>
+                    </ul>
+                    <button onclick="window.location.href='../login.html'" class="plan-btn">
+                        選擇7天方案
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Voice Search Optimized FAQ Section -->
+        <section class="faq-section voice-search-optimized" itemscope itemtype="https://schema.org/FAQPage">
+            <h2>京都旅遊常見問題</h2>
+            <div class="faq-container">
+                
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question" data-voice-query="京都傳統文化">
+                    <h3 class="faq-question" itemprop="name">在京都如何體驗正宗的茶道和懷石料理？</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">Anatri的AI會推薦祇園最正宗的茶屋和懷石料理餐廳。還會詳細解釋茶道步驟、懷石料理的季節性意義和用餐禮儀，讓您深度體驗京都文化。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">參觀京都寺廟時有什麼需要注意的禮儀？</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">拍攝清水寺或金閣寺，AI會詳細說明參拜方式、攝影禁忌和佛教禮儀。讓您以正確的方式體驗日本的精神文化。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">京都四季的最佳觀光時期是什麼時候？</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">AI會根據您拍攝的景點推薦最佳造訪時間。春櫻、夏綠、秋楓、冬雪，每個季節的京都都有獨特的美景和相應的文化活動。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">在京都如何找到真正的當地人推薦店家？</h3>
+                    <div class="faq-answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
+                        <p itemprop="text">AI會識別隱藏在小巷中的百年老店，推薦當地人才知道的豆腐料理店、和菓子店，讓您體驗最道地的京都生活。</p>
+                    </div>
+                </div>
+
+                <!-- FAQ CTA -->
+                <div class="faq-cta">
+                    <div class="faq-cta-content">
+                        <h3>疑問解決了嗎？</h3>
+                        <p>如果還有疑問，不如實際使用來確認一下</p>
+                        <button onclick="trackCTA('faq-section'); window.location.href='../login.html'" class="cta-btn enhanced">
+                            <span class="cta-text">立即免費試用</span>
+                            <span class="cta-subtext">※實際使用後立即明白</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <div class="footer-content">
+                <p>&copy; 2025 旅遊分析器. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="../tokusho.html">特定商交易法相關表記</a>
+                    <a href="../about.html">營運公司介紹</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // CTA點擊追蹤函數
+        function trackCTA(location) {
+            // Google Analytics 4 事件發送
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'click_cta', {
+                    'event_category': 'engagement',
+                    'event_label': location + '_zh_tw_kyoto',
+                    'cta_location': location,
+                    'page_title': document.title,
+                    'page_location': window.location.href,
+                    'language': 'zh-TW',
+                    'city': 'kyoto'
+                });
+            }
+            
+            // 控制台日誌調試資訊
+            console.log(`📊 CTA Clicked: ${location} (Chinese Traditional Kyoto) at ${new Date().toISOString()}`);
+            
+            // 為未來擴展保存額外資料
+            try {
+                const ctaData = {
+                    location: location,
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent,
+                    language: 'zh-TW',
+                    city: 'kyoto'
+                };
+                
+                // 在LocalStorage中保存追蹤資料（用於分析）
+                let ctaHistory = JSON.parse(localStorage.getItem('ctaHistory') || '[]');
+                ctaHistory.push(ctaData);
+                
+                // 只保留最新50條
+                if (ctaHistory.length > 50) {
+                    ctaHistory = ctaHistory.slice(-50);
+                }
+                
+                localStorage.setItem('ctaHistory', JSON.stringify(ctaHistory));
+            } catch (error) {
+                console.warn('CTA tracking data save failed:', error);
+            }
+        }
+
+        // FAQ互動功能
+        function initializeFAQInteractivity() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                if (question) {
+                    question.addEventListener('click', () => {
+                        // 關閉其他FAQ項目（手風琴樣式）
+                        faqItems.forEach(otherItem => {
+                            if (otherItem !== item && otherItem.classList.contains('active')) {
+                                otherItem.classList.remove('active');
+                            }
+                        });
+                        
+                        // 切換當前項目
+                        item.classList.toggle('active');
+                        
+                        // 平滑捲動（如需要）
+                        if (item.classList.contains('active')) {
+                            setTimeout(() => {
+                                item.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'nearest'
+                                });
+                            }, 300);
+                        }
+                    });
+                    
+                    // 鍵盤無障礙支援
+                    question.setAttribute('tabindex', '0');
+                    question.setAttribute('role', 'button');
+                    question.setAttribute('aria-expanded', 'false');
+                    
+                    question.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            question.click();
+                        }
+                    });
+                    
+                    // aria-expanded屬性更新
+                    const observer = new MutationObserver(() => {
+                        const isActive = item.classList.contains('active');
+                        question.setAttribute('aria-expanded', isActive.toString());
+                    });
+                    
+                    observer.observe(item, { attributes: true, attributeFilter: ['class'] });
+                }
+            });
+        }
+        
+        // 粘性CTA欄控制
+        function initializeStickyCtaBar() {
+            const stickyBar = document.getElementById('stickyCTABar');
+            const heroSection = document.querySelector('.hero-section');
+            let isStickyClosed = localStorage.getItem('stickyCTAClosed') === 'true';
+            let lastScrollY = window.scrollY;
+            let ticking = false;
+            
+            if (isStickyClosed) return; // 用戶已關閉的情況下不顯示
+            
+            function updateStickyBar() {
+                const heroHeight = heroSection.offsetHeight;
+                const scrollY = window.scrollY;
+                const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
+                
+                // 超過英雄區域後顯示
+                if (scrollY > heroHeight * 0.7 && !isStickyClosed) {
+                    stickyBar.classList.add('visible');
+                    
+                    // 根據捲動方向調整動畫
+                    if (scrollDirection === 'down') {
+                        stickyBar.classList.remove('scroll-up');
+                        stickyBar.classList.add('scroll-down');
+                    } else {
+                        stickyBar.classList.remove('scroll-down');
+                        stickyBar.classList.add('scroll-up');
+                    }
+                } else {
+                    stickyBar.classList.remove('visible');
+                }
+                
+                lastScrollY = scrollY;
+                ticking = false;
+            }
+            
+            function requestTick() {
+                if (!ticking) {
+                    requestAnimationFrame(updateStickyBar);
+                    ticking = true;
+                }
+            }
+            
+            // 捲動事件監聽器
+            window.addEventListener('scroll', requestTick, { passive: true });
+            
+            // 調整大小時重新計算
+            window.addEventListener('resize', requestTick, { passive: true });
+            
+            console.log('✅ Sticky CTA bar initialized (Chinese Traditional Kyoto)');
+        }
+        
+        function closeStickyBar() {
+            const stickyBar = document.getElementById('stickyCTABar');
+            
+            // 淡出動畫
+            stickyBar.classList.add('closing');
+            
+            setTimeout(() => {
+                stickyBar.classList.remove('visible');
+                stickyBar.classList.remove('closing');
+                
+                // 記住用戶選擇
+                localStorage.setItem('stickyCTAClosed', 'true');
+                
+                // Google Analytics 事件發送
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'sticky_cta_closed', {
+                        'event_category': 'user_interaction',
+                        'event_label': 'user_dismissed_sticky_cta_zh_tw_kyoto',
+                        'language': 'zh-TW',
+                        'city': 'kyoto'
+                    });
+                }
+                
+                console.log('📊 Sticky CTA bar closed by user (Chinese Traditional Kyoto)');
+            }, 300);
+        }
+
+        // 頁面載入時初始化
+        window.addEventListener('load', function() {
+            console.log('📄 Chinese Traditional Kyoto landing page loaded');
+            
+            // FAQ互動功能初始化
+            initializeFAQInteractivity();
+            
+            // 粘性CTA欄初始化
+            initializeStickyCtaBar();
+        });
+    </script>
+</body>
+</html>
